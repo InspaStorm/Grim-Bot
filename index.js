@@ -39,7 +39,7 @@ client.on('message', msg => {
 
 client.on('message', (message) =>{
 	if(message.author.bot) return;
-	if(message.content === 'hello') {
+	if(message.content === 'hello' || 'Hello' || 'hi' || 'Hi' || 'Hey' || 'hey') {
 		message.reply('hello');
 	}
 });
