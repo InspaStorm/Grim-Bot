@@ -6,12 +6,27 @@ const tasks = require('./tasks.json')
 
 const client = new discord.Client();
 
-client.on('ready' , () => console.log('Grim Bot logged on!'))
+client.on('ready' , () => {
+	client.user.setPresence({
+        	activity: {
+        		name: 'Grim Town',
+        		type: "PLAYING",
+        	},
+        	status: 'idle'
+	})
+		.then(console.log(`${client.user.tag} logged on!`))
+		.catch(err => console.log(err))
+});
 
 client.on('message', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
+	
+	if(msg.author.bot) return;
+
 	if (lowerCasedMsg == 'task') {
+
 		const authorID = msg.author.id
+
 		if (tasks.userIds.includes(msg.author.id)) {
 
 			try {
@@ -34,8 +49,10 @@ client.on('message', msg => {
 			}
 
 		}
+	} else if (lowerCasedMsg == 'hello'|| 'hi' || 'hey') {
+		msg.reply('hello');
 	}
-})
+});
 
 keepAlive()
 client.login(token)
