@@ -7,6 +7,7 @@ const tasks = require('./tasks.json')
 const client = new discord.Client();
 
 client.on('ready' , () => {
+
 	client.user.setPresence({
         	activity: {
         		name: 'Grim Town',
