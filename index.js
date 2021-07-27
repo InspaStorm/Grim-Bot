@@ -50,9 +50,39 @@ client.on('message', msg => {
 			}
 
 		}
-	} else if (lowerCasedMsg == 'hello'|| 'hi' || 'hey') {
+	}
+	
+	else if (lowerCasedMsg == 'hello'|| 'hi' || 'hey') {
 		msg.reply('hello');
 	}
+	
+	else if (lowerCasedMsg == 'my avatar') {
+		message.reply(message.author.displayAvatarURL());
+	}
+	
+	else if (lowerCasedMsg == 'ping') {
+		message.channel.send('pong');
+	}
+	
+	else if (lowerCasedMsg == 'help') {
+		const helpEmbed = new Discord.MessageEmbed()
+		    .setColor('#00ffff')
+		    .setTitle('Commands')
+		    .setDescription('You can see the commands of GRIM BOT here')
+		    .addFields(
+			{ name: 'Help Command', value: 'You can use this command to see all the commands ;p' },
+			{ name: '\u200B', value: '\u200B' },
+			{ name: 'Hello', value: 'Say hello to bot for it to respond back so your never lonely', inline: true },
+			{ name: 'Ping', value: 'Pong', inline: true },
+			{ name: 'Task', value: 'You know if you know', inline: true },
+		    )
+		    .setImage('https://thumbs.dreamstime.com/z/help-11277.jpg')
+		    .setFooter('Developed by @DeadlineBoss & @Ranger');
+		
+		msg.channel.send(helpEmbed);
+	}
+
+	
 });
 
 keepAlive()
