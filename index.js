@@ -6,8 +6,17 @@ const tasks = require('./tasks.json')
 
 const client = new discord.Client();
 
-client.on('ready' , () => console.log('Grim Bot logged on!'))
-
+client.on('ready' , () => {
+	console.log('Grim Bot logged on!'))
+	bot.user.setStatus('available')
+	bot.user.setPresence({
+        	game: {
+        		name: 'Grim City',
+            		type: "At the HQ of Grim City with OGs >:3",
+        	}
+	});
+}
+	
 client.on('message', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
 	if (lowerCasedMsg == 'task') {
