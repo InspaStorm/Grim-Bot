@@ -4,6 +4,7 @@ const {keepAlive} = require('./server.js');
 const fs = require('fs');
 const tasks = require('./tasks.json')
 
+const {prefix} = require('./config.js')
 const client = new discord.Client();
 
 client.on('ready' , () => {
@@ -24,37 +25,73 @@ client.on('message', msg => {
 	
 	if(msg.author.bot) return;
 
-	if (lowerCasedMsg == 'task') {
+	if (lowerCasedMsg.startsWith(prefix)) {
 
-		const authorID = msg.author.id
+		const command = lowerCasedMsg.substr(2)
 
-		if (tasks.userIds.includes(msg.author.id)) {
+		if (command == 'task') {
 
-			try {
+			const authorID = msg.author.id
 
-				const tasksList = tasks[authorID].tasks.join('\n');
-				const name = tasks[authorID].name;
+			if (tasks.userIds.includes(msg.author.id)) {
 
-				const tasksEmbed = new discord.MessageEmbed()
-					.setTitle(`Tasks for ${name}`)
-					.setDescription('Tasks assigned to YOU!')
-					.addField('Tasks', tasksList)
-					.setThumbnail(msg.author.avatarURL())
+				try {
 
-				msg.channel.send(tasksEmbed)
-			} catch (err) {
+					const tasksList = tasks[authorID].tasks.join('\n');
+					const name = tasks[authorID].name;
 
-				console.error(err)
-				msg.channel.send('Something went wrong on my side =/')
+					const tasksEmbed = new discord.MessageEmbed()
+						.setTitle(`Tasks for ${name}`)
+						.setDescription('Tasks assigned to YOU!')
+						.addField('Tasks', tasksList)
+						.setThumbnail(msg.author.avatarURL())
+
+					msg.channel.send(tasksEmbed)
+				} catch (err) {
+
+					console.error(err)
+					msg.channel.send('Something went wrong on my side =/')
+
+				}
 
 			}
+		}
 
+		else if (command == 'myavatar') {
+			const avatarEmbed = new discord.MessageEmbed()
+			.setImage(msg.author.avatarURL());
+
+			msg.channel.send(avatarEmbed)
+		}
+		
+		else if (command == 'ping') {
+			msg.channel.send('pong');
+		}
+		
+		else if (command == 'help') {
+			const helpEmbed = new discord.MessageEmbed()
+			    .setColor('#00ffff')
+			    .setTitle('Commands')
+			    .setDescription('You can see the commands of GRIM BOT here')
+			    .addFields(
+				{ name: '\u200B', value: '\u200B' },
+				{ name: 'Help', value: 'You can use this command to see all the commands ;p' },
+				{ name: '\u200B', value: '\u200B' },
+				{ name: 'Hello', value: 'Say hello to bot for it to respond back so your never lonely'},
+				{ name: 'Ping', value: 'Pong'},
+				{ name: 'Task', value: 'You know if you know'},
+			    )
+			    .setImage('https://thumbs.dreamstime.com/z/help-11277.jpg')
+			    .setFooter('Developed by @DeadlineBoss & @Ranger');
+			
+			msg.channel.send(helpEmbed);
 		}
 	} else if (lowerCasedMsg.match(/hi*|hello*|hey*/)) {
 		const randInt = Math.floor(Math.random() * 5)
 		const greetBack = lowerCasedMsg.slice(0, -1) + (lowerCasedMsg.substr(-1).repeat(randInt))
 		msg.reply(greetBack);
 	}
+
 });
 
 keepAlive()
