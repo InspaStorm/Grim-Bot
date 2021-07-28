@@ -50,8 +50,10 @@ client.on('message', msg => {
 			}
 
 		}
-	} else if (lowerCasedMsg == 'hello'|| 'hi' || 'hey') {
-		msg.reply('hello');
+	} else if (lowerCasedMsg.match(/hi*|hello*|hey*/)) {
+		const randInt = Math.floor(Math.random() * 5)
+		const greetBack = lowerCasedMsg.slice(0, -1) + (lowerCasedMsg.substr(-1).repeat(randInt))
+		msg.reply(greetBack);
 	}
 });
 
