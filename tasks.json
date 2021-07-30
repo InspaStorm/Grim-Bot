@@ -4,21 +4,25 @@
 	"599489300672806913":
 		{
 			"name" : "Ranger",
-			"tasks" : ["Add basic player moves"]
+			"tasks" : ["Add basic player moves"],
+			"status" : 1
 		},
 	"681766482803163147":
 		{
 			"name" : "Dead",
-			"tasks" : ["Main Character Sprite Sheet"]
+			"tasks" : ["Main Character Sprite Sheet"],
+			"status" : 1
 		},
 	"520625717885534228":
 		{
 			"name" : "Raccoon",
-			"tasks" : ["Main Map (Not Final)"]
+			"tasks" : ["Main Map (Not Final)"],
+			"status" : 1
 		},
 	"660785366110044210":
 		{
 			"name" : "BlackJoy",
-			"tasks" : [""]
+			"tasks" : [""],
+			"status" : 1
 		}
 }
