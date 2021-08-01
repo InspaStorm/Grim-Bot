@@ -71,7 +71,7 @@ client.on('message', msg => {
 	} else if (lowerCasedMsg.startsWith('hm')) {
 		const randInt = Math.floor(Math.random() * 5)
 		const greetBack = lowerCasedMsg.slice(0, -1) + (lowerCasedMsg.substr(-1).repeat(randInt))
-		msg.reply(greetBack);
+		msg.channel.send(greetBack);
 	}
 
 });
