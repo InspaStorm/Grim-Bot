@@ -4,17 +4,17 @@ const fs = require('fs');
 
 module.exports = {
 	
-	name: 'addtask',
-	description:'Adds a task to the existing user',
+	name: 'removetask',
+	description:'Removes a task to the existing user',
 
 	run(msg, args) {
 		const authorID = msg.author.id
 
 		if (tasks.userIds.includes(msg.author.id)) {
 
-			const newTask = args.join(' ')
+			if (!isNaN(args[0])) {
+				const taskNumber = args[0]
 
-			if (args.length > 0) {
 				fs.readFile('./tasks.json', (err, rawData) => {
 					if (err) {
 						msg.channel.send('Something went wrong when reading the file')
@@ -23,10 +23,10 @@ module.exports = {
 					let fileData = JSON.parse(rawData)
 					
 					if (fileData[authorID].tasks.length < 4) {
-						const newTaskObject = {name: newTask, status: 1}
-						const tasks = fileData[authorID].tasks
 
-						tasks.push(newTaskObject)
+						const taskIndex = taskNumber - 1
+						const removedTask = fileData[authorID].tasks[taskIndex]
+						const removeTask = fileData[authorID].tasks.splice(taskIndex , 1)
 
 						const updatedFile = JSON.stringify(fileData, null , 4)
 
@@ -34,16 +34,15 @@ module.exports = {
 
 							if (err) {
 								console.error('on writing file:' + err)
-							} else msg.channel.send(`Added \`${args}\` as a task`)
+							} else msg.channel.send(`Removed the task at position \`${taskNumber}\``)
 						})
 					} else {
 						msg.channel.send('Your task slots are full, Wait untill the next deadline')
 					}
 				})
 			} else {
-				msg.channel.send('Provide me the `Task` to be added')
+				msg.channel.send('Please provide the `Number` of the task to be removed')
 			}
-
 		}
 	}
 

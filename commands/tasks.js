@@ -1,5 +1,6 @@
 const tasks = require('../tasks.json');
 const discord = require('discord.js');
+const fs = require('fs');
 
 module.exports = {
 	
@@ -19,19 +20,29 @@ module.exports = {
 			let tasksList = ''
 
 			try {
-				for (let task of tasks[authorID].tasks) {
-					tasksList = tasksList + `\n${task.name} - ${status[task.status]}`
-				}
+				let i = 1
+				fs.readFile('./tasks.json', (err, rawData) => {
+					if (err) {
+						msg.channel.send('Something went wrong when reading the file')
+					}
 
-				const name = tasks[authorID].name;
+					let fileData = JSON.parse(rawData)
 
-				const tasksEmbed = new discord.MessageEmbed()
-					.setTitle(`Tasks for ${name}`)
-					.setDescription('Tasks assigned to YOU!')
-					.addField('Tasks', tasksList)
-					.setThumbnail(msg.author.avatarURL())
+					for (let task of fileData[authorID].tasks) {
+						tasksList = tasksList + `\n${i}. ${task.name} - ${status[task.status]}`
+						i += 1
+					}
 
-				msg.channel.send(tasksEmbed)
+					const name = fileData[authorID].name;
+
+					const tasksEmbed = new discord.MessageEmbed()
+						.setTitle(`Tasks for ${name}`)
+						.setDescription('Tasks assigned to YOU!')
+						.addField('Tasks', tasksList)
+						.setThumbnail(msg.author.avatarURL())
+
+					msg.channel.send(tasksEmbed)
+				})
 			} catch (err) {
 
 				console.error(err)
