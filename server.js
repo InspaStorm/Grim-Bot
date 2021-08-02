@@ -1,10 +1,9 @@
 const express = require('express');
-
 const server = express();
 
 server.all('/', (req, res) => {
-	res.json({message: 'Grim Bot is running!'})
-	res.send('Grim Bot is up!')
+
+	const uptime = client.uptime;
 })
 
 function keepAlive() {
