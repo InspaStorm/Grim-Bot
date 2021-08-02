@@ -38,16 +38,18 @@ for (const command of client.commands) {
 
 client.on('message', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
-	
+
 	if(msg.author.bot) return;
 
 	if (lowerCasedMsg.startsWith(prefix)) {
-
-		const command = lowerCasedMsg.substr(2)
+		const eachWord = lowerCasedMsg.split(" ")
+		const command = eachWord[0].substr(2)
+		eachWord.shift()
+		const args = eachWord
 
 		if (client.commands.has(command)) {
 			try {
-				client.commands.get(command).run(msg)
+				client.commands.get(command).run(msg, args)
 			} catch (err) {
 				console.log(`Something went wrong executing command: ${err}`)
 			}

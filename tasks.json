@@ -1,32 +1,49 @@
 {
-	"userIds" : ["599489300672806913", "660785366110044210", "681766482803163147", "520625717885534228"],
-
-	"599489300672806913":
-		{
-			"name" : "Ranger",
-			"tasks" : [
-				{"name":"Add basic player moves", "status" : 1}
-			]
-		},
-	"681766482803163147":
-		{
-			"name" : "Dead",
-			"tasks" : [
-				{"name":"Main Character Sprite Sheet","status" : 1}
-			]
-		},
-	"520625717885534228":
-		{
-			"name" : "Raccoon",
-			"tasks" : [
-				{"name":"Main Map (Not Final)","status" : 1}
-			]
-		},
-	"660785366110044210":
-		{
-			"name" : "BlackJoy",
-			"tasks" : [
-				{"name":"Complete Game Script","status" : 1}
-			]
-		}
+    "userIds": [
+        "599489300672806913",
+        "660785366110044210",
+        "681766482803163147",
+        "520625717885534228",
+        "760954344421195867"
+    ],
+    "599489300672806913": {
+        "name": "Ranger",
+        "tasks": [
+            {
+                "name": "Add basic player moves",
+                "status": 1
+            }
+        ]
+    },
+    "681766482803163147": {
+        "name": "Dead",
+        "tasks": [
+            {
+                "name": "Main Character Sprite Sheet",
+                "status": 1
+            }
+        ]
+    },
+    "520625717885534228": {
+        "name": "Raccoon",
+        "tasks": [
+            {
+                "name": "Main Map (Not Final)",
+                "status": 1
+            }
+        ]
+    },
+    "660785366110044210": {
+        "name": "BlackJoy",
+        "tasks": [
+            {
+                "name": "Complete Game Script",
+                "status": 1
+            }
+        ]
+    },
+    "760954344421195867": {
+        "name": "Baka-Kun",
+        "tasks": []
+    }
 }

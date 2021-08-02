@@ -6,7 +6,7 @@ module.exports = {
 	name: 'task',
 	description:'Shows the tasks assigned to some specific people',
 
-	run(msg) {
+	run(msg, args) {
 		const status = {
 			1: 'Pending<a:notify:871230575342649354>',
 			2: 'Done<a:yes:871230600974045254>',
