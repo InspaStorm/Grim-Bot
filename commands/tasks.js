@@ -1,6 +1,6 @@
-const tasks = require('../tasks.json');
 const discord = require('discord.js');
-const fs = require('fs');
+const { MongoClient } = require('mongodb');
+const {dbUrl} = require('../config.js');
 
 module.exports = {
 	
@@ -8,6 +8,9 @@ module.exports = {
 	description:'Shows the tasks assigned to some specific people',
 
 	run(msg, args) {
+
+		const client = new MongoClient(dbUrl);
+
 		const status = {
 			1: 'Pending<a:notify:871230575342649354>',
 			2: 'Done<a:yes:871230600974045254>',
@@ -15,42 +18,43 @@ module.exports = {
 		}
 		const authorID = msg.author.id
 
-		if (tasks.userIds.includes(msg.author.id)) {
+		let tasksList = '';
 
-			let tasksList = ''
+		try {
+			client.connect(err => {
 
-			try {
-				let i = 1
-				fs.readFile('./tasks.json', (err, rawData) => {
-					if (err) {
-						msg.channel.send('Something went wrong when reading the file')
-					}
+			    const db = client.db('Grim-Town')
+			    const collection = db.collection('Tasks')
 
-					let fileData = JSON.parse(rawData)
+				collection.find({id : '599489300672806913'}).toArray()
+				.then(res => {
 
-					for (let task of fileData[authorID].tasks) {
+					let data = res[0]
+					let i = 1
+					for (let task of data.tasks) {
 						tasksList = tasksList + `\n${i}. ${task.name} - ${status[task.status]}`
-						i += 1
+						i ++
 					}
-
-					const name = fileData[authorID].name;
 
 					const tasksEmbed = new discord.MessageEmbed()
-						.setTitle(`Tasks for ${name}`)
-						.setDescription('Tasks assigned to YOU!')
-						.addField('Tasks', tasksList)
-						.setThumbnail(msg.author.avatarURL())
+					.setTitle(`Tasks for ${data.name}`)
+					.setDescription('Tasks assigned to YOU!')
+					.addField('Tasks', tasksList)
+					.setThumbnail(msg.author.avatarURL())
 
 					msg.channel.send(tasksEmbed)
 				})
-			} catch (err) {
+				.catch(err => console.log('An error occured:',err))
+			})
 
-				console.error(err)
-				msg.channel.send('Something went wrong on my side =/')
+		} catch (err) {
 
-			}
+			console.error(err)
+			msg.channel.send('Something went wrong on my side =/')
 
 		}
+
+		
 	}
 
 }
