@@ -2,7 +2,7 @@ const {token} = require('./config.js');
 const discord = require('discord.js');
 const {keepAlive} = require('./server.js');
 const fs = require('fs');
-const tasks = require('./tasks.json');
+const {updatePoint} = require('./misc/chatPoints')
 
 const {prefix} = require('./config.js')
 const client = new discord.Client();
@@ -73,10 +73,17 @@ client.on('message', msg => {
 	} else if (lowerCasedMsg.startsWith('hm')) {
 		const randInt = Math.floor(Math.random() * 5)
 		const greetBack = lowerCasedMsg.slice(0, -1) + (lowerCasedMsg.substr(-1).repeat(randInt))
-		msg.channel.send(greetBack);
+		msg.channel.send(greetBack)
+		updatePoint(msg.author);
 	}
-
 });
+
+client.on('messageReactionAdd', (reaction, user) => {
+	if (reaction.message.id == 873024241791012904) {
+		reaction.message.channel.guild.roles.fetch(873026246030811167)
+		.then()
+	}
+})
 
 keepAlive()
 client.login(token)

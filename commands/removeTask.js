@@ -1,6 +1,6 @@
-const tasks = require('../tasks.json');
 const discord = require('discord.js');
-const fs = require('fs');
+const { MongoClient } = require('mongodb');
+const {dbUrl} = require('../config.js');
 
 module.exports = {
 	
@@ -15,31 +15,33 @@ module.exports = {
 			if (!isNaN(args[0])) {
 				const taskNumber = args[0]
 
-				fs.readFile('./tasks.json', (err, rawData) => {
-					if (err) {
-						msg.channel.send('Something went wrong when reading the file')
+			client.connect(() => {
+
+			    const db = client.db('Grim-Town')
+			    const collection = db.collection('Tasks')
+
+				collection.find({id : '599489300672806913'}).toArray()
+				.then(res => {
+
+					let data = res[0]
+					let i = 1
+					for (let task of data.tasks) {
+						tasksList = tasksList + `\n${i}. ${task.name} - ${status[task.status]}`
+						i ++
 					}
 
-					let fileData = JSON.parse(rawData)
-					
-					if (fileData[authorID].tasks.length < 4) {
+					const tasksEmbed = new discord.MessageEmbed()
+					.setTitle(`Tasks for ${data.name}`)
+					.setDescription('Tasks assigned to YOU!')
+					.addField('Tasks', tasksList)
+					.setThumbnail(msg.author.avatarURL())
 
-						const taskIndex = taskNumber - 1
-						const removedTask = fileData[authorID].tasks[taskIndex]
-						const removeTask = fileData[authorID].tasks.splice(taskIndex , 1)
-
-						const updatedFile = JSON.stringify(fileData, null , 4)
-
-						fs.writeFile('./tasks.json', updatedFile, (err) => {
-
-							if (err) {
-								console.error('on writing file:' + err)
-							} else msg.channel.send(`Removed the task at position \`${taskNumber}\``)
-						})
-					} else {
-						msg.channel.send('Your task slots are full, Wait untill the next deadline')
-					}
+					msg.channel.send(tasksEmbed)
 				})
+				.catch(err => console.log('An error occured:',err))
+			})
+				
+				
 			} else {
 				msg.channel.send('Please provide the `Number` of the task to be removed')
 			}
