@@ -2,7 +2,7 @@ const {token} = require('./config.js');
 const discord = require('discord.js');
 const {keepAlive} = require('./server.js');
 const fs = require('fs');
-const {updatePoint} = require('./misc/chatPoints')
+const {updatePoint, startDb} = require('./misc/chatPoints')
 
 const {prefix} = require('./config.js')
 const client = new discord.Client();
@@ -17,7 +17,8 @@ client.on('ready' , () => {
         	status: 'idle'
 	})
 		.then(console.log(`${client.user.tag} logged on!`))
-		.catch(err => console.log(err))
+		.catch(err => console.log(err));
+	startDb()
 });
 
 const commandFiles = fs.readdirSync('./commands')

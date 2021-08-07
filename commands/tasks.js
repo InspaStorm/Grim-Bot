@@ -1,6 +1,5 @@
 const discord = require('discord.js');
-const { MongoClient } = require('mongodb');
-const {dbUrl} = require('../config.js');
+const {db} = require('../misc/chatPoints');
 
 module.exports = {
 	
@@ -8,8 +7,6 @@ module.exports = {
 	description:'Shows the tasks assigned to some specific people',
 
 	run(msg, args) {
-
-		const client = new MongoClient(dbUrl);
 
 		const status = {
 			1: 'Pending<a:notify:871230575342649354>',
@@ -23,32 +20,30 @@ module.exports = {
 		try {
 			msg.channel.send('Fetching Data.....')
 			.then(sentMessage => {
-				client.connect(err => {
+			    const collection = db.collection('Tasks')
 
-				    const db = client.db('Grim-Town')
-				    const collection = db.collection('Tasks')
+				collection.find({id : '599489300672806913'}).toArray()
+				.then(res => {
 
-					collection.find({id : '599489300672806913'}).toArray()
-					.then(res => {
-
-						let data = res[0]
-						let i = 1
+					let data = res[0]
+					let i = 1
+					if (data.tasks.length > 0) {
 						for (let task of data.tasks) {
 							tasksList = tasksList + `\n${i}. ${task.name} - ${status[task.status]}`
 							i ++
 						}
+					} else tasksList = 'No Tasks Found'
 
-						const tasksEmbed = new discord.MessageEmbed()
-						.setTitle(`Tasks for ${data.name}`)
-						.setDescription('Tasks assigned to YOU!')
-						.addField('Tasks', tasksList)
-						.setThumbnail(msg.author.avatarURL())
-						
-						sentMessage.delete()
-						msg.channel.send(tasksEmbed)
-					})
-					.catch(err => console.log('An error occured:',err))
+					const tasksEmbed = new discord.MessageEmbed()
+					.setTitle(`Tasks for ${data.name}`)
+					.setDescription('Tasks assigned to YOU!')
+					.addField('Tasks', tasksList)
+					.setThumbnail(msg.author.avatarURL())
+					
+					sentMessage.delete()
+					msg.channel.send(tasksEmbed)
 				})
+				.catch(err => console.log('An error occured:',err))
 			})
 
 		} catch (err) {
