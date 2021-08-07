@@ -1,6 +1,6 @@
 const discord = require('discord.js');
 const { MongoClient } = require('mongodb');
-const {dbUrl} = require('../config.js');
+const {db} = require('../misc/chatPoints.js');
 
 module.exports = {
 	
@@ -10,42 +10,27 @@ module.exports = {
 	run(msg, args) {
 		const authorID = msg.author.id
 
-		if (tasks.userIds.includes(msg.author.id)) {
+		if (!isNaN(args[0])) {
 
-			if (!isNaN(args[0])) {
-				const taskNumber = args[0]
+			const taskNumber = args[0] - 1
+		    const collection = db.collection('Tasks')
 
-			client.connect(() => {
+			collection.findOne({id : `${authorID}`})
+			.then(res => {
 
-			    const db = client.db('Grim-Town')
-			    const collection = db.collection('Tasks')
+				if (res.tasks.length >= args[0]) {
 
-				collection.find({id : '599489300672806913'}).toArray()
-				.then(res => {
+					res.tasks.splice(taskNumber, 1)
 
-					let data = res[0]
-					let i = 1
-					for (let task of data.tasks) {
-						tasksList = tasksList + `\n${i}. ${task.name} - ${status[task.status]}`
-						i ++
-					}
+					collection.updateOne({id: authorID}, {$set :{tasks: res.tasks}})
 
-					const tasksEmbed = new discord.MessageEmbed()
-					.setTitle(`Tasks for ${data.name}`)
-					.setDescription('Tasks assigned to YOU!')
-					.addField('Tasks', tasksList)
-					.setThumbnail(msg.author.avatarURL())
+					msg.channel.send(`${res.tasks[taskNumber]} Has been removed from the list`)
 
-					msg.channel.send(tasksEmbed)
-				})
-				.catch(err => console.log('An error occured:',err))
+				} else msg.channel.send(`There are no tasks at position ${args[0]}`)
 			})
-				
-				
-			} else {
-				msg.channel.send('Please provide the `Number` of the task to be removed')
-			}
+
+		} else {
+			msg.channel.send('Please provide the `Number` of the task to be removed')
 		}
 	}
-
 }
