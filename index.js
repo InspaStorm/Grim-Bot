@@ -3,6 +3,8 @@ const discord = require('discord.js');
 const {keepAlive} = require('./server.js');
 const fs = require('fs');
 const {updatePoint, startDb} = require('./misc/chatPoints')
+const {updateLevel} = require('./misc/levels.js')
+
 
 const {prefix} = require('./config.js')
 const client = new discord.Client();
@@ -42,6 +44,8 @@ client.on('message', msg => {
 
 	if(msg.author.bot) return;
 
+	updateLevel(msg);
+
 	if (lowerCasedMsg.startsWith(prefix)) {
 		const eachWord = lowerCasedMsg.split(" ")
 		const command = eachWord[0].substr(2)
@@ -78,13 +82,6 @@ client.on('message', msg => {
 		updatePoint(msg.author);
 	}
 });
-
-client.on('messageReactionAdd', (reaction, user) => {
-	if (reaction.message.id == 873024241791012904) {
-		reaction.message.channel.guild.roles.fetch(873026246030811167)
-		.then()
-	}
-})
 
 keepAlive()
 client.login(token)
