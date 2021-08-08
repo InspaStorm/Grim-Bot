@@ -60,10 +60,6 @@ client.on('message', msg => {
 			}
 		}
 		
-		else if (command == 'ping') {
-			msg.channel.send('pong');
-		}
-		
 		else if (command == 'help') {
 			const helpEmbed = new discord.MessageEmbed()
 			    .setColor('#00ffff')
@@ -71,15 +67,31 @@ client.on('message', msg => {
 			    .setDescription('You can see the commands of GRIM BOT here')
 			    .addFields(commands)
 			    .setImage('https://thumbs.dreamstime.com/z/help-11277.jpg')
-			    .setFooter('Developed by @DeadlineBoss & @Ranger');
+			    .setFooter('Developed by the InspaStorm Team @DeadlineBoss & @Ranger');
 			
 			msg.channel.send(helpEmbed);
 		}
 	} else if (lowerCasedMsg.startsWith('hm')) {
-		const randInt = Math.floor(Math.random() * 5)
-		const greetBack = lowerCasedMsg.slice(0, -1) + (lowerCasedMsg.substr(-1).repeat(randInt))
-		msg.channel.send(greetBack)
-		updatePoint(msg.author);
+		const randInt = Math.floor(Math.random() * 5);
+		const luck = Math.floor(Math.random() * 101);
+
+		const customReplies = [
+			'hmmm hmmmmm huh?!?!',
+			'HMMMMMMMMMM!!!!!',
+			'hmm :l',
+			'hmmmmmm hmmm hm hmm :( [Translation: Steve took my bed :(]',
+			'hmmmmmmm hmmm hmmm >:3'
+		]
+
+		if(luck > 5) {
+			const greetBack = lowerCasedMsg.slice(0, -1) + (lowerCasedMsg.substr(-1).repeat(randInt))
+			msg.channel.send(greetBack)
+			updatePoint(msg.author);
+		}
+
+		else if(luck <= 5) {
+			msg.channel.send(customReplies[luck - 1])
+		}
 	}
 });
 
