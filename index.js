@@ -49,7 +49,7 @@ client.on('message', msg => {
 
 	if(msg.author.bot) return;
 
-
+	updateLevel(msg)
 
 	if (lowerCasedMsg.startsWith(prefix)) {
 		const eachWord = lowerCasedMsg.split(" ")
@@ -89,14 +89,14 @@ client.on('message', msg => {
 	}
 
   if(lowerCasedMsg == 'hmm') {
-    console.log(hmmGoBrrr);
+
 		if(hmmGoBrrr == 0) {
-      const hmmGoBrrrEmbed = new discord.MessageEmbed()
+      		const hmmGoBrrrEmbed = new discord.MessageEmbed()
 			    .setColor('#00ffff')
 			    .setTitle('Achivement Unlocked')
-          .addFields(
+          		.addFields(
 		        { name: 'The Perfect hmm', value: 'hmm go BRRRRRRRR' }
-          )
+          		)
 
 			msg.reply(hmmGoBrrrEmbed);
 			hmmGoBrrr = hmmGoBrrr + 1;
@@ -129,16 +129,16 @@ client.on('message', msg => {
 
 	else if(msg.guild.id == 802904126312808498) {
 		if(officalServerMsg == 0) {
-      const officalServerMsgEmbed = new discord.MessageEmbed()
+      			const officalServerMsgEmbed = new discord.MessageEmbed()
 			    .setColor('#00ffff')
 			    .setTitle('Achivement Unlocked')
-          .addFields(
+          		.addFields(
 		        { name: 'Chat with the devs!!', value: 'Message in the offical InspaStorm Server' }
-          )
+          		)
 
 			msg.reply(officalServerMsgEmbed);
 			officalServerMsg = officalServerMsg + 1;
-      achivementsDone.push({ name: 'Chat with the devs!!', value: 'Message in the offical InspaStorm Server' })
+     		achivementsDone.push({ name: 'Chat with the devs!!', value: 'Message in the offical InspaStorm Server' })
 		}
 	}
 });
