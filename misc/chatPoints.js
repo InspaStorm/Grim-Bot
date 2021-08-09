@@ -6,7 +6,7 @@ const db = mongo.db('Grim-Town')
 
 function openDb() {
     mongo.connect()
-    .then(console.log('Databse is open!'))
+    .then(console.log('Database is open!'))
 }
 
 function updatePoints(user) {
