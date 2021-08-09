@@ -1,9 +1,9 @@
-const {db} = require('../misc/chatPoints.js');
+const {db} = require('../misc/chatPoints')
 
 module.exports = {
 	
-	name: 'removetask',
-	description:'Removes a task to the existing user',
+	name: 'taskdone',
+	description:'Marks a task of the author as done',
 	private: true,
 
 	run(msg, args) {
@@ -19,11 +19,11 @@ module.exports = {
 
 				if (res.tasks.length >= args[0] && res.tasks.length > 0) {
 
-					res.tasks[taskNumber].status = 3
+					res.tasks[taskNumber].status = 2
 
 					collection.updateOne({id: authorID}, {$set :{tasks: res.tasks}})
 
-					msg.channel.send(`${res.tasks[taskNumber]} Has been marked as cancelled`)
+					msg.channel.send(`${res.tasks[taskNumber]} Has been marked as done`)
 
 				} else msg.channel.send(`There are no tasks at position **${args[0]}**`)
 			})
@@ -32,4 +32,5 @@ module.exports = {
 			msg.channel.send('Please provide the `Positional Number` of the task')
 		}
 	}
+
 }

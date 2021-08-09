@@ -25,7 +25,8 @@ module.exports = {
                 const leaderboard = new discord.MessageEmbed()
                 .setTitle(`Chad Chatters!`)
                 .setDescription('Placeholders in chatting \`Hmm\`')
-                .addField('Tasks', placeHolders)
+                .addField('Leaderboard', placeHolders)
+                .setColor('#FF0000')
 
                 sentMessage.delete()
                 msg.channel.send(leaderboard)

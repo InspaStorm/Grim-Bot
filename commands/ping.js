@@ -1,6 +1,3 @@
-const tasks = require('../tasks.json');
-const discord = require('discord.js');
-
 module.exports = {
 	
 	name: 'ping',
