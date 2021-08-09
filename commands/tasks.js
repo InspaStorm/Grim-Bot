@@ -5,6 +5,7 @@ module.exports = {
 	
 	name: 'task',
 	description:'Shows the tasks assigned to some specific people',
+	private: true,
 
 	run(msg, args) {
 

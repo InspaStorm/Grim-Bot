@@ -2,6 +2,8 @@ const {token} = require('./config.js');
 const discord = require('discord.js');
 const {keepAlive} = require('./server.js');
 const fs = require('fs');
+const {startDb, updatePoint} = require('./misc/chatPoints')
+const {updateLevel} = require('./misc/levels')
 
 const {prefix} = require('./config.js')
 const client = new discord.Client();
@@ -38,15 +40,17 @@ for (const file of commandFiles) {
 let commands = []
 
 for (const command of client.commands) {
-	commands.push({name: command[1].name, value: command[1].description})
+	if (!command[1].private && command[1].private == undefined) {
+		commands.push({name: command[1].name, value: command[1].description})
+	}
 }
 
 client.on('message', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
 
 	if(msg.author.bot) return;
-
-	updateLevel(msg)
+	
+	updateLevel(msg);
 
 	if (lowerCasedMsg.startsWith(prefix)) {
 		const eachWord = lowerCasedMsg.split(" ")
