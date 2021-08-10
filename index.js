@@ -31,18 +31,27 @@ const commandFiles = fs.readdirSync('./commands')
 
 client.commands = new discord.Collection();
 
-for (const file of commandFiles) {
-	const command = require(`./commands/${file}`)
+let commandsInfo = [1]
+let i = -1
+for (const folder of commandFiles) {
+	const commandFolders = fs.readdirSync(`./commands/${folder}`)
+	i ++
+	for (const file of commandFolders) {
+		const command = require(`./commands/${folder}/${file}`)
 
-	client.commands.set(command.name, command)
-}
+		client.commands.set(command.name,command)
+		if (Object.values(commandsInfo).some(r => r.name == folder)) {
 
-let commands = []
-
-for (const command of client.commands) {
-	if (!command[1].private && command[1].private == undefined) {
-		commands.push({name: command[1].name, value: command[1].description})
+			commandsInfo[i].value += `**${command.name}:**\n${command.description}\n\n`
+		} else {
+			const newCmdObjects = {
+				name: folder,
+				value: `\n**${command.name}:**\n${command.description}\n`
+			}
+			commandsInfo.push(newCmdObjects)
+		}
 	}
+
 }
 
 client.on('message', msg => {
@@ -71,7 +80,7 @@ client.on('message', msg => {
 			    .setColor('#00ffff')
 			    .setTitle('Commands')
 			    .setDescription('You can see the commands of GRIM BOT here')
-			    .addFields(commands)
+			    .addFields(commandsInfo)
 			    .setImage('https://thumbs.dreamstime.com/z/help-11277.jpg')
 			    .setFooter('Developed by the InspaStorm Team @DeadlineBoss & @Ranger');
 			
