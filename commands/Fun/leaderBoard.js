@@ -1,5 +1,5 @@
 const discord = require('discord.js');
-const {db} = require('../misc/chatPoints');
+const {db} = require('../../misc/chatPoints');
 
 module.exports = {
 	

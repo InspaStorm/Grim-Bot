@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index",
-    "test": "node ./commands/test.js"
+    "test": "node ./commands/Fun/test.js"
   },
   "keywords": [],
   "author": "",
