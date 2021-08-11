@@ -4,6 +4,7 @@ const {keepAlive} = require('./server.js');
 const fs = require('fs');
 const {startDb, updatePoint} = require('./misc/chatPoints')
 const {updateLevel} = require('./misc/levels')
+const path = require('path')
 
 const {prefix} = require('./config.js')
 const client = new discord.Client();
@@ -31,28 +32,38 @@ const commandFiles = fs.readdirSync('./commands')
 
 client.commands = new discord.Collection();
 
-let commandsInfo = [1]
+// Loading all the commands
+let commandsInfo = []
 let i = -1
 for (const folder of commandFiles) {
+
 	const commandFolders = fs.readdirSync(`./commands/${folder}`)
 	i ++
+
 	for (const file of commandFolders) {
-		const command = require(`./commands/${folder}/${file}`)
 
-		client.commands.set(command.name,command)
-		if (Object.values(commandsInfo).some(r => r.name == folder)) {
+		if (path.extname(`./commands/${folder}/${file}`) == '.js') {
 
-			commandsInfo[i].value += `**${command.name}:**\n${command.description}\n\n`
-		} else {
-			const newCmdObjects = {
-				name: folder,
-				value: `\n**${command.name}:**\n${command.description}\n`
+			const command = require(`./commands/${folder}/${file}`)
+
+			client.commands.set(command.name,command)
+
+			// Setting up help commmand dynamically
+			if (Object.values(commandsInfo).some(r => r.name == folder)) {
+
+				commandsInfo[i].value += `\n\`${command.name}:\`\n${command.description}\n`
+			} else {
+				const newCmdObjects = {
+					name: `${folder}`,
+					value: `\n\`${command.name}:\`\n${command.description}\n`
+				}
+				commandsInfo.push(newCmdObjects)
 			}
-			commandsInfo.push(newCmdObjects)
 		}
 	}
 
 }
+
 
 client.on('message', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
