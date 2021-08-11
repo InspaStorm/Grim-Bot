@@ -24,7 +24,7 @@ function updateScore(msg) {
 	else {
 
 		recentMsg.add(msg.author.id)
-		setTimeout(() => {recentMsg.delete(msg.author.id)}, 60000)
+		setTimeout(() => {recentMsg.delete(msg.author.id)}, 30000)
 		
 		collection = db.collection('Level');
 
