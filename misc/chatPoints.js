@@ -4,9 +4,9 @@ const {dbUrl} = require('../config.js')
 const mongo = new MongoClient(dbUrl)
 const db = mongo.db('Grim-Town')
 
-function openDb() {
-    mongo.connect()
-    .then(console.log('Database is open!'))
+async function openDb() {
+    await mongo.connect()
+    console.log('Database is open!')
 }
 
 const recentMsg = new Set();

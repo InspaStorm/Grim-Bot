@@ -4,11 +4,14 @@ const {keepAlive} = require('./server.js');
 const fs = require('fs');
 const {startDb, updatePoint} = require('./misc/chatPoints')
 const {updateLevel} = require('./misc/levels')
+const {initAchievement, lookForAchievement} = require('./misc/achievementCheck.js')
+
 const path = require('path')
 
 const {prefix} = require('./config.js')
 const client = new discord.Client();
 
+const lockAchievements = new Set();
 //Declaring variables for achivements
 var hmmGoBrrr = 0;
 var officalServerMsg = 0;
@@ -64,6 +67,7 @@ for (const folder of commandFiles) {
 
 }
 
+client.once('message', () => initAchievement(lockAchievements))
 
 client.on('message', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
@@ -97,35 +101,10 @@ client.on('message', msg => {
 			
 			msg.channel.send(helpEmbed);
 		}
-
-    else if (command == 'achivements') {
-      const achivementsEmbed = new discord.MessageEmbed()
-        .setColor('#00ffff')
-        .setTitle('Achivement Unlocked')
-        .addFields(achivementsDone)
-        .setThumbnail(msg.author.avatarURL())
-      
-      msg.reply(achivementsEmbed);   
-    }
 	}
 
-  if(lowerCasedMsg == 'hmm') {
-
-		if(hmmGoBrrr == 0) {
-      		const hmmGoBrrrEmbed = new discord.MessageEmbed()
-			    .setColor('#00ffff')
-			    .setTitle('Achivement Unlocked')
-          		.addFields(
-		        { name: 'The Perfect hmm', value: 'hmm go BRRRRRRRR' }
-          		)
-
-			msg.reply(hmmGoBrrrEmbed);
-			hmmGoBrrr = hmmGoBrrr + 1;
-      achivementsDone.push({ name: 'The Perfect hmm', value: 'hmm go BRRRRRRRR' })
-		}
-	}
   
-  if (lowerCasedMsg.startsWith('hm')) {
+  	if (lowerCasedMsg.startsWith('hm')) {
 		const randInt = Math.floor(Math.random() * 5);
 		const luck = Math.floor(Math.random() * 101);
 
@@ -146,30 +125,8 @@ client.on('message', msg => {
 		else if(luck <= 5) {
 			msg.channel.send(customReplies[luck - 1])
 		}
-	} 
-
-	else if(msg.guild.id == 802904126312808498) {
-		if(officalServerMsg == 0) {
-      			const officalServerMsgEmbed = new discord.MessageEmbed()
-			    .setColor('#00ffff')
-			    .setTitle('Achivement Unlocked')
-          		.addFields(
-		        { name: 'Chat with the devs!!', value: 'Message in the offical InspaStorm Server' }
-          		)
-
-			msg.reply(officalServerMsgEmbed);
-			officalServerMsg = officalServerMsg + 1;
-     		achivementsDone.push({ name: 'Chat with the devs!!', value: 'Message in the offical InspaStorm Server' })
-		}
 	}
 });
-
-client.on('messageReactionAdd', (reaction, user) => {
-	if (reaction.message.id == 873024241791012904) {
-		reaction.message.channel.guild.roles.fetch(873026246030811167)
-		.then()
-	}
-})
 
 keepAlive()
 client.login(token)

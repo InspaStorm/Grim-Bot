@@ -38,7 +38,8 @@ function updateScore(msg) {
 				newUserObject = {
 					id: msg.author.id,
 					name: msg.author.username,
-					score: 2
+					score: 2,
+					achievements: []
 				}
 
 				collection.insertOne(newUserObject)
