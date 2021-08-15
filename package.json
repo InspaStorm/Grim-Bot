@@ -11,9 +11,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/opus": "^0.5.3",
     "discord.js": "^12.5.3",
     "express": "^4.17.1",
-    "mongodb": "^4.1.0"
+    "ffmpeg": "^0.0.4",
+    "ffmpeg-static": "^4.4.0",
+    "jimp": "^0.16.1",
+    "mongodb": "^4.1.0",
+    "ytdl-core": "^4.9.1",
+    "ytsearcher": "^1.2.2"
   },
   "devDependencies": {
     "jest": "^27.0.6"
