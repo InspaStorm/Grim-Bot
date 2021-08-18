@@ -6,7 +6,7 @@ const {startDb, updatePoint} = require('./misc/chatPoints');
 const {updateLevel} = require('./misc/levels');
 const {initAchievement, lookForAchievement} = require('./misc/achievementCheck.js'); 
 const music = require('./music/music.js');
-const achievementList = require('./commands/achievements/achievementList.json');
+const achievementList = require('./commands/Achievements/achievementList.json');
 const path = require('path');
 
 const {prefix} = require('./config.js')
@@ -75,7 +75,8 @@ function lookingAchievements(msg, author, lockAchievements) {
 	try {
 		const achievements = lockAchievements.get(author.id)
 		if (achievements == undefined || achievements.achievements.length != achievementList.length) {
-			lookForAchievement(msg, author, lockAchievements)
+			const res = lookForAchievement(msg, author, lockAchievements)
+			if (res == 'Achievement Found') initAchievement()
 		}
 	} catch (err) {
 		 console.log('error: ', err)
