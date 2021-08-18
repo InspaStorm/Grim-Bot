@@ -1,6 +1,6 @@
 const discord = require('discord.js')
 const {db} = require('./chatPoints.js');
-const achievementList = require('../commands/achievements/achievementList.json')
+const achievementList = require('../commands/Achievements/achievementList.json')
 
 const collection = db.collection('Level')
 
@@ -31,32 +31,28 @@ function lookForAchievement(msg, user, lockAchievements) {
 
 	const achievements = lockAchievements.get(user.id)
 
-	if (achievements == undefined || !achievements.achievements.includes(0)){
-		if (msg.guild.id == 802904126312808498) {
-  			const officalServerMsgEmbed = new discord.MessageEmbed()
+	function makeEmbed(index, userID) {
+		const unlockedEmbed = new discord.MessageEmbed()
 			    .setColor('#00ffff')
 			    .setTitle('Achivement Unlocked')
-          		.addFields(achievementList[0])
+          		.addFields(achievementList[index])
 
-      		msg.channel.send(officalServerMsgEmbed)
-			collection.updateOne({id: user.id}, {$push: {achievements: 0}})
-			initAchievementCheck()
-		}
+  		msg.channel.send(unlockedEmbed)
+		collection.updateOne({id: userID}, {$push: {achievements: index}})
+		return 'Achievement Found'
 	}
+
+	if (achievements == undefined || !achievements.achievements.includes(0)){
+		if (msg.guild.id == 802904126312808498) {
+			makeEmbed(0, user.id)
+		}
+	} else return 'Non Found'
 
 	if (achievements == undefined || !achievements.achievements.includes(1)){
 		if (msg.content.toLowerCase().startsWith('hm')) {
-  			const officalServerMsgEmbed = new discord.MessageEmbed()
-			    .setColor('#00ffff')
-			    .setTitle('Achivement Unlocked')
-          		.addFields(achievementList[1])
-
-      		msg.channel.send(officalServerMsgEmbed)
-			collection.updateOne({id: user.id}, {$push: {achievements: 1}})
-			initAchievementCheck()
-
+  			makeEmbed(1, user.id)
 		}
-	}
+	} else return 'Non Found'
 
 }
 
