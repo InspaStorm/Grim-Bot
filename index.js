@@ -2,20 +2,20 @@ const {token} = require('./config.js');
 const discord = require('discord.js');
 const {keepAlive} = require('./server.js');
 const fs = require('fs');
-const {startDb, updatePoint} = require('./misc/chatPoints')
-const {updateLevel} = require('./misc/levels')
-const {initAchievement, lookForAchievement} = require('./misc/achievementCheck.js')
-
-const path = require('path')
+const {startDb, updatePoint} = require('./misc/chatPoints');
+const {updateLevel} = require('./misc/levels');
+const {initAchievement, lookForAchievement} = require('./misc/achievementCheck.js'); 
+const music = require('./music/music.js');
+const achievementList = require('./commands/achievements/achievementList.json');
+const path = require('path');
 
 const {prefix} = require('./config.js')
 const client = new discord.Client();
 
-const lockAchievements = new Set();
-//Declaring variables for achivements
-var hmmGoBrrr = 0;
-var officalServerMsg = 0;
-var achivementsDone = [];
+// Currently available music commands
+const musicCmds = ['play', 'leave']
+
+var lockAchievements;
 
 client.on('ready' , () => {
 
@@ -27,15 +27,14 @@ client.on('ready' , () => {
         	status: 'idle'
 	})
 		.then(console.log(`${client.user.tag} logged on!`))
-		.catch(err => console.log(err));
-	startDb()
+		.catch(err => console.log(err))
 });
 
 const commandFiles = fs.readdirSync('./commands')
 
 client.commands = new discord.Collection();
 
-// Loading all the commands
+// Loading all the commands and Setting up all things for help command
 let commandsInfo = []
 let i = -1
 for (const folder of commandFiles) {
@@ -64,17 +63,32 @@ for (const folder of commandFiles) {
 			}
 		}
 	}
-
 }
 
-client.once('message', () => initAchievement(lockAchievements))
+commandsInfo.push({
+	name: `Music`,
+	value: `\n\`Play:\`\nPlays The specified music\n\n\`Leave:\`\nLeaves The author's VC\n`
+})
+
+// Checks if user has completed all achievements if not looks for if he completed any achievements
+function lookingAchievements(msg, author, lockAchievements) {
+	try {
+		const achievements = lockAchievements.get(author.id)
+		if (achievements == undefined || achievements.achievements.length != achievementList.length) {
+			lookForAchievement(msg, author, lockAchievements)
+		}
+	} catch (err) {
+		 console.log('error: ', err)
+	}
+}
 
 client.on('message', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
 
 	if(msg.author.bot) return;
+	lookingAchievements(msg, msg.author, lockAchievements)
 	
-	updateLevel(msg);
+	// updateLevel(msg);
 
 	if (lowerCasedMsg.startsWith(prefix)) {
 		const eachWord = lowerCasedMsg.split(" ")
@@ -100,6 +114,10 @@ client.on('message', msg => {
 			    .setFooter('Developed by the InspaStorm Team @DeadlineBoss & @Ranger');
 			
 			msg.channel.send(helpEmbed);
+		}
+
+		else if (musicCmds.includes(command)) {
+			music.command(command, msg, args)
 		}
 	}
 
@@ -128,5 +146,10 @@ client.on('message', msg => {
 	}
 });
 
+startDb()
+
+setTimeout(async () => {
+	lockAchievements = initAchievement()}, 2000)
+
 keepAlive()
-client.login(token)
+setTimeout(() => client.login(token), 2000)

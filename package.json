@@ -4,19 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index",
+    "start": "node index.js",
+    "dev": "pm2 start index.js --watch",
+    "stop": "pm2 stop index.js",
     "test": "node test.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/opus": "^0.5.3",
+    "@discordjs/voice": "^0.6.0",
     "discord.js": "^12.5.3",
     "express": "^4.17.1",
-    "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^4.4.0",
     "jimp": "^0.16.1",
+    "libsodium-wrappers": "^0.7.9",
     "mongodb": "^4.1.0",
     "ytdl-core": "^4.9.1",
     "ytsearcher": "^1.2.2"
