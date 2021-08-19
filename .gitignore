@@ -2,3 +2,6 @@ node_modules/
 package-lock.json
 config.js
 test.js
+pics/rank_bg.png
+pics/EditedPic.png
+ecosystem.config.js

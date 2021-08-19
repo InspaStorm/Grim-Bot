@@ -75,7 +75,7 @@ function lookingAchievements(msg, author, lockAchievements) {
 	try {
 		const achievements = lockAchievements.get(author.id)
 		if (achievements == undefined || achievements.achievements.length != achievementList.length) {
-			const res = lookForAchievement(msg, author, lockAchievements)
+			let res = lookForAchievement(msg, author, lockAchievements)
 			if (res == 'Achievement Found') initAchievement()
 		}
 	} catch (err) {
@@ -87,9 +87,10 @@ client.on('message', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
 
 	if(msg.author.bot) return;
+
 	lookingAchievements(msg, msg.author, lockAchievements)
 	
-	// updateLevel(msg);
+	updateLevel(msg);
 
 	if (lowerCasedMsg.startsWith(prefix)) {
 		const eachWord = lowerCasedMsg.split(" ")
@@ -106,12 +107,14 @@ client.on('message', msg => {
 		}
 
 		else if (command == 'help') {
+			const attachment = new discord.MessageAttachment('./pics/embed/help.png', 'help.png')
 			const helpEmbed = new discord.MessageEmbed()
 			    .setColor('#00ffff')
 			    .setTitle('Commands')
 			    .setDescription('You can see the commands of GRIM BOT here')
 			    .addFields(commandsInfo)
-			    .setImage('https://thumbs.dreamstime.com/z/help-11277.jpg')
+			    .attachFiles(attachment)
+			    .setImage('attachment://help.png')
 			    .setFooter('Developed by the InspaStorm Team @DeadlineBoss & @Ranger');
 			
 			msg.channel.send(helpEmbed);
@@ -150,7 +153,7 @@ client.on('message', msg => {
 startDb()
 
 setTimeout(async () => {
-	lockAchievements = initAchievement()}, 2000)
+	lockAchievements = initAchievement()
+}, 2000)
 
-keepAlive()
 setTimeout(() => client.login(token), 2000)

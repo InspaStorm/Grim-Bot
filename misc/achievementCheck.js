@@ -38,19 +38,20 @@ function lookForAchievement(msg, user, lockAchievements) {
           		.addFields(achievementList[index])
 
   		msg.channel.send(unlockedEmbed)
-		collection.updateOne({id: userID}, {$push: {achievements: index}})
-		return 'Achievement Found'
+		collection.updateOne({id: userID}, {$addToSet: {achievements: index}})		
 	}
 
 	if (achievements == undefined || !achievements.achievements.includes(0)){
 		if (msg.guild.id == 802904126312808498) {
 			makeEmbed(0, user.id)
+			return 'Achievement Found'
 		}
 	} else return 'Non Found'
 
 	if (achievements == undefined || !achievements.achievements.includes(1)){
 		if (msg.content.toLowerCase().startsWith('hm')) {
   			makeEmbed(1, user.id)
+  			return 'Achievement Found'
 		}
 	} else return 'Non Found'
 
