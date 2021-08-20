@@ -3,7 +3,7 @@ const server = express();
 
 server.all('/', (req, res) => {
 
-	const uptime = client.uptime;
+	res.json({message: 'Grim is running!'})
 })
 
 function keepAlive() {

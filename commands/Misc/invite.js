@@ -2,8 +2,8 @@ const discord = require('discord.js');
 
 module.exports = {
 	
-	name: 'server',
-	description:'Get the link to the offical InspaStorm Server where you can chat with the devs',
+	name: 'invite',
+	description:'Invite links for the bot and support server',
 
 	run(msg, args) {
     const serverLink = new discord.MessageEmbed()
