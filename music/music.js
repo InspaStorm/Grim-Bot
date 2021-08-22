@@ -16,7 +16,6 @@ function check(cmd, msg, args) {
 		} else {
 			const channelInfo = {vc: authorVc.id}
 			connectedGuilds.set(msg.guild.id, channelInfo)
-			console.log(connectedGuilds)
 			console.log(connectedGuilds.get(msg.guild.id).vc)
 
 			const vc = await authorVc.join();

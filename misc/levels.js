@@ -32,13 +32,37 @@ function updateScore(msg) {
 		.then(data => {
 			if (data != undefined) {
 				let score = Math.floor(Math.random() * 7)
-				const points = levelCheck(data.score + score, msg, score)
-				collection.updateOne({id: msg.author.id}, {$inc: {score: points}})
+
+				try {
+					const TotalScore = data.scores.find(x => x.guild == msg.guild.id).score
+
+
+					if (TotalScore != undefined) {
+						const points = levelCheck(TotalScore + score, msg, score)
+						collection.updateOne({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points}})
+
+					} else {
+						const newGuild = {
+							guild: msg.guild.id,
+							score: 2
+						}
+											
+						collection.updateOne({id: msg.author.id}, {$push: {scores: newGuild}})
+					}
+				} catch {
+					const newGuild = {
+						guild: msg.guild.id,
+						score: 2
+					}
+											
+					collection.updateOne({id: msg.author.id}, {$push: {scores: newGuild}})
+				}
+				
 			} else {
 				newUserObject = {
 					id: msg.author.id,
 					name: msg.author.username,
-					score: 2,
+					scores: [],
 					achievements: []
 				}
 

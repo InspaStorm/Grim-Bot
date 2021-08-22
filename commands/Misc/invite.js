@@ -9,9 +9,11 @@ module.exports = {
     const serverLink = new discord.MessageEmbed()
 			    .setColor('#00ffff')
 			    .setTitle('Join Our Server')
-			    .setDescription('Wanna Chat with the Devs & Support us? Join our server with the link below')
+			    .setDescription('Links for inviting the bot as well as for support server =)')
           .addFields(
-		        { name: 'Link =>', value: 'https://discord.gg/27qtUTyHhs' }
+
+		        { name: 'Support Server', value: 'https://discord.gg/27qtUTyHhs' },
+		        {name: 'Invite Grim Bot', value: "https://discord.com/api/oauth2/authorize?client_id=796625057391837185&permissions=3525696&scope=bot"}
           )
 
 		msg.channel.send(serverLink)
