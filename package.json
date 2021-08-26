@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "pm2 start index.js --watch",
-    "stop": "pm2 stop index.js",
-    "test": "node test.js"
+    "stop": "pm2 stop index.js --watch",
+    "test": "pm2 start test.js --watch",
+    "end": "pm2 stop test.js --watch"
   },
   "keywords": [],
   "author": "",

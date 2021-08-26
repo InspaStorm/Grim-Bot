@@ -1,5 +1,5 @@
 const discord = require('discord.js')
-const {db} = require('./chatPoints.js');
+const {db} = require('./initializer.js');
 const achievementList = require('../commands/Achievements/achievementList.json')
 
 const collection = db.collection('Level')

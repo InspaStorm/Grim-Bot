@@ -1,4 +1,4 @@
-const {db} = require('../../misc/chatPoints')
+const {db} = require('../../misc/initializer')
 
 module.exports = {
 	
