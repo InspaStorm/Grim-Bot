@@ -1,4 +1,4 @@
-const {db} = require('./chatPoints.js');
+const {db} = require('./initializer.js');
 const levels = require('./levelScore.json');
 
 const recentMsg = new Set();

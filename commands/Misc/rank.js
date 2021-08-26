@@ -1,4 +1,4 @@
-const {db} = require('../../misc/chatPoints.js');
+const {db} = require('../../misc/initializer.js');
 const level = require('../../misc/levelScore.json')
 const jimp = require('jimp')
 const discord = require('discord.js')

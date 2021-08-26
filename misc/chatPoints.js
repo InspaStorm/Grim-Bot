@@ -1,14 +1,4 @@
-const {MongoClient} = require('mongodb')
-const {dbUrl} = require('../config.js')
-
-const mongo = new MongoClient(dbUrl)
-const db = mongo.db('Grim-Town')
-
-async function openDb() {
-    await mongo.connect()
-    console.log('Database is open!')
-}
-
+const {db} = require('./initializer.js');
 const recentMsg = new Set();
 
 function updatePoints(user) {
@@ -38,7 +28,5 @@ function updatePoints(user) {
 }
 
 module.exports = {
-    updatePoint: updatePoints,
-    startDb: openDb,
-    db: db
+    updatePoint: updatePoints
 }

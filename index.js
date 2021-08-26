@@ -2,7 +2,8 @@ const {token} = require('./config.js');
 const discord = require('discord.js');
 const {keepAlive} = require('./server.js');
 const fs = require('fs');
-const {startDb, updatePoint} = require('./misc/chatPoints');
+const {updatePoint} = require('./misc/chatPoints');
+const {startDb} = require('./misc/initializer');
 const {updateLevel} = require('./misc/levels');
 const {initAchievement, lookForAchievement} = require('./misc/achievementCheck.js'); 
 const music = require('./music/music.js');
@@ -156,4 +157,5 @@ setTimeout(async () => {
 	lockAchievements = initAchievement()
 }, 2000)
 
+keepAlive()
 setTimeout(() => client.login(token), 2000)
