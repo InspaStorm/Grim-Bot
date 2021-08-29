@@ -14,7 +14,7 @@ const {prefix} = require('./config.js')
 const client = new discord.Client();
 
 // Currently available music commands
-const musicCmds = ['play', 'leave']
+const musicCmds = ['play', 'leave', 'playlist']
 
 var lockAchievements;
 
@@ -76,8 +76,10 @@ function lookingAchievements(msg, author, lockAchievements) {
 	try {
 		const achievements = lockAchievements.get(author.id)
 		if (achievements == undefined || achievements.achievements.length != achievementList.length) {
-			let res = lookForAchievement(msg, author, lockAchievements)
-			if (res == 'Achievement Found') initAchievement()
+			lookForAchievement(msg, author, lockAchievements)
+			.then(res => {
+				if (res == 'Achievement Found') initAchievement()
+			})
 		}
 	} catch (err) {
 		 console.log('error: ', err)

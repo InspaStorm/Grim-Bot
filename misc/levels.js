@@ -3,6 +3,7 @@ const levels = require('./levelScore.json');
 
 const recentMsg = new Set();
 
+
 function levelCheck(totalScore, msg, score) {
 
 	const rounded = Math.floor(totalScore / 10) * 10
