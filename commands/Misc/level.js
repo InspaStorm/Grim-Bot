@@ -4,7 +4,7 @@ const jimp = require('jimp')
 const discord = require('discord.js')
 
 module.exports = {
-	name: 'rank',
+	name: 'level',
 	description: 'Shows the chatting xp of the author',
 
 	run(msg, args) {
