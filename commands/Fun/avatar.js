@@ -38,7 +38,7 @@ module.exports = {
 				.setDescription(name)
 				.setImage(img);
 
-				msg.channel.send(avatarEmbed)
+				msg.channel.send({embeds:[avatarEmbed] })
 			}
 		})
 

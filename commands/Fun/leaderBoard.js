@@ -29,7 +29,7 @@ module.exports = {
                 .setColor('#FF0000')
 
                 sentMessage.delete()
-                msg.channel.send(leaderboard)
+                msg.channel.send({embeds:[leaderboard] })
             })
         })
 	}

@@ -1,26 +1,27 @@
 const { YTSearcher } = require('ytsearcher');
+const ytpl = require('ytpl')
 const {gApi} = require('../config.js')
-const playlistSearcher = require('youtube-playlist')
 
 const searcher = new YTSearcher(gApi);
 
 async function searchVid(query) {
-	const foundVid = await searcher.search(query, {type: 'video'})
-	return foundVid
+	try {
+		const foundVid = await searcher.search(query, {type: 'video'})
+		return {title: foundVid.first.title, url: foundVid.first.url}
+	} catch {
+		return 'Thats not valid Youtube video'
+	}
+
 }
 
 async function searchPlaylist(query) {
-	console.log('\nHeyyyyyyyy\n')
-	if (query.startsWith('https://')) {
-		const vids = await playlistSearcher(query, 'url')
-		return vids.data.playlist
-	} else {
+	try {
 		const foundPlaylist = await searcher.search(query, {type: 'playlist'})
 
-		console.log(foundPlaylist.first.url)
-		const vids = await playlistSearcher(foundPlaylist.first.url, 'url')
-		console.log(vids)
-		return vids.data.playlist
+		const vids = await ytpl(foundPlaylist.first.id, {limit: 10})
+		return vids.items
+	} catch {
+		return 'Thats not valid Youtube playlist'
 	}
 }
 

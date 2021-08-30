@@ -16,7 +16,7 @@ module.exports = {
 		        {name: 'Invite Grim Bot', value: "https://discord.com/api/oauth2/authorize?client_id=796625057391837185&permissions=3525696&scope=bot"}
           )
 
-		msg.channel.send(serverLink)
+		msg.channel.send({embeds: [serverLink]})
 	}
 
 }

@@ -42,7 +42,7 @@ module.exports = {
 					.setThumbnail(msg.author.avatarURL())
 					
 					sentMessage.delete()
-					msg.channel.send(tasksEmbed)
+					msg.channel.send({embeds: [tasksEmbed]})
 				})
 				.catch(err => console.log('An error occured:',err))
 			})
