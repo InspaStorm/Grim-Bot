@@ -64,8 +64,13 @@ module.exports = {
 				if (score != undefined) {
 					makeCard(score)
 					.then(() => {
-						const rankCard = new discord.MessageAttachment('./pics/EditedPic.png', 'rank-card.png')
-						msg.channel.send(rankCard)
+						msg.channel.send({
+						  files: [{
+						    attachment: './pics/EditedPic.png',
+  							name: 'rank-card.png'
+						  }],
+						  reply: {messageReference: msg}
+						})
 					})
 				} else {
 					makeCard(0)

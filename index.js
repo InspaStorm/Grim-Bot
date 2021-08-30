@@ -11,24 +11,22 @@ const achievementList = require('./commands/Achievements/achievementList.json');
 const path = require('path');
 
 const {prefix} = require('./config.js')
-const client = new discord.Client();
+const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
 
 // Currently available music commands
-const musicCmds = ['play', 'leave', 'playlist']
+const musicCmds = ['play', 'leave', 'playlist', 'skip']
 
 var lockAchievements;
 
-client.on('ready' , () => {
+client.once('ready' , () => {
 
 	client.user.setPresence({
-        	activity: {
-        		name: 'Grim Town | g!help',
-        		type: "PLAYING",
-        	},
+        	activities: [{
+        		name: 'Grim Town | g!help'
+        	}],
         	status: 'idle'
 	})
-		.then(console.log(`${client.user.tag} logged on!`))
-		.catch(err => console.log(err))
+	console.log(`${client.user.tag} logged on!`)
 });
 
 const commandFiles = fs.readdirSync('./commands')
@@ -68,7 +66,7 @@ for (const folder of commandFiles) {
 
 commandsInfo.push({
 	name: `Music`,
-	value: `\n\`Play:\`\nPlays The specified music\n\n\`Leave:\`\nLeaves The author's VC\n`
+	value: `\n\`Play:\`\nPlays The specified music\n\n\`Playlist:\`\nPlays The specified playlist's musics\n\n\`skip:\`\nSkips The currently playing music\n\n\`Leave:\`\nLeaves The author's VC\n`
 })
 
 // Checks if user has completed all achievements if not looks for if he completed any achievements
@@ -86,7 +84,7 @@ function lookingAchievements(msg, author, lockAchievements) {
 	}
 }
 
-client.on('message', msg => {
+client.on('messageCreate', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
 
 	if(msg.author.bot) return;
@@ -120,7 +118,7 @@ client.on('message', msg => {
 			    .setImage('attachment://help.png')
 			    .setFooter('Developed by the InspaStorm Team @DeadlineBoss & @Ranger');
 			
-			msg.channel.send(helpEmbed);
+			msg.channel.send({embeds: [helpEmbed]});
 		}
 
 		else if (musicCmds.includes(command)) {
@@ -154,10 +152,7 @@ client.on('message', msg => {
 });
 
 startDb()
-
-setTimeout(async () => {
-	lockAchievements = initAchievement()
-}, 2000)
+.then(() => {lockAchievements = initAchievement()})
 
 keepAlive()
 setTimeout(() => client.login(token), 2000)

@@ -27,7 +27,7 @@ module.exports = {
 			    .addFields(achievements)
 			    .setColor('#00ffff')
 
-		    msg.channel.send(achievementEmbed)
+		    msg.channel.send({embeds: [achievementEmbed]})
 
 		})
 	}
