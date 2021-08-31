@@ -4,7 +4,7 @@ module.exports = {
 	description:'pong',
 
 	run(msg, args) {
-		msg.channel.send('pong')
+		msg.channel.send({content: 'pong'})
 	}
 
 }

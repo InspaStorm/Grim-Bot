@@ -1,14 +1,13 @@
 const {token} = require('./config.js');
 const discord = require('discord.js');
 const {keepAlive} = require('./server.js');
-const fs = require('fs');
 const {updatePoint} = require('./misc/chatPoints');
 const {startDb} = require('./misc/initializer');
 const {updateLevel} = require('./misc/levels');
 const {initAchievement, lookForAchievement} = require('./misc/achievementCheck.js'); 
 const music = require('./music/music.js');
 const achievementList = require('./commands/Achievements/achievementList.json');
-const path = require('path');
+const {cmdLoader} = require('./commands/Misc/help.js');
 
 const {prefix} = require('./config.js')
 const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
@@ -16,6 +15,8 @@ const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGE
 // Currently available music commands
 const musicCmds = ['play', 'leave', 'playlist', 'skip']
 
+client.commands = new discord.Collection();
+cmdLoader(client.commands)
 var lockAchievements;
 
 client.once('ready' , () => {
@@ -28,46 +29,6 @@ client.once('ready' , () => {
 	})
 	console.log(`${client.user.tag} logged on!`)
 });
-
-const commandFiles = fs.readdirSync('./commands')
-
-client.commands = new discord.Collection();
-
-// Loading all the commands and Setting up all things for help command
-let commandsInfo = []
-let i = -1
-for (const folder of commandFiles) {
-
-	const commandFolders = fs.readdirSync(`./commands/${folder}`)
-	i ++
-
-	for (const file of commandFolders) {
-
-		if (path.extname(`./commands/${folder}/${file}`) == '.js') {
-
-			const command = require(`./commands/${folder}/${file}`)
-
-			client.commands.set(command.name,command)
-
-			// Setting up help commmand dynamically
-			if (Object.values(commandsInfo).some(r => r.name == folder)) {
-
-				commandsInfo[i].value += `\n\`${command.name}:\`\n${command.description}\n`
-			} else {
-				const newCmdObjects = {
-					name: `${folder}`,
-					value: `\n\`${command.name}:\`\n${command.description}\n`
-				}
-				commandsInfo.push(newCmdObjects)
-			}
-		}
-	}
-}
-
-commandsInfo.push({
-	name: `Music`,
-	value: `\n\`Play:\`\nPlays The specified music\n\n\`Playlist:\`\nPlays The specified playlist's musics\n\n\`skip:\`\nSkips The currently playing music\n\n\`Leave:\`\nLeaves The author's VC\n`
-})
 
 // Checks if user has completed all achievements if not looks for if he completed any achievements
 function lookingAchievements(msg, author, lockAchievements) {
@@ -105,20 +66,6 @@ client.on('messageCreate', msg => {
 			} catch (err) {
 				console.log(`Something went wrong executing command: ${err}`)
 			}
-		}
-
-		else if (command == 'help') {
-			const attachment = new discord.MessageAttachment('./pics/embed/help.png', 'help.png')
-			const helpEmbed = new discord.MessageEmbed()
-			    .setColor('#00ffff')
-			    .setTitle('Commands')
-			    .setDescription('You can see the commands of GRIM BOT here')
-			    .addFields(commandsInfo)
-			    .attachFiles(attachment)
-			    .setImage('attachment://help.png')
-			    .setFooter('Developed by the InspaStorm Team @DeadlineBoss & @Ranger');
-			
-			msg.channel.send({embeds: [helpEmbed]});
 		}
 
 		else if (musicCmds.includes(command)) {
