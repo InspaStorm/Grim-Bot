@@ -17,7 +17,7 @@ async function searchVid(query) {
 async function searchPlaylist(query) {
 	try {
 		const foundPlaylist = await searcher.search(query, {type: 'playlist'})
-
+		
 		const vids = await ytpl(foundPlaylist.first.id, {limit: 10})
 		return vids.items
 	} catch {

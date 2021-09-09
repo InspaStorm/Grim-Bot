@@ -6,10 +6,24 @@ const {vid, searchPlaylist} = require('./ytSearch.js')
 const connectedGuilds = new Map();
 
 class Track {
-	constructor(vcId, audioPlayer, songs) {
+	constructor(msg, vcId, connection, songs) {
 		this.vcId = vcId;
-		this.audioPlayer = audioPlayer;
+		this.audioPlayer = new createAudioPlayer();;
 		this.queue = songs;
+		this.connection = connection;
+
+		this.audioPlayer.on('stateChange', (oldState, newState)=> {
+			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
+				const queue = connectedGuilds.get(msg.guild.id).queue
+				if (queue.length > 0) {
+					const nextSong = createAudioResource(ytdl(queue[0].url))
+					msg.channel.send(`going to play: \`${queue[0].title}\``)
+					this.audioPlayer.play(nextSong)
+					connectedGuilds.get(msg.guild.id).queue.shift();
+				}
+			}
+		});
+
 	}
 
 	skip() {
@@ -51,7 +65,7 @@ async function play(msg, args, playlist) {
 
 		// checking if a video/playlist was found or not
 		if (typeof searchResult[0] == 'string' || typeof searchResult[0].title == 'undefined') {
-			msg.channel.send('Thats not a valid video/playlist (url is not supportedd yet =( ))')
+			msg.channel.send('Thats not a valid video/playlist')
 			return
 		}
 		const connection = joinVoiceChannel({
@@ -60,7 +74,7 @@ async function play(msg, args, playlist) {
 			adapterCreator: authorVc.guild.voiceAdapterCreator
 		})
 
-		const player = new createAudioPlayer();
+		
 
 		// Check if the author is in the same vc as the bot
 		if (connectedGuilds.has(msg.guild.id) && connectedGuilds.get(msg.guild.id).vcId == authorVc.id) {
@@ -83,14 +97,13 @@ async function play(msg, args, playlist) {
 		// Creates a new instance for track class and plays the music
 		} else {
 
-			const trackInfo = new Track(authorVc.id, player, [])
+			const trackInfo = new Track(msg, authorVc.id, connection, [])
 
 			connectedGuilds.set(msg.guild.id, trackInfo)
-
 			for (let videoDetails of searchResult) {
 				connectedGuilds.get(msg.guild.id).queue.push(videoDetails)
 			}
-			
+			const player = connectedGuilds.get(msg.guild.id).audioPlayer
 			const song = createAudioResource(ytdl(searchResult[0].url))
 			msg.channel.send(`going to play: \`${searchResult[0].title}\``)
 			player.play(song)
@@ -98,20 +111,6 @@ async function play(msg, args, playlist) {
 			connection.subscribe(player)
 			connectedGuilds.get(msg.guild.id).queue.shift();
 		}
-
-		player.on(AudioPlayerStatus.stateChange, (oldState, newState)=> {
-			console.log('complete=====', oldState, '===>', newState)
-			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
-				console.log('complete!!!!!!!!!!1')
-				const queue = connectedGuilds.get(msg.guild.id).songs
-				if (queue.length > 0) {
-					const nextSong = createAudioResource(ytdl(queue[0].url))
-					msg.channel.send(`going to play: \`${queue[0].title}\``)
-					player.play(nextSong)
-					connectedGuilds.get(msg.guild.id).songs.shift();
-				}
-			}
-		})
 
 	}
 }
@@ -131,7 +130,7 @@ async function skip(msg,args) {
 			connectedGuilds.get(msg.guild.id).queue.shift();
 		} else {
 			player.stop();
-			msg.channel.send('There are no songs in the queue!')
+			msg.channel.send('There are no songs in the queue!');
 		}
 	}
 }
@@ -142,7 +141,7 @@ async function leave(msg, args) {
 		msg.channel.send('Im not in your vc =/');
 
 	} else {
-		const player = connectedGuilds.get(msg.guild.id).player
+		const player = connectedGuilds.get(msg.guild.id).audioPlayer
 		const connection = getVoiceConnection(msg.guild.id)
 		player.stop();
 		connection.destroy();
