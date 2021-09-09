@@ -14,9 +14,10 @@ const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGE
 
 // Currently available music commands
 const musicCmds = ['play', 'leave', 'playlist', 'skip']
+const levelEnabledGuild = ['802904126312808498', '869218454127923220']
 
 client.commands = new discord.Collection();
-cmdLoader(client.commands)
+cmdLoader(client.commands);
 var lockAchievements;
 
 client.once('ready' , () => {
@@ -52,7 +53,9 @@ client.on('messageCreate', msg => {
 
 	lookingAchievements(msg, msg.author, lockAchievements)
 	
-	updateLevel(msg);
+	if (levelEnabledGuild.includes(msg.guild.id)){
+		updateLevel(msg);
+	}
 
 	if (lowerCasedMsg.startsWith(prefix)) {
 		const eachWord = lowerCasedMsg.split(" ")
