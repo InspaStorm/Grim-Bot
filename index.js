@@ -1,4 +1,4 @@
-const {token} = require('./config.js');
+const { token } = require('./config.js');
 const discord = require('discord.js');
 const {keepAlive} = require('./server.js');
 const {updatePoint} = require('./misc/chatPoints');
@@ -8,9 +8,37 @@ const {initAchievement, lookForAchievement} = require('./misc/achievementCheck.j
 const music = require('./music/music.js');
 const achievementList = require('./commands/Achievements/achievementList.json');
 const {cmdLoader} = require('./commands/Misc/help.js');
+const winston = require('winston'); // winston is A logger (customized console.log)
 
 const {prefix} = require('./config.js')
 const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
+const customText = winston.format.combine(
+	winston.format.colorize(),
+	winston.format.printf(
+		info => `[${info.level}] - ${info.message}`,
+	),
+);
+const logger = winston.createLogger({
+	transports: [
+		new winston.transports.Console({ format: winston.format.combine(winston.format.colorize(), customText) }),
+		new winston.transports.File({ filename: 'ConsoleLogs' }),
+	],
+
+	format: winston.format.combine(
+		winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
+	),
+});
+
+winston.addColors({
+	error: 'red',
+	warn: 'yellow',
+	info: 'green',
+});
+
+client.on('warn', m => logger.log('warn', m));
+client.on('error', m => logger.log('error', m));
+
+process.on('uncaughtException', error => logger.log('error', error))
 
 // Currently available music commands
 const musicCmds = ['play', 'leave', 'playlist', 'skip']
@@ -20,15 +48,15 @@ client.commands = new discord.Collection();
 cmdLoader(client.commands);
 var lockAchievements;
 
-client.once('ready' , () => {
+client.once('ready', () => {
 
 	client.user.setPresence({
-        	activities: [{
-        		name: 'Grim Town | g!help'
-        	}],
-        	status: 'idle'
-	})
-	console.log(`${client.user.tag} logged on!`)
+    	activities: [{
+			name: 'Grim Town | g!help'
+		}],
+    	status: 'idle'
+	});
+	logger.log('info',`${client.user.tag} logged on!`)
 });
 
 // Checks if user has completed all achievements if not looks for if he completed any achievements

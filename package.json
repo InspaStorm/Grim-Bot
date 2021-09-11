@@ -25,11 +25,13 @@
     "libsodium-wrappers": "^0.7.9",
     "mongodb": "^4.1.0",
     "node-fetch": "^2.6.1",
+    "winston": "^3.3.3",
     "ytdl-core": "^4.9.1",
     "ytpl": "^2.2.3",
     "ytsearcher": "^1.2.2"
   },
   "devDependencies": {
+    "eslint": "^7.32.0",
     "jest": "^27.0.6",
     "pm2": "^5.1.0"
   }
