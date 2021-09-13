@@ -1,6 +1,5 @@
 const { token } = require('./config.js');
 const discord = require('discord.js');
-const {keepAlive} = require('./server.js');
 const {updatePoint} = require('./misc/chatPoints');
 const {startDb} = require('./misc/initializer');
 const {updateLevel} = require('./misc/levels');
@@ -8,6 +7,7 @@ const {initAchievement, lookForAchievement} = require('./misc/achievementCheck.j
 const music = require('./music/music.js');
 const achievementList = require('./commands/Achievements/achievementList.json');
 const {cmdLoader} = require('./commands/Misc/help.js');
+const {updateLeader} = require('./misc/leaderboard');
 const winston = require('winston'); // winston is A logger (customized console.log)
 
 const {prefix} = require('./config.js')
@@ -21,11 +21,14 @@ const customText = winston.format.combine(
 const logger = winston.createLogger({
 	transports: [
 		new winston.transports.Console({ format: winston.format.combine(winston.format.colorize(), customText) }),
-		new winston.transports.File({ filename: 'ConsoleLogs' }),
+		new winston.transports.File({ filename: 'ErrorLogs' , level: 'error', timestamp: true}),
 	],
 
 	format: winston.format.combine(
-		winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`),
+		winston.format.timestamp({
+			format: 'YYYY-MM-DD HH:mm:ss'
+		}),
+		winston.format.printf(log => `[${log.timestamp}] - ${log.message}`),
 	),
 });
 
@@ -130,7 +133,10 @@ client.on('messageCreate', msg => {
 });
 
 startDb()
-.then(() => {lockAchievements = initAchievement()})
-
-keepAlive()
-setTimeout(() => client.login(token), 2000)
+.then(() => {
+	lockAchievements = initAchievement();
+	client.login(token)
+	.then(() => {
+		if (client.user.id == '') updateLeader(client)
+	})
+})
