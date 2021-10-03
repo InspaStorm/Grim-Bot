@@ -6,3 +6,6 @@ pics/rank_bg.png
 pics/EditedPic.png
 ecosystem.config.js
 ErrorLogs
+slashCommands.js
+Discord Tokens.json
+.vscode/

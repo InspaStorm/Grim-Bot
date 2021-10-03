@@ -6,6 +6,7 @@ module.exports = {
 	description:'Invite links for the bot and support server',
 
 	run(msg, args) {
+		
 		const button = new discord.MessageActionRow()
 			.addComponents(
 				new discord.MessageButton()
@@ -13,7 +14,7 @@ module.exports = {
 					.setLabel('Join InspaStorm (support Server)')
 					.setStyle('LINK'),
 				new discord.MessageButton()
-					.setURL('https://discord.com/api/oauth2/authorize?client_id=796625057391837185&permissions=3525696&scope=bot')
+					.setURL('https://discord.com/api/oauth2/authorize?client_id=796625057391837185&permissions=2150960192&scope=bot%20applications.commands')
 					.setLabel('Invite Grim Bot')
 					.setStyle('LINK')
 			);

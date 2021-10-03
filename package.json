@@ -17,15 +17,14 @@
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
     "@discordjs/voice": "^0.6.0",
+    "chalk": "^4.1.2",
     "discord-api-types": "^0.22.0",
     "discord.js": "^13.1.0",
-    "express": "^4.17.1",
     "ffmpeg-static": "^4.4.0",
     "jimp": "^0.16.1",
     "libsodium-wrappers": "^0.7.9",
     "mongodb": "^4.1.0",
     "node-fetch": "^2.6.1",
-    "winston": "^3.3.3",
     "ytdl-core": "^4.9.1",
     "ytpl": "^2.2.3",
     "ytsearcher": "^1.2.2"
@@ -33,6 +32,7 @@
   "devDependencies": {
     "eslint": "^7.32.0",
     "jest": "^27.0.6",
+    "nodemon": "^2.0.13",
     "pm2": "^5.1.0"
   }
 }

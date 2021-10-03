@@ -8,44 +8,14 @@ const music = require('./music/music.js');
 const achievementList = require('./commands/Achievements/achievementList.json');
 const {cmdLoader} = require('./commands/Misc/help.js');
 const {updateLeader} = require('./misc/leaderboard');
-const winston = require('winston'); // winston is A logger (customized console.log)
+const {logger} = require('./helpers/logger');
 
 const {prefix} = require('./config.js')
 const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
-const customText = winston.format.combine(
-	winston.format.colorize(),
-	winston.format.printf(
-		info => `[${info.level}] - ${info.message}`,
-	),
-);
-const logger = winston.createLogger({
-	transports: [
-		new winston.transports.Console({ format: winston.format.combine(winston.format.colorize(), customText) }),
-		new winston.transports.File({ filename: 'ErrorLogs' , level: 'error', timestamp: true}),
-	],
-
-	format: winston.format.combine(
-		winston.format.timestamp({
-			format: 'YYYY-MM-DD HH:mm:ss'
-		}),
-		winston.format.printf(log => `[${log.timestamp}] - ${log.message}`),
-	),
-});
-
-winston.addColors({
-	error: 'red',
-	warn: 'yellow',
-	info: 'green',
-});
-
-client.on('warn', m => logger.log('warn', m));
-client.on('error', m => logger.log('error', m));
-
-process.on('uncaughtException', error => logger.log('error', error))
 
 // Currently available music commands
 const musicCmds = ['play', 'leave', 'playlist', 'skip']
-const levelEnabledGuild = ['802904126312808498', '869218454127923220']
+const levelEnabledGuild = ['802904126312808498', '869218454127923220',]
 
 client.commands = new discord.Collection();
 cmdLoader(client.commands);
@@ -59,9 +29,11 @@ client.once('ready', () => {
 		}],
     	status: 'idle'
 	});
-	logger.log('info',`${client.user.tag} logged on!`)
+	console.log(`${client.user.tag} logged on!`)
 });
 
+client.on('error', e => logger(e))
+process.on('uncaughtException', e => logger(e));
 // Checks if user has completed all achievements if not looks for if he completed any achievements
 function lookingAchievements(msg, author, lockAchievements) {
 	try {
@@ -76,6 +48,33 @@ function lookingAchievements(msg, author, lockAchievements) {
 		 console.log('error: ', err)
 	}
 }
+
+client.on('interactionCreate', interaction => {
+
+	if (!interaction.isCommand()) return;
+
+	const options = interaction.options.data
+
+	const args = []
+
+	for (let option of options) {
+		args.push(option.value)
+	}
+
+	if (client.commands.has(interaction.commandName)) {
+		
+		try {
+			client.commands.get(interaction.commandName).run(interaction, args, interaction.user)
+		} catch (err) {
+			console.log(`Something went wrong executing command: ${err}`)
+		}
+	}
+
+	else if (musicCmds.includes(interaction.commandName)) {
+		music.command(interaction.commandName, interaction, args)
+	}
+
+})
 
 client.on('messageCreate', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
@@ -137,6 +136,6 @@ startDb()
 	lockAchievements = initAchievement();
 	client.login(token)
 	.then(() => {
-		if (client.user.id == '') updateLeader(client)
+		if (client.user.id == '796625057391837185') updateLeader(client)
 	})
 })

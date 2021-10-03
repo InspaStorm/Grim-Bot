@@ -24,6 +24,7 @@ function updateScore(msg) {
 
 	else {
 
+		// Making so that xp can only be given per 30 seconds
 		recentMsg.add(msg.author.id)
 		setTimeout(() => {recentMsg.delete(msg.author.id)}, 30000)
 		
