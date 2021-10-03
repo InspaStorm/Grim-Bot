@@ -5,22 +5,27 @@ module.exports = {
 	
 	name: 'avatar',
 	description:'Shows off your avatar',
+	options: [
+		{name: "user", desc: "Mention the user/give the user's name", required: false, type: "USER"},
+	],
 
-	run(msg, args) {
+	run(msg, args, author=msg.author) {
 
-		async function mentionCheck(msg, args) {
+		async function mentionCheck(msg) {
 
 			if (args.length > 0) {
 				const member = await memberCheck(msg, args[0])
-				if (typeof member != 'string'){
+				if (typeof member != 'string' && typeof member != 'undefined') {
 					return {name: member.user.username, image: member.user.displayAvatarURL({dynamic: true,size: 256})}
+				} else if (typeof member == undefined) {
+					return `No user found with name: \`${args[0]}\``
 				} else {
 					return member
 				}
 			} else {
 				return {
-					name: msg.author.username,
-					image: msg.author.displayAvatarURL({dynamic: true,size: 256})
+					name: author.username,
+					image: author.displayAvatarURL({dynamic: true,size: 256})
 				}
 			}
 		}
@@ -38,7 +43,7 @@ module.exports = {
 				.setDescription(name)
 				.setImage(img);
 
-				msg.channel.send({embeds:[avatarEmbed] })
+				msg.reply({embeds:[avatarEmbed] })
 			}
 		})
 

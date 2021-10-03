@@ -4,8 +4,8 @@ const collection = db.collection('Chat');
 const {memberCheck} = require('../helpers/member.js');
 
 async function updateLeader(client) {
-	const channel = await client.channels.fetch('');
-	const msg = await channel.messages.fetch('');
+	const channel = await client.channels.fetch('887904218491539467');
+	const msg = await channel.messages.fetch('887927692232634398');
 	setInterval(() => {
 		collection.find().sort({count: -1}).limit(10).toArray()
 		.then(res => {
