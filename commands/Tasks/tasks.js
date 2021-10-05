@@ -7,7 +7,7 @@ module.exports = {
 	description:'Shows the tasks assigned to some specific people',
 	private: true,
 
-	run(msg, args, author=author) {
+	run(msg, args, author=msg.author) {
 
 		const status = {
 			1: 'Pending<a:notify:871230575342649354>',

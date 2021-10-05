@@ -5,9 +5,12 @@ const discord = require('discord.js');
 const commandFiles = fs.readdirSync('./commands');
 
 // Loading all the commands and Setting up all things for help command
-let commandsInfo = []
+
+let allCommands;
+
 function loadCmds(collection) {
-	let i = 0
+	let i = -1;
+	let commandsInfo = [];
 	for (const folder of commandFiles) {
 
 		const commandFolders = fs.readdirSync(`./commands/${folder}`)
@@ -34,14 +37,13 @@ function loadCmds(collection) {
 			}
 		}
 	}
+	commandsInfo.push({
+		name: `Music`,
+		value: `\n\`Play:\`\nPlays The specified music\n\n\`Playlist:\`\nPlays The specified playlist's musics\n\n\`skip:\`\nSkips The currently playing music\n\n\`Leave:\`\nLeaves The author's VC\n`
+	})
+	allCommands = commandsInfo;
 	return collection
 }
-
-
-commandsInfo.push({
-	name: `Music`,
-	value: `\n\`Play:\`\nPlays The specified music\n\n\`Playlist:\`\nPlays The specified playlist's musics\n\n\`skip:\`\nSkips The currently playing music\n\n\`Leave:\`\nLeaves The author's VC\n`
-})
 
 module.exports = {
 	name: 'help',
@@ -53,7 +55,7 @@ module.exports = {
 		    .setColor('#00ffff')
 		    .setTitle('Commands')
 		    .setDescription('You can see the commands of GRIM BOT here')
-		    .addFields(commandsInfo)
+		    .addFields(allCommands)
 		    .setImage('attachment://help.png')
 		    .setFooter('Developed by the InspaStorm Team @DeadlineBoss & @Ranger');
 		
