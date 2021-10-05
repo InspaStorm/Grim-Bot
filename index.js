@@ -9,6 +9,7 @@ const achievementList = require('./commands/Achievements/achievementList.json');
 const {cmdLoader} = require('./commands/Misc/help.js');
 const {updateLeader} = require('./misc/leaderboard');
 const {logger} = require('./helpers/logger');
+const { playRadio } = require('./misc/radio')
 
 const {prefix} = require('./config.js')
 const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
@@ -30,10 +31,13 @@ client.once('ready', () => {
     	status: 'idle'
 	});
 	console.log(`${client.user.tag} logged on!`)
+
+	playRadio(client)
 });
 
 client.on('error', e => logger(e))
 process.on('uncaughtException', e => logger(e));
+
 // Checks if user has completed all achievements if not looks for if he completed any achievements
 function lookingAchievements(msg, author, lockAchievements) {
 	try {

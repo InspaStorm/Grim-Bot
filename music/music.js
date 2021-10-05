@@ -8,7 +8,7 @@ const connectedGuilds = new Map();
 class Track {
 	constructor(msg, vcId, connection, songs) {
 		this.vcId = vcId;
-		this.audioPlayer = new createAudioPlayer();;
+		this.audioPlayer = new createAudioPlayer();
 		this.queue = songs;
 		this.connection = connection;
 
@@ -151,7 +151,9 @@ async function leave(msg, args) {
 
 async function check(cmd, msg, args) {
 
-	if (msg.member.voice.channel) {
+	if (msg.guild.id == '802904126312808498') {
+		msg.reply("I can't play any songs in this server (coz Am playing some lofi beats 24/7), Why not add me to your server ;)")
+	} else if (msg.member.voice.channel) {
 
 		if (cmd == 'play') {
 			await play(msg, args, false)
