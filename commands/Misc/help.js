@@ -57,7 +57,7 @@ module.exports = {
 		    .setImage('attachment://help.png')
 		    .setFooter('Developed by the InspaStorm Team @DeadlineBoss & @Ranger');
 		
-		msg.channel.send({embeds: [helpEmbed], files: [file]});
+		msg.reply({embeds: [helpEmbed], files: [file]});
 	},
 	cmdLoader: loadCmds
 }

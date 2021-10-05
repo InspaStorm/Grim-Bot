@@ -9,11 +9,11 @@ module.exports = {
 	name: 'level',
 	description: 'Shows the chatting xp of the author',
 
-	run(msg, args) {
+	run(msg, args, author=author) {
 		if (levelEnabledGuild.includes(msg.guild.id)) {
 			const collection = db.collection('Level')
 
-			collection.findOne({id: msg.author.id})
+			collection.findOne({id: author.id})
 			.then(data => {
 				try {
 					const score = data.scores.find(x => x.guild == msg.guild.id).score
@@ -26,7 +26,7 @@ module.exports = {
 						const percentage = Math.floor((score/CurrentLevelScore) * 100)
 
 						const card = await jimp.read('./pics/rank_card.png')
-						let avatar = await jimp.read(msg.author.avatarURL({format:'png', size: 128}))
+						let avatar = await jimp.read(author.avatarURL({format:'png', size: 128}))
 
 						const leftEmpty = await jimp.read('./pics/rank_bar/left_empty.png')
 						const leftFull = await jimp.read('./pics/rank_bar/left_full.png')
@@ -44,7 +44,7 @@ module.exports = {
 						card.blit(avatar , 250, 10)
 
 						card.print(nameFont	, 20, 15, {
-						    text: msg.author.username,
+						    text: author.username,
 						    alignmentX: jimp.HORIZONTAL_ALIGN_LEFT,
 						    alignmentY: jimp.VERTICAL_ALIGN_MIDDLE
 					  	}, 200, 40)
@@ -62,7 +62,7 @@ module.exports = {
 					if (score != undefined) {
 						makeCard(score)
 						.then(() => {
-							msg.channel.send({
+							msg.reply({
 							  files: [{
 							    attachment: './pics/EditedPic.png',
 	  							name: 'rank-card.png'
@@ -78,6 +78,6 @@ module.exports = {
 				}
 				
 			});
-		} else msg.channel.send({content: 'Level system is not enabled in this server =/'})
+		} else msg.reply({content: 'Level system is not enabled in this server =/'})
 	}
 }

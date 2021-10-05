@@ -95,7 +95,7 @@ client.on('messageCreate', msg => {
 
 		if (client.commands.has(command)) {
 			try {
-				client.commands.get(command).run(msg, args)
+				client.commands.get(command).run(msg, args, author=msg.author)
 			} catch (err) {
 				console.log(`Something went wrong executing command: ${err}`)
 			}

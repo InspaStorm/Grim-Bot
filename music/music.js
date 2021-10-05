@@ -17,7 +17,7 @@ class Track {
 				const queue = connectedGuilds.get(msg.guild.id).queue
 				if (queue.length > 0) {
 					const nextSong = createAudioResource(ytdl(queue[0].url))
-					msg.channel.send(`going to play: \`${queue[0].title}\``)
+					msg.reply(`going to play: \`${queue[0].title}\``)
 					this.audioPlayer.play(nextSong)
 					connectedGuilds.get(msg.guild.id).queue.shift();
 				}
@@ -47,7 +47,7 @@ async function play(msg, args, playlist) {
 
 	if (connectedGuilds.has(msg.guild.id) && connectedGuilds.get(msg.guild.id).vcId != authorVc.id) {
 
-		msg.channel.send('Im active in another vc =/');
+		msg.reply('Im active in another vc =/');
 
 	} else {
 		const query = args.join(" ");
@@ -65,7 +65,7 @@ async function play(msg, args, playlist) {
 
 		// checking if a video/playlist was found or not
 		if (typeof searchResult[0] == 'string' || typeof searchResult[0].title == 'undefined') {
-			msg.channel.send('Thats not a valid video/playlist')
+			msg.reply('Thats not a valid video/playlist')
 			return
 		}
 		const connection = joinVoiceChannel({
@@ -90,9 +90,9 @@ async function play(msg, args, playlist) {
 				for (let i of songDatas) {
 					songNames.push(i.title)
 				}
-				msg.channel.send(`**Queue:**\n\`\`\`${songNames.join('\n')}\`\`\``);
+				msg.reply(`**Queue:**\n\`\`\`${songNames.join('\n')}\`\`\``);
 			} else {
-				msg.channel.send(`Added ${searchResult[0].title} to queue`)
+				msg.reply(`Added ${searchResult[0].title} to queue`)
 			}
 		// Creates a new instance for track class and plays the music
 		} else {
@@ -105,7 +105,7 @@ async function play(msg, args, playlist) {
 			}
 			const player = connectedGuilds.get(msg.guild.id).audioPlayer
 			const song = createAudioResource(ytdl(searchResult[0].url))
-			msg.channel.send(`going to play: \`${searchResult[0].title}\``)
+			msg.reply(`going to play: \`${searchResult[0].title}\``)
 			player.play(song)
 
 			connection.subscribe(player)
@@ -118,19 +118,19 @@ async function play(msg, args, playlist) {
 async function skip(msg,args) {
 	if (connectedGuilds.has(msg.guild.id) && connectedGuilds.get(msg.guild.id).vcId != msg.member.voice.channel.id) {
 
-		msg.channel.send('Im not in your vc =/');
+		msg.reply('Im not in your vc =/');
 
 	} else {
 		const queue = connectedGuilds.get(msg.guild.id).queue
 		const player = connectedGuilds.get(msg.guild.id).audioPlayer
 		if (queue.length > 0) {
 			const nextSong = createAudioResource(ytdl(queue[0].url))
-			msg.channel.send(`going to play: \`${queue[0].title}\``)
+			msg.reply(`going to play: \`${queue[0].title}\``)
 			player.play(nextSong)
 			connectedGuilds.get(msg.guild.id).queue.shift();
 		} else {
 			player.stop();
-			msg.channel.send('There are no songs in the queue!');
+			msg.reply('There are no songs in the queue!');
 		}
 	}
 }
@@ -138,7 +138,7 @@ async function skip(msg,args) {
 async function leave(msg, args) {
 	if (connectedGuilds.has(msg.guild.id) && connectedGuilds.get(msg.guild.id).vcId != msg.member.voice.channel.id) {
 
-		msg.channel.send('Im not in your vc =/');
+		msg.reply('Im not in your vc =/');
 
 	} else {
 		const player = connectedGuilds.get(msg.guild.id).audioPlayer
@@ -163,7 +163,7 @@ async function check(cmd, msg, args) {
 			await skip(msg, args)
 		}
 
-	} else msg.channel.send('You have to be in a Voice Channel to run this command')
+	} else msg.reply('You have to be in a Voice Channel to run this command')
 }
 module.exports = {
 	command: check
