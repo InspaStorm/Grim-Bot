@@ -5,7 +5,7 @@ module.exports = {
 	name: 'invite',
 	description:'Invite links for the bot and support server',
 
-	run(msg, args) {
+	run(msg, args, author=author) {
 		
 		const button = new discord.MessageActionRow()
 			.addComponents(
@@ -28,7 +28,7 @@ module.exports = {
 		        {name: 'Invite Grim Bot', value: "Grim bot is a unique entertainment bot, Which gets regular updates\nFor any suggestions join the support server and lets us know"}
       		)
 
-		msg.channel.send({embeds: [serverLink], components: [button]})
+		msg.reply({embeds: [serverLink], components: [button]})
 	}
 
 }

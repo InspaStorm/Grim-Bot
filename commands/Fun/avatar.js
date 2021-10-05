@@ -9,7 +9,7 @@ module.exports = {
 		{name: "user", desc: "Mention the user/give the user's name", required: false, type: "USER"},
 	],
 
-	run(msg, args, author=msg.author) {
+	run(msg, args, author=author) {
 
 		async function mentionCheck(msg) {
 
@@ -34,7 +34,7 @@ module.exports = {
 		.then(check => {
 			if (typeof check == 'string') {
 				
-				msg.channel.send(check)
+				msg.reply(check)
 
 			} else {
 				const name  = check.name

@@ -6,8 +6,8 @@ module.exports = {
 	description:'Marks a task of the author as done',
 	private: true,
 
-	run(msg, args) {
-		const authorID = msg.author.id
+	run(msg, args, author=author) {
+		const authorID = author.id
 
 		if (!isNaN(args[0])) {
 
@@ -23,13 +23,13 @@ module.exports = {
 
 					collection.updateOne({id: authorID}, {$set :{tasks: res.tasks}})
 
-					msg.channel.send(`${res.tasks[taskNumber]} Has been marked as done`)
+					msg.reply(`${res.tasks[taskNumber]} Has been marked as done`)
 
-				} else msg.channel.send(`There are no tasks at position **${args[0]}**`)
+				} else msg.reply(`There are no tasks at position **${args[0]}**`)
 			})
 
 		} else {
-			msg.channel.send('Please provide the `Positional Number` of the task')
+			msg.reply('Please provide the `Positional Number` of the task')
 		}
 	}
 

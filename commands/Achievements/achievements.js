@@ -7,8 +7,8 @@ module.exports = {
 	name: 'achievements',
 	description: 'Showcases the achievements earned by the author',
 
-	run(msg, args) {
-		collection.findOne({id: msg.author.id})
+	run(msg, args, author=author) {
+		collection.findOne({id: author.id})
 		.then(res => {
 
 			const achievementIndexes = res.achievements
@@ -27,7 +27,7 @@ module.exports = {
 			    .addFields(achievements)
 			    .setColor('#00ffff')
 
-		    msg.channel.send({embeds: [achievementEmbed]})
+		    msg.reply({embeds: [achievementEmbed]})
 
 		})
 	}
