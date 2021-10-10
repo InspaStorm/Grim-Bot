@@ -13,24 +13,24 @@ function levelCheck(totalScore, msg, score) {
 	if (newLevel != undefined) {
 
 		const scoreRounded = Math.floor(score / 10) * 10
-		msg.reply(`You reached Level ${newLevel}<a:party:873867784608681994>`)
+		return (`You reached Level ${newLevel}<a:party:873867784608681994>`)
 		return scoreRounded + 10
 
 	} else return score
 }
 
 function updateScore(msg) {
-	if (recentMsg.has(author.id)) return;
+	if (recentMsg.has(msg.author.id)) return;
 
 	else {
 
 		// Making so that xp can only be given per 30 seconds
-		recentMsg.add(author.id)
-		setTimeout(() => {recentMsg.delete(author.id)}, 30000)
+		recentMsg.add(msg.author.id)
+		setTimeout(() => {recentMsg.delete(msg.author.id)}, 30000)
 		
 		collection = db.collection('Level');
 
-		collection.findOne({id: author.id})
+		collection.findOne({id: msg.author.id})
 		.then(data => {
 			if (data != undefined) {
 				let score = Math.floor(Math.random() * 7)
@@ -41,7 +41,7 @@ function updateScore(msg) {
 
 					if (TotalScore != undefined) {
 						const points = levelCheck(TotalScore + score, msg, score)
-						collection.updateOne({id: author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points}})
+						collection.updateOne({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points}})
 
 					} else {
 						const newGuild = {
@@ -49,7 +49,7 @@ function updateScore(msg) {
 							score: 2
 						}
 											
-						collection.updateOne({id: author.id}, {$push: {scores: newGuild}})
+						collection.updateOne({id: msg.author.id}, {$push: {scores: newGuild}})
 					}
 				} catch {
 					const newGuild = {
@@ -57,13 +57,13 @@ function updateScore(msg) {
 						score: 2
 					}
 											
-					collection.updateOne({id: author.id}, {$push: {scores: newGuild}})
+					collection.updateOne({id: msg.author.id}, {$push: {scores: newGuild}})
 				}
 				
 			} else {
 				newUserObject = {
-					id: author.id,
-					name: author.username,
+					id: msg.author.id,
+					name: msg.author.username,
 					scores: [],
 					achievements: []
 				}

@@ -9,7 +9,7 @@ module.exports = {
 	name: 'level',
 	description: 'Shows the chatting xp of the author',
 
-	run(msg, args, author=author) {
+	async run(msg, args, author = msg.author, isInteraction = false) {
 		if (levelEnabledGuild.includes(msg.guild.id)) {
 			const collection = db.collection('Level')
 
@@ -62,7 +62,7 @@ module.exports = {
 					if (score != undefined) {
 						makeCard(score)
 						.then(() => {
-							msg.reply({
+							return ({
 							  files: [{
 							    attachment: './pics/EditedPic.png',
 	  							name: 'rank-card.png'
@@ -78,6 +78,6 @@ module.exports = {
 				}
 				
 			});
-		} else msg.reply({content: 'Level system is not enabled in this server =/'})
+		} else return ({content: 'Level system is not enabled in this server =/'})
 	}
 }

@@ -49,7 +49,7 @@ module.exports = {
 	name: 'help',
 	description: 'The complete guide for all commands available on beloved Grim Bot :p',
 
-	run(msg,args) {
+	async run(msg,args) {
 		const file = new discord.MessageAttachment('./pics/embed/help.png')
 		const helpEmbed = new discord.MessageEmbed()
 		    .setColor('#00ffff')
@@ -59,7 +59,7 @@ module.exports = {
 		    .setImage('attachment://help.png')
 		    .setFooter('Developed by the InspaStorm Team @DeadlineBoss & @Ranger');
 		
-		msg.reply({embeds: [helpEmbed], files: [file]});
+		return ({embeds: [helpEmbed], files: [file]});
 	},
 	cmdLoader: loadCmds
 }

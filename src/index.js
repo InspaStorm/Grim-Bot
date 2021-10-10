@@ -1,4 +1,4 @@
-const { token } = require('./config.js');
+const { token } = require('../config.js');
 const discord = require('discord.js');
 const {updatePoint} = require('./misc/chatPoints');
 const {startDb} = require('./misc/initializer');
@@ -9,9 +9,10 @@ const achievementList = require('./commands/Achievements/achievementList.json');
 const {cmdLoader} = require('./commands/Misc/help.js');
 const {updateLeader} = require('./misc/leaderboard');
 const {logger} = require('./helpers/logger');
-const { playRadio } = require('./misc/radio')
+const { playRadio } = require('./misc/radio');
+const {replier, sender} = require('./helpers/apiResolver.js')
 
-const {prefix} = require('./config.js')
+const {prefix} = require('../config.js')
 const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
 
 // Currently available music commands
@@ -53,30 +54,33 @@ function lookingAchievements(msg, author, lockAchievements) {
 	}
 }
 
-client.on('interactionCreate', interaction => {
 
-	if (!interaction.isCommand()) return;
-
-	const options = interaction.options.data
-
-	const args = []
-
-	for (let option of options) {
-		args.push(option.value)
-	}
-
-	if (client.commands.has(interaction.commandName)) {
+function executeCommand(commandName, msg, args, author, isInteraction = false) {
+	if (client.commands.has(commandName)) {
 		
 		try {
-			client.commands.get(interaction.commandName).run(interaction, args, interaction.user)
+			client.commands.get(commandName).run(msg, args, author, isInteraction)
+			.then(content => {
+				replier(msg, content)
+			
+			})
 		} catch (err) {
 			console.log(`Something went wrong executing command: ${err}`)
 		}
 	}
 
-	else if (musicCmds.includes(interaction.commandName)) {
-		music.command(interaction.commandName, interaction, args)
-	}
+	// else if (musicCmds.includes(commandName)) {
+	// 	music.command(commandName, msg, args)
+	// }
+}
+
+client.on('interactionCreate', interaction => {
+
+	if (!interaction.isCommand()) return;
+
+	const args = interaction.options
+
+	executeCommand(interaction.commandName, interaction, args, interaction.user, true)
 
 })
 
@@ -92,22 +96,12 @@ client.on('messageCreate', msg => {
 	}
 
 	if (lowerCasedMsg.startsWith(prefix)) {
-		const eachWord = lowerCasedMsg.split(" ")
-		const command = eachWord[0].substr(2)
-		eachWord.shift()
-		const args = eachWord
+		const eachWord = lowerCasedMsg.split(" ");
+		const commandName = eachWord[0].substr(2);
+		eachWord.shift();
+		const args = eachWord;
 
-		if (client.commands.has(command)) {
-			try {
-				client.commands.get(command).run(msg, args, author=msg.author)
-			} catch (err) {
-				console.log(`Something went wrong executing command: ${err}`)
-			}
-		}
-
-		else if (musicCmds.includes(command)) {
-			music.command(command, msg, args)
-		}
+		executeCommand(commandName, msg, args, msg.author);
 	}
 
   
@@ -121,11 +115,11 @@ client.on('messageCreate', msg => {
 			'hmm :l',
 			'hmmmmmm hmmm hm hmm :( [Translation: Steve took my bed :(]',
 			'hmmmmmmm hmmm hmmm >:3'
-		]
+		];
 
 		if(luck > 5) {
 			const greetBack = lowerCasedMsg.slice(0, -1) + (lowerCasedMsg.substr(-1).repeat(randInt))
-			msg.channel.send(greetBack)
+			msg.channel.send(greetBack);
 			updatePoint(msg.author);
 		}
 

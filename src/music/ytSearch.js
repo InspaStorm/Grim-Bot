@@ -1,6 +1,6 @@
 const { YTSearcher } = require('ytsearcher');
 const ytpl = require('ytpl')
-const {gApi} = require('../config.js')
+const {gApi} = require('../../config.js')
 
 const searcher = new YTSearcher(gApi);
 
