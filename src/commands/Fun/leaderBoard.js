@@ -6,7 +6,7 @@ module.exports = {
 	name: 'leaderboard',
 	description:'Preview the chad chatters',
 
-	run(msg, args, author=author) {
+	async run(msg, args, author = msg.author, isInteraction = false) {
 
         const collection = db.collection('Chat')
 
@@ -25,7 +25,7 @@ module.exports = {
             .addField('Leaderboard', placeHolders)
             .setColor('#FF0000')
 
-            msg.reply({embeds:[leaderboard] })
+            return ({embeds:[leaderboard] })
         })
 	}
 

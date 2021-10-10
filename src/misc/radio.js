@@ -18,7 +18,7 @@ async function playRadio(client) {
 
 		connection.subscribe(audioPlayer)
 	} catch(e) {
-		console.log("Error while starting the 24/7 radio:\n\t", e);
+		console.log("Error while starting the 24/7 radio:\n\t");
 	}
 
 }

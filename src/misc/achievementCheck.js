@@ -40,7 +40,7 @@ async function lookForAchievement(msg, user, lockAchievements) {
           		.addFields(achievementList[index])
 
 		await collection.updateOne({id: userID}, {$addToSet: {achievements: index}})		
-  		msg.reply(unlockedEmbed)
+  		return (unlockedEmbed)
 	}
 
 	if (achievements == undefined || !achievements.achievements.includes(0)){
