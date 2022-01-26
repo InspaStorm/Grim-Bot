@@ -1,6 +1,4 @@
-src/node_modules/
 package-lock.json
-config.js
 src/test.js
 src/pics/rank_bg.png
 src/pics/EditedPic.png
@@ -8,3 +6,6 @@ ecosystem.config.js
 src/slashCommands.js
 Discord Tokens.json
 .vscode/
+node_modules/
+src/researchArea.js
+src/error.log

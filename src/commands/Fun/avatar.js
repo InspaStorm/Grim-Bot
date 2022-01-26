@@ -1,8 +1,8 @@
-const discord = require('discord.js');
-const {memberCheck} = require('../../helpers/member.js');
+import discord from 'discord.js';
+import {memberCheck} from '../../helpers/member.js';
 
-module.exports = {
-	
+export default {
+
 	name: 'avatar',
 	description:'Shows off your avatar',
 	options: [
@@ -27,9 +27,10 @@ module.exports = {
 				}
 			} else if (arg.length > 0) {
 				const member = await memberCheck(msg, arg[0])
+
 				if (typeof member != 'string' && typeof member != 'undefined') {
 					return {name: member.user.username, image: member.user.displayAvatarURL({dynamic: true,size: 256})}
-				} else if (typeof member == undefined) {
+				} else if (typeof member == 'undefined') {
 					return `No user found with name: \`${args[0]}\``
 				} else {
 					return member
@@ -45,8 +46,8 @@ module.exports = {
 		const check = await mentionCheck(msg, args)
 
 		if (typeof check == 'string') {
-				
-			return (check)
+
+			return {content: check}
 
 		} else {
 			const name  = check.name
@@ -54,7 +55,7 @@ module.exports = {
 			const avatarEmbed = new discord.MessageEmbed()
 			.setDescription(name)
 			.setImage(img);
-			
+
 			return ({embeds:[avatarEmbed] })
 		}
 

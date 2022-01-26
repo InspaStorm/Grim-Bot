@@ -1,7 +1,7 @@
-const {db} = require('../../misc/initializer')
+import {db} from '../../misc/initializer.js';
 
-module.exports = {
-	
+export default {
+
 	name: 'taskdone',
 	description:'Marks a task of the author as done',
 	private: true,

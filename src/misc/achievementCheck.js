@@ -1,20 +1,22 @@
-const discord = require('discord.js')
-const {db} = require('./initializer.js');
-const achievementList = require('../commands/Achievements/achievementList.json')
+import discord from 'discord.js'
+import {db} from './initializer.js';
+import achievementList from '../helpers/achievementList.js';
 
 const collection = db.collection('Level')
 
 let lockAchievements = new Map();
 let resolvingFoundAchievement = new Map();
 
-function initAchievementCheck() {
+export function initAchievement() {
 	lockAchievements.clear()
 
 	collection.find({}).toArray()
 	.then( data => {
+		let user;
 		for (user of data) {
 
 			if (user.achievements.length > 0) {
+				let achievement;
 				for (achievement of user.achievements) {
 					var userAchievement = {achievements: []}
 
@@ -28,7 +30,7 @@ function initAchievementCheck() {
 	return lockAchievements
 }
 
-async function lookForAchievement(msg, user, lockAchievements) {
+export async function lookForAchievement(msg, user, lockAchievements) {
 
 	const achievements = lockAchievements.get(user.id)
 
@@ -39,7 +41,7 @@ async function lookForAchievement(msg, user, lockAchievements) {
 			    .setTitle('Achivement Unlocked')
           		.addFields(achievementList[index])
 
-		await collection.updateOne({id: userID}, {$addToSet: {achievements: index}})		
+		await collection.updateOne({id: userID}, {$addToSet: {achievements: index}})
   		return (unlockedEmbed)
 	}
 
@@ -58,9 +60,3 @@ async function lookForAchievement(msg, user, lockAchievements) {
 	} else return 'Non Found'
 
 }
-
-module.exports = {
-	initAchievement: initAchievementCheck,
-	lookForAchievement: lookForAchievement
-}
-

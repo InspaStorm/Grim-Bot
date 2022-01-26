@@ -1,12 +1,14 @@
 // This file is made to make testing the whole code easier
-const discord = require('discord.js');
+import discord from 'discord.js';
 
-function replyMsg(destination, content) {
-    destination.reply(content)
+export function replier(destination, content) {
+    try{
+        destination.reply(content)
+    } catch {
+        console.log('Error with content:\n\t', content)
+    }
 }
 
-function sendMsg(destination, content) {
+export function sender(destination, content) {
     destination.channel.send(content)
 }
-
-module.exports = {replier: replyMsg, sender: sendMsg}

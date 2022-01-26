@@ -1,15 +1,12 @@
-const {MongoClient} = require('mongodb')
-const {dbUrl} = require('../../config')
+import {MongoClient} from 'mongodb'
+import config from '../../config.js'
+
+const dbUrl = config.dbUrl
 
 const mongo = new MongoClient(dbUrl)
-const db = mongo.db('Grim-Town')
+export const db = mongo.db('Grim-Town')
 
-async function openDb() {
+export async function startDb() {
     await mongo.connect()
     console.log('Database is open!')
-}
-
-module.exports = {
-    startDb: openDb,
-    db: db
 }
