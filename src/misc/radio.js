@@ -1,6 +1,6 @@
-const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
+import { joinVoiceChannel, createAudioPlayer, createAudioResource } from '@discordjs/voice';
 
-async function playRadio(client) {
+export async function playRadio(client) {
 	try {
 		const authorVc = await client.channels.fetch('894967573278511155')
 
@@ -13,7 +13,7 @@ async function playRadio(client) {
 		const audioPlayer = new createAudioPlayer()
 
 		const radioStation = createAudioResource('https://coderadio-relay-blr.freecodecamp.org/radio/8010/low.mp3')
-		
+
 		audioPlayer.play(radioStation)
 
 		connection.subscribe(audioPlayer)
@@ -22,5 +22,3 @@ async function playRadio(client) {
 	}
 
 }
-
-module.exports = {playRadio}

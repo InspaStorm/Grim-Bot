@@ -1,4 +1,4 @@
-async function memberCheck(msg, refer) {
+export async function memberCheck(msg, refer) {
 	let notFound;
 	let foundMember;
 
@@ -11,7 +11,7 @@ async function memberCheck(msg, refer) {
 	} else if (refer.startsWith('<@!')){
 		try {
 			const editedMention = refer.substr(3, refer.length - 4)
-			const foundMember = await msg.guild.members.fetch(editedMention)
+			foundMember = await msg.guild.members.fetch(editedMention)
 		} catch (err){
 			notFound = `No user Found as ${refer}`
 		}
@@ -25,13 +25,9 @@ async function memberCheck(msg, refer) {
 		}
 
 	}
-
-	if (notFound == undefined) {
+	if (typeof notFound == 'undefined') {
 		return foundMember
+	} else {
+		return notFound
 	}
-	return notFound
-}
-
-module.exports = {
-	memberCheck: memberCheck
 }

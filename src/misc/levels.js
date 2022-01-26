@@ -1,5 +1,5 @@
-const {db} = require('./initializer.js');
-const levels = require('./levelScore.json');
+import {db} from './initializer.js';
+import levels from './levelScore.js';
 
 const recentMsg = new Set();
 
@@ -13,13 +13,12 @@ function levelCheck(totalScore, msg, score) {
 	if (newLevel != undefined) {
 
 		const scoreRounded = Math.floor(score / 10) * 10
-		return (`You reached Level ${newLevel}<a:party:873867784608681994>`)
-		return scoreRounded + 10
+		return ({score:scoreRounded+10,message:`You reached Level ${newLevel}<a:party:873867784608681994>`})
 
 	} else return score
 }
 
-function updateScore(msg) {
+export function updateLevel(msg) {
 	if (recentMsg.has(msg.author.id)) return;
 
 	else {
@@ -27,8 +26,8 @@ function updateScore(msg) {
 		// Making so that xp can only be given per 30 seconds
 		recentMsg.add(msg.author.id)
 		setTimeout(() => {recentMsg.delete(msg.author.id)}, 30000)
-		
-		collection = db.collection('Level');
+
+		const collection = db.collection('Level');
 
 		collection.findOne({id: msg.author.id})
 		.then(data => {
@@ -41,14 +40,19 @@ function updateScore(msg) {
 
 					if (TotalScore != undefined) {
 						const points = levelCheck(TotalScore + score, msg, score)
-						collection.updateOne({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points}})
+						if (typeof points == 'number') {
 
+							collection.updateOne({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points}})
+						} else {
+							collection.updateOne({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points.score}})
+							return points.message
+						}
 					} else {
 						const newGuild = {
 							guild: msg.guild.id,
 							score: 2
 						}
-											
+
 						collection.updateOne({id: msg.author.id}, {$push: {scores: newGuild}})
 					}
 				} catch {
@@ -56,10 +60,10 @@ function updateScore(msg) {
 						guild: msg.guild.id,
 						score: 2
 					}
-											
+
 					collection.updateOne({id: msg.author.id}, {$push: {scores: newGuild}})
 				}
-				
+
 			} else {
 				newUserObject = {
 					id: msg.author.id,
@@ -72,8 +76,4 @@ function updateScore(msg) {
 			}
 		})
 	}
-}
-
-module.exports = {
-	updateLevel: updateScore
 }

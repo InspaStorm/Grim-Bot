@@ -1,8 +1,8 @@
-const discord = require('discord.js');
-const {db} = require('../../misc/initializer');
+import discord from 'discord.js';
+import {db} from '../../misc/initializer.js';
 
-module.exports = {
-	
+export default {
+
 	name: 'task',
 	description:'Shows the tasks assigned to some specific people',
 	private: true,
@@ -19,10 +19,10 @@ module.exports = {
 		let tasksList = '';
 
 		try {
-			
+
 			const collection = db.collection('Tasks')
 
-			const res = collection.find({id : '599489300672806913'}).toArray()
+			const res = await collection.find({id : '599489300672806913'}).toArray()
 
 			let data = res[0]
 			let i = 1;
@@ -58,7 +58,7 @@ module.exports = {
 
 		}
 
-		
+
 	}
 
 }

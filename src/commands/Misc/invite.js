@@ -1,12 +1,12 @@
-const discord = require('discord.js');
+import discord from 'discord.js';
 
-module.exports = {
-	
+export default {
+
 	name: 'invite',
 	description:'Invite links for the bot and support server',
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
-		
+
 		const button = new discord.MessageActionRow()
 			.addComponents(
 				new discord.MessageButton()

@@ -1,9 +1,9 @@
-const discord = require('discord.js');
-const {db} = require('./initializer');
+import discord from 'discord.js';
+import {db} from './initializer.js';
 const collection = db.collection('Chat');
-const {memberCheck} = require('../helpers/member.js');
+import {memberCheck} from '../helpers/member.js';
 
-async function updateLeader(client) {
+export async function updateLeader(client) {
 	const channel = await client.channels.fetch('887904218491539467');
 	const msg = await channel.messages.fetch('887927692232634398');
 	setInterval(() => {
@@ -31,7 +31,7 @@ async function updateLeader(client) {
 			    .setThumbnail(user.displayAvatarURL())
 			    .addField(crownHolder, placeHolders)
 			    .setColor('#FFFF00')
-			    .setFooter(`Lastly updated on: ${Date().toString().split(' ').splice(0, 6).join(' ')} | update every 30 mins`)
+			    .setFooter({text: `Lastly updated on: ${Date().toString().split(' ').splice(0, 6).join(' ')} | update every 30 mins`})
 
 			    msg.edit({embeds:[leaderboard] });
 		    })
@@ -39,5 +39,3 @@ async function updateLeader(client) {
 		});
 	}, 1.8e+6)
 }
-
-module.exports = {updateLeader: updateLeader}

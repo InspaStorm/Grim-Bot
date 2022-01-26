@@ -1,7 +1,7 @@
-const {db} = require('./initializer.js');
+import {db} from './initializer.js';
 const recentMsg = new Set();
 
-function updatePoints(user) {
+export async function updatePoint(user) {
     if (recentMsg.has(user.id)) return;
 
     else {
@@ -10,23 +10,17 @@ function updatePoints(user) {
         setTimeout(() => {recentMsg.delete(user.id)}, 1500)
         const collection = db.collection('Chat')
 
-        collection.find({id: `${user.id}`}).toArray()
-        .then( res => {
-            if (res.length > 0) {
-                collection.updateOne({id: `${user.id}`}, {$inc: {count: 1}})
-            } else {
-                const pointInit = {
-                    id: user.id,
-                    name: user.username,
-                    count: 1
-                }
-
-                collection.insertOne(pointInit)
+        const res = await collection.find({id: `${user.id}`}).toArray()
+        if (res.length > 0) {
+            collection.updateOne({id: `${user.id}`}, {$inc: {count: 1}})
+        } else {
+            const pointInit = {
+                id: user.id,
+                name: user.username,
+                count: 1
             }
-        })
-    }
-}
 
-module.exports = {
-    updatePoint: updatePoints
+            await collection.insertOne(pointInit)
+        }
+    }
 }

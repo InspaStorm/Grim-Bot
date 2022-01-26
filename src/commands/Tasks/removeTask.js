@@ -1,7 +1,7 @@
-const {db} = require('../../misc/initializer.js');
+import {db} from '../../misc/initializer.js';
 
-module.exports = {
-	
+export default {
+
 	name: 'removetask',
 	description:'Removes a task to the existing user',
 	private: true,
@@ -12,7 +12,7 @@ module.exports = {
 		if (!isNaN(args[0])) {
 
 			const taskNumber = args[0] - 1
-		    const collection = db.collection('Tasks')
+			const collection = db.collection('Tasks')
 
 			const res = await collection.findOne({id : `${authorID}`})
 
@@ -20,7 +20,7 @@ module.exports = {
 
 				res.tasks[taskNumber].status = 3
 
-				collection.updateOne({id: authorID}, {$set :{tasks: res.tasks}})
+				await collection.updateOne({id: authorID}, {$set :{tasks: res.tasks}})
 
 				return (`${res.tasks[taskNumber]} Has been marked as cancelled`)
 
