@@ -8,5 +8,4 @@ export const db = mongo.db('Grim-Town')
 
 export async function startDb() {
     await mongo.connect()
-    console.log('Database is open!')
 }
