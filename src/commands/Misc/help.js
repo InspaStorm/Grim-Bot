@@ -41,7 +41,6 @@ export async function cmdLoader(collection) {
 		}
 	}
 	allCommands = commandsInfo;
-	console.log('Commands got loaded...')
 	return collection
 }
 

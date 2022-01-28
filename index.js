@@ -1,5 +1,20 @@
+import { createSpinner } from 'nanospinner'
+import gradient from 'gradient-string';
+import figlet from 'figlet'
+import chalk from 'chalk';
 
-console.log('Index file started running...')
+// wait for some time (default = 2 secs)
+const sleep = (ms = 2000) => new Promise(resolve => setTimeout(resolve, ms));
+
+console.clear();
+await figlet('Mr. Grim',{
+	font: "Epic",
+}, (err, data) => {
+	console.log(gradient.rainbow.multiline(data))
+});
+
+// wait for the text to be rendered
+await sleep();
 
 import config from './config.js'
 import fs from 'fs';
@@ -34,18 +49,23 @@ const prefix = config.prefix;
 const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
 
 client.commands = new discord.Collection();
-cmdLoader(client.commands);
+
+const cmdLoading = createSpinner('Loading commands..').start();
+await cmdLoader(client.commands);
+cmdLoading.success({text: 'Commands got loaded'})
+
 var lockAchievements;
 
-client.once('ready', () => {
+const startingBot = createSpinner('Starting the bot...')
 
+client.once('ready', () => {
 	client.user.setPresence({
     	activities: [{
 			name: 'Grim Town | g!help'
 		}],
     	status: 'idle'
 	});
-	console.log(`${client.user.tag} logged on!`)
+	startingBot.success({text: chalk.yellow.bold(`${client.user.tag} logged on!`), mark: '🎉'})
 
 	if (!devolopment)	{ playRadio(client) }
 });
@@ -119,11 +139,17 @@ client.on('messageCreate', msg => {
 	}
 });
 
+const loadingDb = createSpinner("Connecting to database..").start()
 startDb()
 .then(() => {
+	loadingDb.success({text: 'Connected to Database'});
 	lockAchievements = initAchievement();
+	startingBot.start();
 	client.login(token)
 	.then(() => {
 		if (client.user.id == '796625057391837185') updateLeader(client)
 	})
+})
+.catch(() => {
+	loadingDb.error({text: 'Failed to connect to database'})
 })

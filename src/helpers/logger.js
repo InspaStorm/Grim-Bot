@@ -15,15 +15,16 @@ export function logger(err) {
 		const stack = [];
 
 		let i = 0;
-		console.log(err)
 		let level;
 
 		for (const line of info) {
 			let moddedLine = line.trim()
 
 			if (i == 0) {
+				const firstLineAsArr = moddedLine.split(" ")
 				level = moddedLine.split(" ")[0]
-				moddedLine = moddedLine.split(" ").pop().toString()
+				firstLineAsArr.shift()
+				moddedLine = firstLineAsArr.join(" ")
 			}
 
 			if (moddedLine.startsWith('at')) {
@@ -37,7 +38,7 @@ export function logger(err) {
 			i++;
 		}
 
-		console.log(chalk.red(level) + ' ' + chalk.hex('#FCC3C3')(stack.join('\n')))
+		console.log('\n' + chalk.red(level) + ' ' + chalk.hex('#FCC3C3')(stack.join('\n\t')))
 		log_file.write(util.format(stack.join('\n')) + '\n');
 
 	} else {
