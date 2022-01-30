@@ -22,7 +22,7 @@ export default {
 
 				await collection.updateOne({id: authorID}, {$set :{tasks: res.tasks}})
 
-				return (`${res.tasks[taskNumber]} Has been marked as cancelled`)
+				return (`${res.tasks[taskNumber].name} has been marked as cancelled`)
 
 			} else return (`There are no tasks at position **${args[0]}**`)
 
