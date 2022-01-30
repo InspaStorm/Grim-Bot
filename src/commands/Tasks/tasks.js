@@ -1,6 +1,8 @@
 import discord from 'discord.js';
 import {db} from '../../misc/initializer.js';
 
+const collection = db.collection('Tasks')
+
 export default {
 
 	name: 'task',
@@ -20,7 +22,6 @@ export default {
 
 		try {
 
-			const collection = db.collection('Tasks')
 
 			const res = await collection.find({id : '599489300672806913'}).toArray()
 
