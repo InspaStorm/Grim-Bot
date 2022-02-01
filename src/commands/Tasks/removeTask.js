@@ -4,7 +4,7 @@ export default {
 
 	name: 'removetask',
 	description:'Removes a task to the existing user',
-	private: true,
+	isStaff: true,
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
 		const authorID = author.id

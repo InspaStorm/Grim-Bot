@@ -4,7 +4,7 @@ export default {
 
 	name: 'taskdone',
 	description:'Marks a task of the author as done',
-	private: true,
+	isStaff: true,
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
 		const authorID = author.id

@@ -6,7 +6,7 @@ const devs = ['599489300672806913', '681766482803163147', '520625717885534228', 
 export default {
   name: 'addtask',
   description: 'Add tasks to some specific people ;)',
-  private: true,
+  isStaff: true,
 
   async run(msg, args, author = msg.author, isInteraction = false)  {
     const authorId = author.id
