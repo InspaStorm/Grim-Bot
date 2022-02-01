@@ -5,13 +5,13 @@ const owners = ['599489300672806913']
 
 export default {
   name: 'cleartask',
-  description: 'Add tasks to some specific people ;)',
-  private: true,
+  description: 'Completely removes the task from the list',
+  isStaff: true,
 
   async run(msg, args, author = msg.author, isInteraction = false)  {
     const authorId = author.id
     if (owners.includes(authorId)) {
-      const dbEntry = await collection.updateOne({id: authorId}, {$pop: {tasks: 1}});
+      const dbEntry = await collection.updateOne({id: authorId}, {$pop: {tasks: args[0]-1 }});
 
       return {content: `Task list has been cleared!`}
 

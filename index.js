@@ -1,20 +1,10 @@
-import { createSpinner } from 'nanospinner'
-import gradient from 'gradient-string';
-import figlet from 'figlet'
+import discord from 'discord.js';
 import chalk from 'chalk';
+import { createSpinner } from 'nanospinner';
 
-// wait for some time (default = 2 secs)
-const sleep = (ms = 2000) => new Promise(resolve => setTimeout(resolve, ms));
+const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
 
-console.clear();
-await figlet('Mr. Grim',{
-	font: "Epic",
-}, (err, data) => {
-	console.log(gradient.rainbow.multiline(data))
-});
-
-// wait for the text to be rendered
-await sleep();
+client.commands = new discord.Collection();
 
 import config from './config.js'
 import fs from 'fs';
@@ -31,32 +21,28 @@ if (devolopment) {
 } else {
 	token = config.main_key
 }
+const startingBot = createSpinner('Starting the bot...')
 
-import discord from 'discord.js';
+if (devolopment) {
+	lockAchievements = await startAsDevolopment(client, token, startingBot);
+} else {
+	lockAchievements = await startAsProduction(client, token)
+}
+
+import {startAsDevolopment, startAsProduction} from './src/helpers/botLauncher.js';
 import {updatePoint} from'./src/misc/chatPoints.js';
-import {startDb} from'./src/misc/initializer.js';
 import {updateLevel} from'./src/misc/levels.js';
 import {initAchievement, lookForAchievement} from'./src/misc/achievementCheck.js';
 import achievementList from './src/helpers/achievementList.js';
 import {cmdLoader} from'./src/commands/Misc/help.js';
-import {updateLeader} from'./src/misc/leaderboard.js';
 import {logger} from'./src/helpers/logger.js';
 import { playRadio } from'./src/misc/radio.js';
 import {replier, sender} from'./src/helpers/apiResolver.js';
 import { replyHm } from'./src/helpers/hmmReplier.js'
 
 const prefix = config.prefix;
-const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
-
-client.commands = new discord.Collection();
-
-const cmdLoading = createSpinner('Loading commands..').start();
-await cmdLoader(client.commands);
-cmdLoading.success({text: 'Commands got loaded'})
 
 var lockAchievements;
-
-const startingBot = createSpinner('Starting the bot...')
 
 client.once('ready', () => {
 	client.user.setPresence({
@@ -65,9 +51,11 @@ client.once('ready', () => {
 		}],
     	status: 'idle'
 	});
-	startingBot.success({text: chalk.yellow.bold(`${client.user.tag} logged on!`), mark: '🎉'})
-
-	if (!devolopment)	{ playRadio(client) }
+	if (devolopment) {
+		startingBot.success({text: chalk.yellow.bold(`${client.user.tag} logged on!`), mark: '🎉'})
+	} else {
+		console.log(chalk.yellow.bold(`🎉 ${client.user.tag} logged on!`))
+		playRadio(client) }
 });
 
 client.on('error', e => logger(e))
@@ -92,6 +80,7 @@ function lookingAchievements(msg, author, lockAchievements) {
 function executeCommand(commandName, msg, args, author, isInteraction = false) {
 	if (client.commands.has(commandName)) {
 		try {
+			msg.channel.sendTyping();
 			client.commands.get(commandName).run(msg, args, author, isInteraction)
 			.then(content => {
 				replier(msg, content)
@@ -138,18 +127,3 @@ client.on('messageCreate', msg => {
 		msg.channel.send(res)
 	}
 });
-
-const loadingDb = createSpinner("Connecting to database..").start()
-startDb()
-.then(() => {
-	loadingDb.success({text: 'Connected to Database'});
-	lockAchievements = initAchievement();
-	startingBot.start();
-	client.login(token)
-	.then(() => {
-		if (client.user.id == '796625057391837185') updateLeader(client)
-	})
-})
-.catch(() => {
-	loadingDb.error({text: 'Failed to connect to database'})
-})
