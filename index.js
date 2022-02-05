@@ -1,4 +1,11 @@
 import discord from 'discord.js';
+import {startAsDevolopment, startAsProduction} from './src/startup/botLauncher.js';
+import {updateLevel} from'./src/misc/levels.js';
+import {initAchievement, lookForAchievement} from'./src/misc/achievementCheck.js';
+import achievementList from './src/helpers/achievementList.js';
+import {logger} from'./src/helpers/logger.js';
+import {replier, sender} from'./src/helpers/apiResolver.js';
+import { replyHm } from'./src/helpers/hmmReplier.js'
 import chalk from 'chalk';
 import { createSpinner } from 'nanospinner';
 
@@ -29,16 +36,6 @@ if (devolopment) {
 	lockAchievements = await startAsProduction(client, token)
 }
 
-import {startAsDevolopment, startAsProduction} from './src/helpers/botLauncher.js';
-import {updatePoint} from'./src/misc/chatPoints.js';
-import {updateLevel} from'./src/misc/levels.js';
-import {initAchievement, lookForAchievement} from'./src/misc/achievementCheck.js';
-import achievementList from './src/helpers/achievementList.js';
-import {cmdLoader} from'./src/commands/Misc/help.js';
-import {logger} from'./src/helpers/logger.js';
-import { playRadio } from'./src/misc/radio.js';
-import {replier, sender} from'./src/helpers/apiResolver.js';
-import { replyHm } from'./src/helpers/hmmReplier.js'
 
 const prefix = config.prefix;
 
@@ -54,8 +51,8 @@ client.once('ready', () => {
 	if (devolopment) {
 		startingBot.success({text: chalk.yellow.bold(`${client.user.tag} logged on!`), mark: '🎉'})
 	} else {
-		console.log(chalk.yellow.bold(`🎉 ${client.user.tag} logged on!`))
-		playRadio(client) }
+		console.log(chalk.yellow.bold(`🎉  ${client.user.tag} logged on!`))
+	}
 });
 
 client.on('error', e => logger(e))

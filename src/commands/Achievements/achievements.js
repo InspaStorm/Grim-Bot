@@ -1,4 +1,4 @@
-import {db} from '../../misc/initializer.js';
+import {db} from '../../startup/database.js';
 import achievementList from '../../helpers/achievementList.js';
 import discord from 'discord.js';
 

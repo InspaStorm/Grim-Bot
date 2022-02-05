@@ -1,4 +1,4 @@
-import {db} from '../../misc/initializer.js';
+import {db} from '../../startup/database.js';
 
 const collection = db.collection('Tasks')
 const devs = ['599489300672806913', '681766482803163147', '520625717885534228', '660785366110044210', '760954344421195867']

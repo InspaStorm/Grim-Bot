@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import {db} from '../../misc/initializer.js';
+import {db} from '../../startup/database.js';
 
 export default {
 

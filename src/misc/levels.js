@@ -1,4 +1,4 @@
-import {db} from './initializer.js';
+import {db} from '../startup/database.js';
 import levels from './levelScore.js';
 
 const recentMsg = new Set();
