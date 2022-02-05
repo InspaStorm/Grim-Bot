@@ -1,4 +1,4 @@
-import {db} from '../../misc/initializer.js';
+import {db} from '../../startup/database.js';
 import level from '../../misc/levelScore.js';
 import jimp from 'jimp';
 import discord from 'discord.js';

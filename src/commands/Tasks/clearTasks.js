@@ -1,4 +1,4 @@
-import {db} from '../../misc/initializer.js';
+import {db} from '../../startup/database.js';
 
 const collection = db.collection('Tasks')
 const owners = ['599489300672806913']

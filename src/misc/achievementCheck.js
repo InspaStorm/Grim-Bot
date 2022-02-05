@@ -1,5 +1,5 @@
 import discord from 'discord.js'
-import {db} from './initializer.js';
+import {db} from '../startup/database.js';
 import achievementList from '../helpers/achievementList.js';
 
 const collection = db.collection('Level')

@@ -1,4 +1,4 @@
-import {db} from './initializer.js';
+import {db} from '../startup/database.js';
 const recentMsg = new Set();
 
 export async function updatePoint(user) {
