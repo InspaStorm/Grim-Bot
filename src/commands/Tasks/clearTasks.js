@@ -6,6 +6,7 @@ const owners = ['599489300672806913']
 export default {
   name: 'cleartask',
   description: 'Completely removes the task from the list',
+  alias: [],
   isStaff: true,
 
   async run(msg, args, author = msg.author, isInteraction = false)  {

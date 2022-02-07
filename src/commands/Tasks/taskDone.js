@@ -4,6 +4,7 @@ export default {
 
 	name: 'taskdone',
 	description:'Marks a task of the author as done',
+	alias: [],
 	isStaff: true,
 
 	async run(msg, args, author = msg.author, isInteraction = false) {

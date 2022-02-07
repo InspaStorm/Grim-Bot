@@ -29,6 +29,8 @@ async function checkCategoryName(path, folderName) {
 }
 
 export async function cmdLoader(collection) {
+	collection.clear()
+
 	let i = -1;
 	let q = -1;
 	let commandsInfo = [];
@@ -37,16 +39,16 @@ export async function cmdLoader(collection) {
 	for (const folder of commandFiles) {
 
 		const commandFolders = fs.readdirSync(`${pathToCmds}/${folder}`)
-		i ++;
 
 		for (const file of commandFolders) {
 			if (path.extname(file) == '.js') {
 
-				let obj = await import(`${pathToCmds}/${folder}/${file}`)
+				let obj = await import(`${pathToCmds}/${folder}/${file}?update=${new Date()}`)
 				let command = obj.default
 				collection.set(command.name,command)
 
-				let infoFormat = `\n\`${command.name}:\`\n${command.description}\n`;
+				let infoFormat = `\n**${command.name}** \`Aliases [${command.alias}]\`:
+				${command.description}\n`;
 
 				const categoryName = await checkCategoryName(`${pathToCmds}/${folder}/config.txt`, folder)
 
@@ -54,7 +56,6 @@ export async function cmdLoader(collection) {
 
 				// Looks if the category name has already been added
 				if (Object.values(commandsInfo).some(r => r.name == categoryName)) {
-
 					commandsInfo[i].value += infoFormat
 
 				} else if (Object.values(staffSpecial).some(r => r.name == categoryName)) {
@@ -65,13 +66,14 @@ export async function cmdLoader(collection) {
 					// creating new category
 					const newCmdObjects = {
 						name: `${categoryName}`,
-						value: `\n\`${command.name}:\`\n${command.description}\n`
+						value: infoFormat
 					}
 					if (command.isStaff) {
 						staffSpecial.push(newCmdObjects)
 						q ++;
 					} else {
 						commandsInfo.push(newCmdObjects)
+						i ++;
 					}
 
 					categoryNames.push(categoryName)

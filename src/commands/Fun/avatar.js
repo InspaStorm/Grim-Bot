@@ -5,6 +5,7 @@ export default {
 
 	name: 'avatar',
 	description:'Shows off your avatar',
+	alias: [],
 	options: [
 		{name: "user", desc: "Mention the user/give the user's name", required: false, type: "user"},
 	],

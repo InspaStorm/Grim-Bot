@@ -4,6 +4,7 @@ export default {
 
 	name: 'invite',
 	description:'Invite links for the bot and support server',
+	alias: [],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
 
