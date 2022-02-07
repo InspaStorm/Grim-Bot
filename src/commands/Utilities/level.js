@@ -8,6 +8,7 @@ const levelEnabledGuild = ['802904126312808498', '869218454127923220'];
 export default {
 	name: 'level',
 	description: 'Shows the chatting xp of the author',
+	alias: [],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
 		if (levelEnabledGuild.includes(msg.guild.id)) {

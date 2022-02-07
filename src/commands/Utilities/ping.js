@@ -2,6 +2,7 @@ export default {
 
 	name: 'ping',
 	description:'pong',
+	alias: [''],
 
 	async run(msg, args, author, isInteraction = false) {
 		const newMsg = await msg.reply({content:'🧮 Calculating ping...'})

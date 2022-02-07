@@ -73,7 +73,7 @@ function lookingAchievements(msg, author, lockAchievements) {
 	}
 }
 
-
+// Executes the commands
 function executeCommand(commandName, msg, args, author, isInteraction = false) {
 	if (client.commands.has(commandName)) {
 		try {
@@ -85,6 +85,12 @@ function executeCommand(commandName, msg, args, author, isInteraction = false) {
 		} catch (err) {
 			console.log(`Something went wrong executing command: ${err}`)
 		}
+	} else if (client.commands.find(x => x.alias.includes(commandName))) {
+		msg.channel.sendTyping();
+		client.commands.find(x => x.alias.includes(commandName)).run(msg, args, author, isInteraction)
+		.then(content => {
+			replier(msg, content)
+		})
 	}
 }
 
@@ -123,4 +129,6 @@ client.on('messageCreate', msg => {
 		const res = replyHm(lowerCasedMsg, msg.author)
 		msg.channel.send(res)
 	}
+
+	if (msg.mentions.has(client.user)) executeCommand('help', msg, [], msg.author);
 });
