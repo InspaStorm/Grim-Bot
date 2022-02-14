@@ -8,10 +8,18 @@ export default {
   description: 'Add tasks to some specific people ;)',
   alias: [],
   isStaff: true,
+  options: [
+    {name: "Task", desc: "Task to be added to the list", required: true, type: "string"},
+  ],
 
   async run(msg, args, author = msg.author, isInteraction = false)  {
     const authorId = author.id
-    const specifiedTask = args.join(" ")
+    let specifiedTask;
+    if (isInteraction) {
+      specifiedTask = args.get("task").value
+    } else {
+      specifiedTask = args.join(" ")
+    }
 
     if (devs.includes(authorId)) {
       const dbEntry = await collection.updateOne({id: authorId}, {$push: {tasks: {name: specifiedTask, status: 1}}});

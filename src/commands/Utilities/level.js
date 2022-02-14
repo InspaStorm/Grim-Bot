@@ -3,15 +3,13 @@ import level from '../../misc/levelScore.js';
 import jimp from 'jimp';
 import discord from 'discord.js';
 
-const levelEnabledGuild = ['802904126312808498', '869218454127923220'];
-
 export default {
 	name: 'level',
 	description: 'Shows the chatting xp of the author',
 	alias: [],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
-		if (levelEnabledGuild.includes(msg.guild.id)) {
+		if (msg.client.locks.get('level').includes(msg.guild.id)) {
 			const collection = db.collection('Level')
 
 			const data = await collection.findOne({id: author.id})
