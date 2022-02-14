@@ -45,7 +45,7 @@ export async function cmdLoader(collection) {
 
 				let obj = await import(`${pathToCmds}/${folder}/${file}?update=${new Date()}`)
 				let command = obj.default
-				collection.set(command.name,command)
+				collection.set(command.name.toLowerCase(),command)
 
 				let infoFormat = `\n**${command.name}** \`Aliases [${command.alias}]\`:
 				${command.description}\n`;

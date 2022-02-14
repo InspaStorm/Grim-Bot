@@ -12,7 +12,15 @@ export default {
   async run(msg, args, author = msg.author, isInteraction = false)  {
     const authorId = author.id
     if (owners.includes(authorId)) {
-      const dbEntry = await collection.updateOne({id: authorId}, {$pop: {tasks: args[0]-1 }});
+
+      // let taskIndex;
+      // if (isInteraction) {
+      //   taskIndex = args.get("index").value
+      // } else {
+      //   taskIndex = args[0]
+      // }
+
+      const dbEntry = await collection.updateOne({id: authorId}, {$pop: {tasks: 1 }});
 
       return {content: `Task list has been cleared!`}
 

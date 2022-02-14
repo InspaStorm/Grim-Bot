@@ -7,6 +7,7 @@ export default {
 	name: 'achievements',
 	description: 'Showcases the achievements earned by the author',
 	alias: ['achievement', 'award', 'awards'],
+	options: [],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
 		const res = await collection.findOne({id: author.id})

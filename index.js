@@ -1,6 +1,6 @@
 import discord from 'discord.js';
 import {startAsDevolopment, startAsProduction} from './src/startup/botLauncher.js';
-import {updateLevel} from'./src/misc/levels.js';
+import {updateLevel} from'./src/misc/updateLevelScore.js';
 import {initAchievement, lookForAchievement} from'./src/misc/achievementCheck.js';
 import achievementList from './src/helpers/achievementList.js';
 import {logger} from'./src/helpers/logger.js';
@@ -9,12 +9,12 @@ import { replyHm } from'./src/helpers/hmmReplier.js'
 import chalk from 'chalk';
 import { createSpinner } from 'nanospinner';
 
-const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
-
-client.commands = new discord.Collection();
-
 import config from './config.js'
 import fs from 'fs';
+
+const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
+client.commands = new discord.Collection();
+client.locks = new discord.Collection();
 
 let devolopment = false;
 let token;
@@ -36,15 +36,14 @@ if (devolopment) {
 	lockAchievements = await startAsProduction(client, token)
 }
 
-
 const prefix = config.prefix;
-
 var lockAchievements;
 
 client.once('ready', () => {
 	client.user.setPresence({
     	activities: [{
-			name: 'Grim Town | g!help'
+			name: 'InspArmy | g!help',
+			type: 'WATCHING'
 		}],
     	status: 'idle'
 	});
@@ -94,8 +93,8 @@ function executeCommand(commandName, msg, args, author, isInteraction = false) {
 	}
 }
 
+// Slash commands handler
 client.on('interactionCreate', interaction => {
-
 	if (!interaction.isCommand()) return;
 
 	const args = interaction.options
@@ -103,8 +102,7 @@ client.on('interactionCreate', interaction => {
 
 })
 
-const levelEnabledGuild = ['802904126312808498', '869218454127923220',]
-
+// Event triggered on getting a message from any channel of guild
 client.on('messageCreate', msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
 
@@ -112,9 +110,7 @@ client.on('messageCreate', msg => {
 
 	lookingAchievements(msg, msg.author, lockAchievements)
 
-	if (levelEnabledGuild.includes(msg.guild.id)){
-		updateLevel(msg);
-	}
+	if (client.locks.get('level').includes(msg.guild.id)) updateLevel(msg);
 
 	if (lowerCasedMsg.startsWith(prefix)) {
 		const commandName = lowerCasedMsg.split(" ")[0].substr(2);

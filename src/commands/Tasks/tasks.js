@@ -9,6 +9,7 @@ export default {
 	description:'Shows the tasks assigned to some specific people',
 	alias: [],
 	isStaff: true,
+	options: [],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
 

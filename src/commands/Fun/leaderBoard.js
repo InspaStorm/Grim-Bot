@@ -6,6 +6,7 @@ export default {
 	name: 'leaderboard',
 	description:'Preview the chad chatters',
 	alias: [],
+	options: [],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
 

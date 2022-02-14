@@ -5,6 +5,7 @@ import chalk from 'chalk';
 
 import {cmdLoader} from'./commandLoader.js';
 import {initAchievement} from'../misc/achievementCheck.js';
+import initLock from './featureLocks.js'
 import {updateLeader} from'../misc/leaderboard.js';
 import {startDb} from'../startup/database.js';
 
@@ -31,6 +32,7 @@ export async function startAsDevolopment (client, token, loadingBot) {
   await startDb()
 	loadingDb.success({text: 'Connected to Database'});
   const lockAchievements = initAchievement();
+  await initLock(client)
 	loadingBot.start();
 	client.login(token)
 	.then(() => {
@@ -53,6 +55,7 @@ export async function startAsProduction (client, token) {
   await startDb()
 	console.log('📊  Connected to Database');
   const lockAchievements = initAchievement();
+  await initLock(client)
   client.login(token)
 	.then(() => {
 		if (client.user.id == '796625057391837185') updateLeader(client)
