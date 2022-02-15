@@ -9,3 +9,4 @@ Discord Tokens.json
 node_modules/
 src/researchArea.js
 src/error.log
+.dev
