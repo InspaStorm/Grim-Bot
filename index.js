@@ -76,7 +76,7 @@ function lookingAchievements(msg, author, lockAchievements) {
 function executeCommand(commandName, msg, args, author, isInteraction = false) {
 	if (client.commands.has(commandName)) {
 		try {
-			msg.channel.sendTyping();
+			if(!isInteraction) msg.channel.sendTyping();
 			client.commands.get(commandName).run(msg, args, author, isInteraction)
 			.then(content => {
 				replier(msg, content)

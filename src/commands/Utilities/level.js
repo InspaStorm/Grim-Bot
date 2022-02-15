@@ -63,8 +63,7 @@ export default {
 						files: [{
 						attachment: './src/pics/EditedPic.png',
 						name: 'rank-card.png'
-						}],
-						reply: {messageReference: msg}
+					}],
 					})
 				} else {
 					makeCard(0)
