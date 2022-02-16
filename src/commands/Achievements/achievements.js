@@ -1,8 +1,7 @@
-import {db} from '../../startup/database.js';
+import {singleFind} from '../../helpers/dbCrud.js';
 import achievementList from '../../helpers/achievementList.js';
 import discord from 'discord.js';
 
-const collection = db.collection('Level')
 export default {
 	name: 'achievements',
 	description: 'Showcases the achievements earned by the author',
@@ -10,7 +9,7 @@ export default {
 	options: [],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
-		const res = await collection.findOne({id: author.id})
+		const res = await singleFind('Level', {id: author.id})
 
 		const achievementIndexes = res.achievements
 		const achievements = []

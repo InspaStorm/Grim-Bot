@@ -1,6 +1,8 @@
 import discord from 'discord.js';
 import {db} from '../../startup/database.js';
 
+const collection = db.collection('Chat')
+
 export default {
 
 	name: 'leaderboard',
@@ -10,23 +12,32 @@ export default {
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
 
-        const collection = db.collection('Chat')
+		const res = await collection.find().sort({count: -1}).limit(10).toArray()
 
-        const res = await collection.find().sort({count: -1}).limit(10).toArray()
-        let i = 1;
-        let placeHolders= '';
-        for (let entry of res) {
-            placeHolders = placeHolders + `${i}. ${entry.name} - ${entry.count}\n`
-            i ++
-        }
+	    let i = 1;
+	    let placeHolders= '';
+	    const leaderboard = new discord.MessageEmbed()
+	    for (let entry of res) {
+	    	if (i == 1) {
+	    		var userId = entry.id
+	    		var crownHolder = `👑 ${entry.name} - ${entry.count}`;
+	    		i ++;
+	    	} else {
+		        placeHolders = placeHolders + `${i}. ${entry.name} - ${entry.count}\n`;
+		        i ++;
+	        }
+	    }
 
-        const leaderboard = new discord.MessageEmbed()
-        .setTitle(`Chad Chatters!`)
-        .setDescription('Placeholders in chatting \`Hmm\`')
-        .addField('Leaderboard', placeHolders)
-        .setColor('#FF0000')
+	    const user = await msg.client.users.fetch(userId)
+	    leaderboard
+	    .setTitle(`THC Leaderboard`)
+	    .setDescription('\u200b')
+	    .setThumbnail(user.displayAvatarURL())
+	    .addField(crownHolder, placeHolders)
+	    .setColor('#FFFF00')
+	    .setFooter({text: `These points might have a use in future ;p`})
 
-        return ({embeds:[leaderboard] })
+	    return {embeds:[leaderboard] }
 	}
 
 }
