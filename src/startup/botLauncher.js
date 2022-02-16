@@ -54,7 +54,7 @@ export async function startAsProduction (client, token) {
   const lockAchievements = initAchievement();
   await initLock(client)
   await client.login(token)
-  .then(updateLeader(client))
+  // .then(updateLeader(client))
 
   return lockAchievements
 
