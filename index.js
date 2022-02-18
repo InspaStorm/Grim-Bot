@@ -4,7 +4,7 @@ import {updateLevel} from'./src/misc/updateLevelScore.js';
 import {initAchievement, lookForAchievement} from'./src/misc/achievementCheck.js';
 import achievementList from './src/helpers/achievementList.js';
 import {logger} from'./src/helpers/logger.js';
-import {replier, sender} from'./src/helpers/apiResolver.js';
+import {replier, sender, followUp} from'./src/helpers/apiResolver.js';
 import { replyHm } from'./src/helpers/hmmReplier.js'
 import chalk from 'chalk';
 import { createSpinner } from 'nanospinner';
@@ -73,14 +73,19 @@ function lookingAchievements(msg, author, lockAchievements) {
 }
 
 // Executes the commands
-function executeCommand(commandName, msg, args, author, isInteraction = false) {
+async function executeCommand(commandName, msg, args, author, isInteraction = false) {
 	if (client.commands.has(commandName)) {
 		try {
+
 			if(!isInteraction) msg.channel.sendTyping();
-			client.commands.get(commandName).run(msg, args, author, isInteraction)
-			.then(content => {
-				replier(msg, content)
-			})
+			const ans = await client.commands.get(commandName).run(msg, args, author, isInteraction)
+			if (ans.hasOwnProperty('followUp')) {
+				const reply = ans.followUp
+				delete ans.followUp;
+				await followUp(reply, ans, isInteraction);
+			} else {
+				await replier(msg, ans)
+			}
 		} catch (err) {
 			console.log(`Something went wrong executing command: ${err}`)
 		}
@@ -126,5 +131,5 @@ client.on('messageCreate', msg => {
 		msg.channel.send(res)
 	}
 
-	if (msg.mentions.has(client.user)) executeCommand('help', msg, [], msg.author);
+	if (msg.mentions.has(client.user) && !msg.mentions.everyone) executeCommand('help', msg, [], msg.author);
 });
