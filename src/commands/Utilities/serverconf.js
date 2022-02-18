@@ -14,7 +14,7 @@ export default {
   ],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
-    if (!msg.member.permissions.has('MANAGE_GUILD')) return {content: 'You are lacking permission of: `Manage Server` =/'}
+    	if (!msg.member.permissions.has('MANAGE_GUILD')) return {content: 'You are lacking permission of: `Manage Server` =/'}
 		let featureName;
 		let decision;
 		if (isInteraction) {
@@ -48,8 +48,8 @@ export default {
 				level: decision
 			}
 
-			collection.insertOne(newGuildEntry)
-			{content: `**${featureName} system** has been turned **${decision}** for this server!`}
+			await collection.insertOne(newGuildEntry)
+			return {content: `🎉 **${featureName} system** has been turned **${decision}** on this server for the 1st time!`}
 		}
 	}
 }
