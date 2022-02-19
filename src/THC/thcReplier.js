@@ -1,4 +1,4 @@
-import { updatePoint } from '../misc/chatPoints.js';
+import { updateThcPoint } from './thcPoints.js';
 
 export function replyHm(triggerWord, user){
   const randInt = Math.floor(Math.random() * 5);
@@ -14,12 +14,12 @@ export function replyHm(triggerWord, user){
 
   if(luck > 5) {
     const greetBack = triggerWord.slice(0, -1) + (triggerWord.substr(-1).repeat(randInt))
-    updatePoint(user);
+    updateThcPoint(user);
     return greetBack
   }
 
   else if(luck <= 5) {
-    updatePoint(user);
+    updateThcPoint(user);
     return customReplies[luck - 1]
   }
 }

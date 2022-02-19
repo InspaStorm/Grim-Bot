@@ -1,7 +1,7 @@
 // This file is made to make testing the whole code easier
 import discord from 'discord.js';
 
-export async function replier(destination, content, isInteraction) {
+export async function replier(destination, content, isInteraction = false) {
     try{
         if (isInteraction) content.fetchReply = true
         const reply = await destination.reply(content)

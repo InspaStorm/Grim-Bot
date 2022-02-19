@@ -10,7 +10,7 @@ export default {
 	alias: ['sc'],
 	options: [
     {name: "feature", desc: "Name of the feature to be changed", required: true,type: "string", choices: currentFeatures},
-		{name: "decision", desc: "Your decision on how to change it", required: true, type: "string", choices: validDecisions},
+	{name: "decision", desc: "Your decision on how to change it", required: true, type: "string", choices: validDecisions},
   ],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {

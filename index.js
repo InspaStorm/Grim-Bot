@@ -1,11 +1,11 @@
 import discord from 'discord.js';
 import {startAsDevolopment, startAsProduction} from './src/startup/botLauncher.js';
-import {updateLevel} from'./src/misc/updateLevelScore.js';
-import {initAchievement, lookForAchievement} from'./src/misc/achievementCheck.js';
-import achievementList from './src/helpers/achievementList.js';
+import {updateLevel} from'./src/level/updateLevelScore.js';
+import {initAchievement, lookForAchievement} from'./src/achievements/achievementCheck.js';
+import achievementList from './src/achievements/achievementList.js';
 import {logger} from'./src/helpers/logger.js';
 import {replier, sender, followUp} from'./src/helpers/apiResolver.js';
-import { replyHm } from'./src/helpers/hmmReplier.js'
+import { replyHm } from'./src/THC/thcReplier.js'
 import chalk from 'chalk';
 import { createSpinner } from 'nanospinner';
 
@@ -108,14 +108,14 @@ client.on('interactionCreate', interaction => {
 })
 
 // Event triggered on getting a message from any channel of guild
-client.on('messageCreate', msg => {
+client.on('messageCreate', async msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
 
 	if(msg.author.bot) return;
 
+	if (client.locks.get('level').includes(msg.guild.id)) await updateLevel(msg);
 	lookingAchievements(msg, msg.author, lockAchievements)
 
-	if (client.locks.get('level').includes(msg.guild.id)) updateLevel(msg);
 
 	if (lowerCasedMsg.startsWith(prefix)) {
 		const commandName = lowerCasedMsg.split(" ")[0].substr(2);
