@@ -1,5 +1,5 @@
 import {db} from '../../startup/database.js';
-import level from '../../misc/levelScore.js';
+import level from '../../level/levelScore.js';
 import jimp from 'jimp';
 import discord from 'discord.js';
 import {replier} from '../../helpers/apiResolver.js'

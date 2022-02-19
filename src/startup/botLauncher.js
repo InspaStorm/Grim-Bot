@@ -4,7 +4,7 @@ import figlet from 'figlet'
 import chalk from 'chalk';
 
 import {cmdLoader} from'./commandLoader.js';
-import {initAchievement} from'../misc/achievementCheck.js';
+import {initAchievement} from'../achievements/achievementCheck.js';
 import initLock from './featureLocks.js'
 import {updateLeader} from'../loops/leaderboard.js';
 import {startDb} from'../startup/database.js';

@@ -1,5 +1,5 @@
 import {singleFind} from '../../helpers/dbCrud.js';
-import achievementList from '../../helpers/achievementList.js';
+import achievementList from '../../achievements/achievementList.js';
 import discord from 'discord.js';
 
 export default {
@@ -22,9 +22,10 @@ export default {
 			}
 		}
 		const achievementEmbed = new discord.MessageEmbed()
-			.setTitle('Achivements Unlocked')
+			.setTitle('<:achievement:939468591395377213> Unlocked Achivements')
 			.addFields(achievements)
 			.setColor('#00ffff')
+			.setFooter({text: `Found ${achievementIndexes.length} out of ${Object.keys(achievementList).length} achievements`})
 
 		return ({embeds: [achievementEmbed]})
 
