@@ -13,7 +13,6 @@ export default {
 	async run(msg, args, author = msg.author, isInteraction = false) {
 
 		const res = await collection.find().sort({count: -1}).limit(10).toArray()
-
 	    let i = 1;
 	    let placeHolders= '';
 	    const leaderboard = new discord.MessageEmbed()
@@ -27,6 +26,8 @@ export default {
 		        i ++;
 	        }
 	    }
+
+		if (i <= 2) placeHolders = '----'
 
 	    const user = await msg.client.users.fetch(userId)
 	    leaderboard

@@ -65,7 +65,7 @@ export default {
 				.setThumbnail(author.avatarURL())
 
 			} else {
-				tasksList = 'No Tasks Found'
+				const tasksList = 'No Tasks Found'
 				tasksEmbed = new discord.MessageEmbed()
 				.setTitle(`Tasks for ${author.username}`)
 				.setDescription('Tasks assigned to YOU!')
