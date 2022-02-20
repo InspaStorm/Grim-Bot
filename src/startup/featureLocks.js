@@ -1,23 +1,57 @@
 import discord from 'discord.js';
 import {db} from './database.js';
 
-const collection = db.collection('server-conf');
 
-export async function lockLevel(client, dbEntry, isInitialize = false) {
-  client.locks.clear();
-  if (!isInitialize) dbEntry = await collection.find({}).toArray();
+export async function lockLevel(client, isInitialize = false) {
 
-  const levelEnabledGuild = [];
+    client.locks.delete('level')
 
-  for (let guild of dbEntry) {
+    const collection = db.collection('server-conf');
+
+    const dbEntry = await collection.find({}).toArray();
+
+    const levelEnabledGuild = [];
+
+    for (let guild of dbEntry) {
     if (guild.level == 'on') levelEnabledGuild.push(guild.guildId);
-  }
+    }
 
-  client.locks.set('level', levelEnabledGuild)
+    client.locks.set('level', levelEnabledGuild)
 }
 
 export default async function initAllLocks(client) {
-  const dbData = await collection.find({}).toArray();
+  client.locks.clear();
 
-  await lockLevel(client, dbData, true)
+  await lockLevel(client, true)
+  await lockAchievements(client, true)
+
+}
+
+export async function lockAchievements(client, isInitialize = false) {
+
+    client.locks.delete('achievement')
+
+    const collection = db.collection('Level');
+
+    const dbEntry = await collection.find({}).toArray();
+
+    let userDetails = [];
+
+    let user;
+    for (user of dbEntry) {
+
+        if (user.achievements.length > 0) {
+
+            let eachUser = {id: user.id, achievements: []}
+            let achievement;
+
+            for (achievement of user.achievements) {
+                eachUser.achievements.push(achievement)
+            }
+
+            userDetails.push(eachUser)
+        }
+    }
+
+    client.locks.set('achievement', userDetails)
 }

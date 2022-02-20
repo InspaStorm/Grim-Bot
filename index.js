@@ -1,16 +1,8 @@
 import discord from 'discord.js';
 import {startAsDevolopment, startAsProduction} from './src/startup/botLauncher.js';
-import {updateLevel} from'./src/level/updateLevelScore.js';
-import {initAchievement, lookForAchievement} from'./src/achievements/achievementCheck.js';
-import achievementList from './src/achievements/achievementList.js';
-import {logger} from'./src/helpers/logger.js';
-import {replier, sender, followUp} from'./src/helpers/apiResolver.js';
-import { replyHm } from'./src/THC/thcReplier.js'
-import chalk from 'chalk';
-import { createSpinner } from 'nanospinner';
-
 import config from './config.js'
 import fs from 'fs';
+import { createSpinner } from 'nanospinner';
 
 const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
 client.commands = new discord.Collection();
@@ -31,13 +23,21 @@ if (devolopment) {
 const startingBot = createSpinner('Starting the bot...')
 
 if (devolopment) {
-	lockAchievements = await startAsDevolopment(client, token, startingBot);
+	await startAsDevolopment(client, token, startingBot);
 } else {
-	lockAchievements = await startAsProduction(client, token)
+	await startAsProduction(client, token)
 }
 
+import {updateLevel} from'./src/level/updateLevelScore.js';
+import { lookForAchievement} from'./src/achievements/achievementCheck.js';
+import achievementList from './src/achievements/achievementList.js';
+import {logger} from'./src/helpers/logger.js';
+import {replier, sender, followUp} from'./src/helpers/apiResolver.js';
+import { replyHm } from'./src/THC/thcReplier.js'
+import chalk from 'chalk';
+
+
 const prefix = config.prefix;
-var lockAchievements;
 
 client.once('ready', () => {
 	client.user.setPresence({
@@ -58,14 +58,11 @@ client.on('error', e => logger(e))
 process.on('uncaughtException', e => logger(e));
 
 // Checks if user has completed all achievements if not looks for if he completed any achievements
-function lookingAchievements(msg, author, lockAchievements) {
+function lookingAchievements(msg, author) {
 	try {
-		const achievements = lockAchievements.get(author.id)
-		if (achievements == undefined || achievements.achievements.length != achievementList.length) {
-			lookForAchievement(msg, author, lockAchievements)
-			.then(res => {
-				if (res == 'Achievement Found') initAchievement()
-			})
+		const userData = client.locks.get('achievement').find(user => {return user.id == author.id})
+		if (userData == undefined || userData.achievements.length != achievementList.length) {
+			lookForAchievement(msg, author, userData)
 		}
 	} catch (err) {
 		 console.log('error: ', err)
@@ -112,7 +109,6 @@ client.on('messageCreate', async msg => {
 	const lowerCasedMsg = msg.content.toLowerCase()
 
 	if(msg.author.bot) return;
-
 	if (client.locks.get('level').includes(msg.guild.id)) await updateLevel(msg);
 	lookingAchievements(msg, msg.author, lockAchievements)
 

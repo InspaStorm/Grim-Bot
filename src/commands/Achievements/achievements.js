@@ -11,18 +11,18 @@ export default {
 	async run(msg, args, author = msg.author, isInteraction = false) {
 		const res = await singleFind('Level', {id: author.id})
 
-		const achievementIndexes = res.achievements
+		const achievementIndexes = res?.achievements || []
 		const achievements = []
 
 		if (achievementIndexes.length == 0) {
-			achievements.push({name: 'No Achivements Earned', value: 'Why not hunt down some sweet achievements ¯\\_(ツ)_/¯'})
+			achievements.push({name: 'No achievement Earned', value: 'Why not hunt down some sweet achievement ¯\\_(ツ)_/¯'})
 		} else {
 			for (let index of achievementIndexes) {
 				achievements.push(achievementList[index])
 			}
 		}
 		const achievementEmbed = new discord.MessageEmbed()
-			.setTitle('<:achievement:939468591395377213> Unlocked Achivements')
+			.setTitle('<:achievement:939468591395377213> Unlocked achievement(s)')
 			.addFields(achievements)
 			.setColor('#00ffff')
 			.setFooter({text: `Found ${achievementIndexes.length} out of ${Object.keys(achievementList).length} achievements`})
