@@ -110,7 +110,7 @@ client.on('messageCreate', async msg => {
 
 	if(msg.author.bot) return;
 	if (client.locks.get('level').includes(msg.guild.id)) await updateLevel(msg);
-	lookingAchievements(msg, msg.author, lockAchievements)
+	lookingAchievements(msg, msg.author)
 
 
 	if (lowerCasedMsg.startsWith(prefix)) {
