@@ -1,4 +1,4 @@
-import discord from 'discord.js';
+import discord, { MessageActionRow, MessageSelectMenu } from 'discord.js';
 import { getCmdDetails } from '../../startup/commandLoader.js'
 import config from '../../../config.js'
 
@@ -7,6 +7,45 @@ const devs = ['599489300672806913', '681766482803163147', '520625717885534228', 
 
 let userCommands;
 let staffCommands;
+let categoryDetails;
+
+function prepareMainEmbed(msg, isStaff = false) {
+	let commandsList;
+	let embedPic;
+	let file;
+
+	if (isStaff) {
+		commandsList = staffCommands
+		file = new discord.MessageAttachment('./src/pics/embed/staff_help.png')
+		embedPic = 'attachment://staff_help.png'
+	} else {
+		commandsList = userCommands
+		file = new discord.MessageAttachment('./src/pics/embed/help.png')
+		embedPic = 'attachment://help.png'
+	}
+
+	const helpEmbed = new discord.MessageEmbed()
+		.setColor('#00ffff')
+		.setTitle('Command Support')
+		.setDescription(`My prefix is **${prefix}**
+				Command format: \`${prefix}<command> <options>\`
+					Eg: \`${prefix}help\``)
+		.addFields(commandsList)
+		.setImage(embedPic)
+		.setFooter({text: 'Developed by the InspaStorm Team @DeadlineBoss & @Ranger'});
+
+	return {embeds: [helpEmbed], files: [file]};
+}
+
+function prepareCategoryEmbed(categoryName) {
+	const category = categoryDetails.get(categoryName)
+	const helpEmbed = new discord.MessageEmbed()
+		.setColor('#00ffff')
+		.setTitle(category.label)
+		.setDescription(category.description)
+		.addField('\u200b',category.cmdInfo)
+	return helpEmbed
+}
 
 export default {
 	name: 'help',
@@ -19,34 +58,32 @@ export default {
 
 			userCommands = cmdDetails.userCommands
 			staffCommands = cmdDetails.staffCommands
+			categoryDetails = cmdDetails.categoryDetails
 		}
+		const menuEntries = [];
 
-		if (devs.includes(author.id)) {
-			const file = new discord.MessageAttachment('./src/pics/embed/staff_help.png')
-			const helpEmbed = new discord.MessageEmbed()
-			    .setColor('#00ffff')
-			    .setTitle('Command Support')
-			    .setDescription(`My prefix is **${prefix}**
-						Command format: \`${prefix}<command> <options>\`
-							Eg: \`${prefix}help\``)
-			    .addFields(staffCommands)
-					.setThumbnail(msg.client.user.displayAvatarURL())
-			    .setImage('attachment://staff_help.png')
-			    .setFooter({text: 'Developed by the InspaStorm Team @DeadlineBoss & @Ranger'});
+		categoryDetails.forEach(value => {
+			const format = {
+				label: value.label, description: value.description, value: value.value
+			}
+			menuEntries.push(format)
+		});
 
-			return ({embeds: [helpEmbed], files: [file]});
-		} else {
-			const file = new discord.MessageAttachment('./src/pics/embed/help.png')
-			const helpEmbed = new discord.MessageEmbed()
-			    .setColor('#00ffff')
-			    .setTitle('Commands')
-			    .setDescription('You can see the commands of Mr. Grim here')
-			    .addFields(userCommands)
-					.setThumbnail(msg.client.user.displayAvatarURL())
-			    .setImage('attachment://help.png')
-			    .setFooter({text: 'Developed by the InspaStorm Team @DeadlineBoss & @Ranger'});
+		const row = new MessageActionRow()
+		.addComponents(
+			new MessageSelectMenu()
+			.setCustomId('help')
+			.setPlaceholder('No category selected')
+			.addOptions(menuEntries)
+		);
 
-			return ({embeds: [helpEmbed], files: [file]});
-		}
+		const helpEmbed = (devs.includes(author.id)) ? await prepareMainEmbed(msg, true): await prepareMainEmbed(msg, false)
+		helpEmbed.components = [row]
+		return helpEmbed
+	},
+
+	async handle(msg, value) {
+		const embed = prepareCategoryEmbed(value)
+		msg.update({embeds: [embed], files: []})
 	}
 }

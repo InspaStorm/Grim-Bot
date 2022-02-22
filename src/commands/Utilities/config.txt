@@ -1,1 +1,2 @@
 🛠️ Utilities
+Commands for managing and configuring
