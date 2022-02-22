@@ -9,17 +9,11 @@ client.commands = new discord.Collection();
 client.locks = new discord.Collection();
 
 let devolopment = false;
-let token;
 
-if (fs.existsSync('./.dev')) {
-	devolopment = true
-}
+if (fs.existsSync('./.dev')) devolopment = true
 
-if (devolopment) {
-	token = config.test_key
-} else {
-	token = config.main_key
-}
+const token = (devolopment) ? config.test_key:config.main_key
+
 const startingBot = createSpinner('Starting the bot...')
 
 if (devolopment) {
@@ -95,13 +89,18 @@ async function executeCommand(commandName, msg, args, author, isInteraction = fa
 	}
 }
 
+async function handleFollowUp(interaction, name) {
+	const ans = await client.commands.get(name).handle(interaction, interaction.values[0])
+}
+
 // Slash commands handler
 client.on('interactionCreate', interaction => {
-	if (!interaction.isCommand()) return;
-
-	const args = interaction.options
-	executeCommand(interaction.commandName, interaction, args, interaction.user, true)
-
+	if (interaction.isCommand()) {
+		const args = interaction.options
+		executeCommand(interaction.commandName, interaction, args, interaction.user, true)
+	} else if (interaction.isSelectMenu()) {
+		handleFollowUp(interaction, interaction.customId)
+	}
 })
 
 // Event triggered on getting a message from any channel of guild

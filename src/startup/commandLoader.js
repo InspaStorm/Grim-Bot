@@ -11,26 +11,30 @@ const commandFiles = fs.readdirSync(pathToCmds);
 
 let regularUserCommands;
 let staffCommands;
+const categoryDetails = new Map();
 
-async function checkCategoryName(path, folderName) {
+async function checkCategoryInfo(path, folderName) {
 
-	let categoryName;
+	let categoryInfo = {}
 
 	if (fs.existsSync(path)) {
 		const configFile = await fs.readFileSync(path)
 
 		const arr = configFile.toString().replace(/\r\n/g,'\n').split('\n');
 
-    categoryName = arr[0] //arr[0] represents 1st line of th file
+    	categoryInfo.name = arr[0] //arr[0] represents 1st line of th file
+		categoryInfo.description = arr[1] || 'None'
 
-	} else categoryName = folderName
-
-	return categoryName
+	} else {
+		categoryInfo.name = folderName
+		categoryInfo.description = 'None'
+	}
+	categoryInfo.value = folderName
+	return categoryInfo
 }
 
 export async function cmdLoader(collection) {
 	collection.clear()
-
 	let i = -1;
 	let q = -1;
 	let commandsInfo = [];
@@ -50,33 +54,34 @@ export async function cmdLoader(collection) {
 				let infoFormat = `\n**${command.name}** \`Aliases [${command.alias}]\`:
 				${command.description}\n`;
 
-				const categoryName = await checkCategoryName(`${pathToCmds}/${folder}/config.txt`, folder)
+				const categoryData = await checkCategoryInfo(`${pathToCmds}/${folder}/config.txt`, folder)
 
 				// Setting up help commmand dynamically
 
 				// Looks if the category name has already been added
-				if (Object.values(commandsInfo).some(r => r.name == categoryName)) {
-					commandsInfo[i].value += infoFormat
+				if (Object.values(commandsInfo).some(r => r.name == categoryData.name)) {
+					categoryDetails.get(folder).cmdInfo += infoFormat
 
-				} else if (Object.values(staffSpecial).some(r => r.name == categoryName)) {
+				} else if (Object.values(staffSpecial).some(r => r.name == categoryData.name)) {
 
-					staffSpecial[q].value += infoFormat
+					categoryDetails.get(folder).cmdInfo += infoFormat
 
 				} else {
-					// creating new category
-					const newCmdObjects = {
-						name: `${categoryName}`,
-						value: infoFormat
-					}
-					if (command.isStaff) {
-						staffSpecial.push(newCmdObjects)
-						q ++;
-					} else {
-						commandsInfo.push(newCmdObjects)
-						i ++;
-					}
+				// creating new category
+				const newCmdObjects = {
+					name: categoryData.name,
+					value: categoryData.description
+				}
+				if (command.isStaff) {
+					staffSpecial.push(newCmdObjects)
+					q ++;
+				} else {
+					commandsInfo.push(newCmdObjects)
+					i ++;
+				}
 
-					categoryNames.push(categoryName)
+				categoryDetails.set(folder, {label: categoryData.name, description:categoryData.description, value: categoryData.value, cmdInfo:infoFormat})
+				categoryNames.push(categoryData.name)
 				}
 			}
 		}
@@ -86,5 +91,5 @@ export async function cmdLoader(collection) {
 }
 
 export function getCmdDetails() {
-  return {userCommands: regularUserCommands, staffCommands: staffCommands}
+  return {userCommands: regularUserCommands, staffCommands: staffCommands, categoryDetails: categoryDetails}
 }
