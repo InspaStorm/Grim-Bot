@@ -1,4 +1,4 @@
-export async function memberCheck(msg, refer) {
+export async function fetchMember(msg, refer) {
 	let notFound;
 	let foundMember;
 
@@ -29,5 +29,28 @@ export async function memberCheck(msg, refer) {
 		return foundMember
 	} else {
 		return notFound
+	}
+}
+
+export async function inputMemberCheck(msg, author, args, isInteraction) {
+	if (isInteraction) {
+		const user = args.getUser('user')
+		if (user) {
+			return user
+		} else {
+			return author
+		}
+	} else if (args.length > 0) {
+		const member = await fetchMember(msg, args[0])
+
+		if (typeof member != 'string' && typeof member != 'undefined') {
+			return member.user
+		} else if (typeof member == 'undefined') {
+			return `No user found with name: \`${args[0]}\``
+		} else {
+			return member
+		}
+	} else {
+		return author
 	}
 }

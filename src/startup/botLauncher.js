@@ -5,7 +5,7 @@ import chalk from 'chalk';
 
 import {cmdLoader} from'./commandLoader.js';
 import initLock from './featureLocks.js'
-import {startDb} from'../startup/database.js';
+import {startDbAsDev, startDbAsProd} from'../startup/database.js';
 // import {updateLeader} from'../loops/leaderboard.js';
 
 // wait for some time (default = 2 secs)
@@ -15,16 +15,16 @@ export async function startAsDevolopment (client, token, loadingBot) {
 
     console.clear();
     await figlet('Mr. Grim',{
-    	font: "Epic",
+    	font: "Small Slant",
     }, (err, data) => {
     	console.log(gradient.rainbow.multiline(data))
     });
     // wait for the text to be rendered
     await sleep(1000);
 
-    const loadingDb = createSpinner("Connecting to database..").start()
+    const loadingDb = createSpinner("Connecting to local database..").start()
 
-    await startDb(true)
+    await startDbAsDev()
     loadingDb.success({text: 'Connected to Database'});
 
     const cmdLoading = createSpinner('Loading commands..').start();
@@ -43,7 +43,7 @@ export async function startAsProduction (client, token) {
 
   console.log('🔃  Database is being loaded..')
 
-  await startDb(false)
+  await startDbAsProd()
   console.log('📊  Connected to Database');
 
   await cmdLoader(client.commands);

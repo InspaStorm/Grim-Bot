@@ -2,8 +2,8 @@ import {db} from '../../startup/database.js';
 import level from '../../level/levelScore.js';
 import jimp from 'jimp';
 import discord from 'discord.js';
-import {replier} from '../../helpers/apiResolver.js'
-
+import {replier} from '../../helpers/apiResolver.js';
+import {fetchMember, inputMemberCheck} from '../../helpers/member.js';
 
 async function makeCard(score, user) {
 	const arrayOfScores = Object.keys(level)
@@ -13,7 +13,7 @@ async function makeCard(score, user) {
 	const percentage = Math.floor((score/CurrentLevelScore) * 100)
 
 	const card = await jimp.read('./src/pics/rank_card.png')
-	let avatar = await jimp.read(user.avatarURL({format:'png', size: 128}))
+	let avatar = await jimp.read(user.displayAvatarURL({format: 'png',size: 256}))
 
 	const leftEmpty = await jimp.read('./src/pics/rank_bar/left_empty.png')
 	const leftFull = await jimp.read('./src/pics/rank_bar/left_full.png')
@@ -51,18 +51,52 @@ export default {
 	name: 'level',
 	description: 'Shows the chatting xp of the author',
 	alias: [],
+	options: [
+		{name: "user", desc: "Mention the user/give the user's name", required: false, type: "user"},
+	],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
 		if (!msg.client.locks.get('level').includes(msg.guild.id)) return {content: '**Level system is off** in this server =(\n\nAdmins can turn it on using: `g!serverconf level on`'}
 
 
-		const data = await collection.findOne({id: author.id})
+		async function mentionCheck(msg,author, args, isInteraction) {
+			if (isInteraction) {
+				const user = args.getUser('user')
+				if (user) {
+					return user
+				} else {
+					return author
+				}
+			} else if (args.length > 0) {
+				const member = await fetchMember(msg, args[0])
+
+				if (typeof member != 'string' && typeof member != 'undefined') {
+					return member.user
+				} else if (typeof member == 'undefined') {
+					return `No user found with name: \`${args[0]}\``
+				} else {
+					return member
+				}
+			} else {
+				return author
+			}
+		}
+
+		const userToBeChecked = await mentionCheck(msg, author, args)
+
+		if (typeof userToBeChecked == 'string') {
+
+			return {content: userToBeChecked}
+
+		}
+
+		const data = await collection.findOne({id: userToBeChecked.id})
 		try {
-			const score = data.scores.find(x => x.guild == msg.guild.id).score
+			const score = (data != null) ? data.scores.find(x => x.guild == msg.guild.id).score : undefined
 
 			if (score != undefined) {
 				const reply = await replier(msg, {content: '**Processing your level card** <a:loading:944275536274935835>'}, isInteraction)
-				await makeCard(score, author)
+				await makeCard(score, userToBeChecked)
 				return ({
 					content: '\u200b',
 					followUp: reply,
@@ -73,7 +107,7 @@ export default {
 				})
 			} else {
 				const reply = await replier(msg, {content: '**Making a new level card** <a:loading:944275536274935835>'}, isInteraction)
-				await makeCard(0, author)
+				await makeCard(0, userToBeChecked)
 				return ({
 					content: '\u200b',
 					followUp: reply,

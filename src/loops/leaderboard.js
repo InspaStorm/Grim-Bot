@@ -1,7 +1,7 @@
 import discord from 'discord.js';
 import {db} from '../startup/database.js';
 const collection = db.collection('Chat');
-import {memberCheck} from '../helpers/member.js';
+import {fetchMember} from '../helpers/member.js';
 
 export async function updateLeader(client) {
 	const channel = await client.channels.fetch('887904218491539467');
