@@ -1,19 +1,19 @@
 import {MongoClient} from 'mongodb'
 import config from '../../config.js'
 
-let dbUrl;
-const devolopment = false
+const test_dbUrl = config.test_dbUrl
+const main_dbUrl = config.main_dbUrl
 
-if (devolopment) {
-	dbUrl = config.test_dbUrl
-} else {
-	dbUrl = config.main_dbUrl
+const test_mongo = new MongoClient(test_dbUrl)
+const main_mongo = new MongoClient(main_dbUrl)
+export const db = main_mongo.db('Grim-Town')
+
+export async function startDbAsDev() {
+
+    await test_mongo.connect()
 }
 
-const mongo = new MongoClient(dbUrl)
-export const db = mongo.db('Grim-Town')
+export async function startDbAsProd() {
 
-export async function startDb(devolopment) {
-
-    await mongo.connect()
+    await main_mongo.connect()
 }

@@ -1,6 +1,30 @@
 import {singleFind} from '../../helpers/dbCrud.js';
 import achievementList from '../../achievements/achievementList.js';
 import discord from 'discord.js';
+import {inputMemberCheck} from '../../helpers/member.js';
+
+async function makeAwardEmbed(user){
+	const res = await singleFind('Level', {id: user.id})
+
+	const achievementIndexes = res?.achievements || []
+	const achievements = []
+
+	if (achievementIndexes.length == 0) {
+		achievements.push({name: 'No achievement Earned', value: 'Why not hunt down some sweet achievement ¯\\_(ツ)_/¯'})
+	} else {
+		for (let index of achievementIndexes) {
+			achievements.push(achievementList[index])
+		}
+	}
+	const achievementEmbed = new discord.MessageEmbed()
+	.setTitle('<:achievement:939468591395377213> Unlocked achievement(s)')
+	.setDescription(user.username)
+	.addFields(achievements)
+	.setColor('#00ffff')
+	.setFooter({text: `Found ${achievementIndexes.length} out of ${Object.keys(achievementList).length} achievements`})
+
+	return achievementEmbed
+}
 
 export default {
 	name: 'achievements',
@@ -9,24 +33,11 @@ export default {
 	options: [],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
-		const res = await singleFind('Level', {id: author.id})
+		let user = await inputMemberCheck(msg, author, args, isInteraction)
 
-		const achievementIndexes = res?.achievements || []
-		const achievements = []
+		if (typeof user == 'string') return {content: user};
 
-		if (achievementIndexes.length == 0) {
-			achievements.push({name: 'No achievement Earned', value: 'Why not hunt down some sweet achievement ¯\\_(ツ)_/¯'})
-		} else {
-			for (let index of achievementIndexes) {
-				achievements.push(achievementList[index])
-			}
-		}
-		const achievementEmbed = new discord.MessageEmbed()
-			.setTitle('<:achievement:939468591395377213> Unlocked achievement(s)')
-			.addFields(achievements)
-			.setColor('#00ffff')
-			.setFooter({text: `Found ${achievementIndexes.length} out of ${Object.keys(achievementList).length} achievements`})
-
+		const achievementEmbed = await makeAwardEmbed(user);
 		return ({embeds: [achievementEmbed]})
 
 	}
