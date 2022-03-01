@@ -76,7 +76,7 @@ export default {
 		try {
 			const score = (data != null) ? data.scores.find(x => x.guild == msg.guild.id).score : undefined
 			if (score != undefined) {
-				const reply = await replier(msg, {content: `**Processing your ${userToBeChecked.username}'s card** <a:loading:944275536274935835>'`}, isInteraction)
+				const reply = await replier(msg, {content: `**Processing ${userToBeChecked.username}'s card** <a:loading:944275536274935835>'`}, isInteraction)
 				const levelCard = await makeCard(score, userToBeChecked)
 				return ({
 					content: '\u200b',
