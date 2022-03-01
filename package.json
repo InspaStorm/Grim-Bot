@@ -12,11 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "canvacord": "^5.2.3",
     "chalk": "^4.1.2",
     "discord.js": "^13.1.0",
     "figlet": "^1.5.2",
     "gradient-string": "^2.0.0",
-    "jimp": "^0.16.1",
     "mongodb": "^4.1.0",
     "nanospinner": "^1.0.0",
     "node-fetch": "^2.6.1"

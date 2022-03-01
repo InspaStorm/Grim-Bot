@@ -14,13 +14,9 @@ if (fs.existsSync('./.dev')) devolopment = true
 
 const token = (devolopment) ? config.test_key:config.main_key
 
-const startingBot = createSpinner('Starting the bot...')
+const startingBot = createSpinner('Starting the bot...');
 
-if (devolopment) {
-	await startAsDevolopment(client, token, startingBot);
-} else {
-	await startAsProduction(client, token)
-}
+(devolopment) ? await startAsDevolopment(client, token, startingBot) : await startAsProduction(client, token)
 
 import {updateLevel} from'./src/level/updateLevelScore.js';
 import { lookForAchievement} from'./src/achievements/achievementCheck.js';
@@ -100,7 +96,7 @@ client.on('interactionCreate', interaction => {
 		executeCommand(interaction.commandName, interaction, args, interaction.user, true)
 	} else if (interaction.isSelectMenu()) {
 		handleFollowUp(interaction, interaction.customId)
-	}
+	} else return;
 })
 
 // Event triggered on getting a message from any channel of guild
