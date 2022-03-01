@@ -5,10 +5,11 @@ export function replyHm(triggerWord, user){
   const luck = Math.floor(Math.random() * 101);
 
   const customReplies = [
+    'Haha hmm go brrr',
     'hmmm hmmmmm huh?!?!',
     'HMMMMMMMMMM!!!!!',
     'hmm :l',
-    'hmmmmmm hmmm hm hmm :( [Translation: Steve took my bed :(]',
+    'hmmmmmm hmmm hm hmm :( [Translation: Raccoon took my bed :(]',
     'hmmmmmmm hmmm hmmm >:3'
   ];
 
@@ -16,12 +17,8 @@ export function replyHm(triggerWord, user){
     const greetBack = triggerWord.slice(0, -1) + (triggerWord.substr(-1).repeat(randInt))
     updateThcPoint(user);
     return greetBack
-  }
-
-  else if(luck <= 5) {
+  } else if(luck <= 5) {
     updateThcPoint(user);
     return customReplies[luck - 1]
   }
 }
-
-export default {replyHm : replyHm}

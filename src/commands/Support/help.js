@@ -85,5 +85,9 @@ export default {
 	async handle(msg, value) {
 		const embed = prepareCategoryEmbed(value)
 		msg.update({embeds: [embed], files: []})
+		setTimeout(async () => {
+			const toBeUpdated = await msg.fetchReply()
+			toBeUpdated.edit({components: []})
+		}, 15000);
 	}
 }

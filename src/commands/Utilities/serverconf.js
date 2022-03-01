@@ -1,7 +1,7 @@
 import {db} from '../../startup/database.js';
 import {lockLevel} from '../../startup/featureLocks.js'
 
-const currentFeatures = ['level']
+const currentFeatures = ['level', 'custom_replies']
 const validDecisions = ['on', 'off']
 
 export default {
@@ -37,7 +37,7 @@ export default {
 		const entry = await collection.findOne({guildId: msg.guild.id});
 		if (entry != null) {
 
-			await collection.updateOne({guildId: msg.guild.id}, {$set: {level: decision}})
+			await collection.updateOne({guildId: msg.guild.id}, {$set: {[featureName]: decision}})
 
 			await lockLevel(msg.client)
 			return {content: `**${featureName} system** has been turned **${decision}** for this server!`}
@@ -45,11 +45,14 @@ export default {
 		} else {
 			const newGuildEntry = {
 				guildId: msg.guild.id,
-				level: decision
+				level: 'on',
+				custom_replies: 'on'
 			}
 
+			newGuildEntry[featureName] = decision
+
 			await collection.insertOne(newGuildEntry)
-			return {content: `🎉 **${featureName} system** has been turned **${decision}** on this server for the 1st time!`}
+			return {content: `🎉 **${featureName}** has been turned **${decision}** on this server for the 1st time!`}
 		}
 	}
 }

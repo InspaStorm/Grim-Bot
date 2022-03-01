@@ -1,6 +1,6 @@
 import {db} from '../../startup/database.js';
 import level from '../../level/levelScore.js';
-import jimp from 'jimp';
+import canvacord from 'canvacord';
 import discord from 'discord.js';
 import {replier} from '../../helpers/apiResolver.js';
 import {fetchMember, inputMemberCheck} from '../../helpers/member.js';
@@ -9,40 +9,22 @@ async function makeCard(score, user) {
 	const arrayOfScores = Object.keys(level)
 	const CurrentLevelScore = arrayOfScores.find(x => x > score)
 	const CurrentLevel = level[CurrentLevelScore] - 1
+	const img = user.displayAvatarURL({format: 'png',size: 256});
 
-	const percentage = Math.floor((score/CurrentLevelScore) * 100)
+	const rank = new canvacord.Rank()
+	    .setAvatar(img)
+		.setLevel(parseInt(CurrentLevel))
+	    .setCurrentXP(score)
+		.setOverlay('grey', 0.7, false)
+		.setBackground('IMAGE', './src/pics/level_card_bg.jpg')
+	    .setRequiredXP(parseInt(CurrentLevelScore))
+	    .setStatus("online")
+	    .setProgressBar(["#df75ec", "#f90a0a"], "GRADIENT")
+	    .setUsername(user.username)
+	    .setDiscriminator(user.discriminator)
+		.setRank(0, 'No Rank', false);
 
-	const card = await jimp.read('./src/pics/rank_card.png')
-	let avatar = await jimp.read(user.displayAvatarURL({format: 'png',size: 256}))
-
-	const leftEmpty = await jimp.read('./src/pics/rank_bar/left_empty.png')
-	const leftFull = await jimp.read('./src/pics/rank_bar/left_full.png')
-	const middleEmpty = await jimp.read('./src/pics/rank_bar/middle_empty.png')
-	const middleFull = await jimp.read('./src/pics/rank_bar/middle_full.png')
-	const rightEmpty = await jimp.read('./src/pics/rank_bar/right_empty.png')
-	const rightFull = await jimp.read('./src/pics/rank_bar/right_full.png')
-
-	avatar.resize(100, 100)
-	avatar.circle();
-
-	const nameFont = await jimp.loadFont('./src/Fonts/lobster_nameText.fnt');
-	const mainText = await jimp.loadFont('./src/Fonts/lobster_subText.fnt');
-
-	card.blit(avatar , 250, 10)
-
-	card.print(nameFont	, 20, 15, {
-		text: user.username,
-		alignmentX: jimp.HORIZONTAL_ALIGN_LEFT,
-		alignmentY: jimp.VERTICAL_ALIGN_MIDDLE
-	}, 200, 40)
-
-	card.print(mainText	, 22, 60, {
-		text: `Level ${CurrentLevel}\n\t\t\t\t${score}/${CurrentLevelScore}\t${percentage}%`,
-		alignmentX: jimp.HORIZONTAL_ALIGN_LEFT,
-		alignmentY: jimp.VERTICAL_ALIGN_MIDDLE
-	}, 172, 35)
-
-	card.write('./src/pics/EditedPic.png')
+	return await rank.build()
 }
 
 const collection = db.collection('Level')
@@ -82,7 +64,7 @@ export default {
 			}
 		}
 
-		const userToBeChecked = await mentionCheck(msg, author, args)
+		const userToBeChecked = await mentionCheck(msg, author, args, isInteraction)
 
 		if (typeof userToBeChecked == 'string') {
 
@@ -93,26 +75,25 @@ export default {
 		const data = await collection.findOne({id: userToBeChecked.id})
 		try {
 			const score = (data != null) ? data.scores.find(x => x.guild == msg.guild.id).score : undefined
-
 			if (score != undefined) {
-				const reply = await replier(msg, {content: '**Processing your level card** <a:loading:944275536274935835>'}, isInteraction)
-				await makeCard(score, userToBeChecked)
+				const reply = await replier(msg, {content: `**Processing your ${userToBeChecked.username}'s card** <a:loading:944275536274935835>'`}, isInteraction)
+				const levelCard = await makeCard(score, userToBeChecked)
 				return ({
 					content: '\u200b',
 					followUp: reply,
 					files: [{
-					attachment: './src/pics/EditedPic.png',
+					attachment: levelCard,
 					name: 'rank-card.png'
 				}],
 				})
 			} else {
 				const reply = await replier(msg, {content: '**Making a new level card** <a:loading:944275536274935835>'}, isInteraction)
-				await makeCard(0, userToBeChecked)
+				const levelCard = await makeCard(0, userToBeChecked)
 				return ({
 					content: '\u200b',
 					followUp: reply,
 					files: [{
-					attachment: './src/pics/EditedPic.png',
+					attachment: levelCard,
 					name: 'rank-card.png'
 				}],
 				})
