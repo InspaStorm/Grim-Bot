@@ -27,7 +27,7 @@ export async function startAsDevolopment (client, token, loadingBot) {
     loadingDb.success({text: 'Connected to Database'});
 
     const cmdLoading = createSpinner('Loading commands..').start();
-    const cmdManager = await cmdLoader(client.commands);
+    const cmdManager = await cmdLoader();
     cmdLoading.success({text: 'Commands got loaded'})
 
     await initLock(client)
@@ -46,11 +46,14 @@ export async function startAsProduction (client, token) {
   await startDb()
   console.log('📊  Connected to Database');
 
-  await cmdLoader(client.commands);
+  const cmdManager = await cmdLoader();
+
   console.log('📨  Commands got loaded ')
 
   await initLock(client)
   await client.login(token)
   // .then(updateLeader(client))
+
+  return cmdManager
 
 }
