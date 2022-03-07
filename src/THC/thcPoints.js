@@ -1,7 +1,7 @@
 import {db} from '../startup/database.js';
 const recentMsg = new Set();
 
-const collection = db.collection('Chat')
+const collection = db.collection('thc')
 
 async function createNewEntry(collection, user) {
     const pointInit = {

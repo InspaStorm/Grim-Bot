@@ -8,7 +8,7 @@ export default {
 
 	async run(msg, args, author, isInteraction) {
 		if (author.id != "599489300672806913") return {content: 'Currently only Ranger can use this command =)'}
-    await cmdLoader(msg.client.commands)
+		global.cmdManager = await cmdLoader()
     return {content: 'Commands got reloaded'}
 	}
 }

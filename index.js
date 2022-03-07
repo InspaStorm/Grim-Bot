@@ -9,14 +9,13 @@ client.commands = new discord.Collection();
 client.locks = new discord.Collection();
 
 let devolopment = false;
-
 if (fs.existsSync('./.dev')) devolopment = true
 
 const token = (devolopment) ? config.test_key:config.main_key
 
 const startingBot = createSpinner('Starting the bot...');
 
-(devolopment) ? await startAsDevolopment(client, token, startingBot) : await startAsProduction(client, token)
+global.cmdManager = (devolopment) ? await startAsDevolopment(client, token, startingBot) : await startAsProduction(client, token);
 
 import {updateLevel} from'./src/level/updateLevelScore.js';
 import { lookForAchievement} from'./src/achievements/achievementCheck.js';
@@ -61,11 +60,12 @@ function lookingAchievements(msg, author) {
 
 // Executes the commands
 async function executeCommand(commandName, msg, args, author, isInteraction = false) {
-	if (client.commands.has(commandName)) {
+	if (cmdManager.availableCommands.includes(commandName)) {
 		try {
 
 			if(!isInteraction) msg.channel.sendTyping();
-			const ans = await client.commands.get(commandName).run(msg, args, author, isInteraction)
+			
+			const ans = await cmdManager.runCmd(commandName, msg, args, author, isInteraction)
 			if (ans.hasOwnProperty('followUp')) {
 				const reply = ans.followUp
 				delete ans.followUp;
@@ -76,17 +76,11 @@ async function executeCommand(commandName, msg, args, author, isInteraction = fa
 		} catch (err) {
 			console.log(`Something went wrong executing command: ${err}`)
 		}
-	} else if (client.commands.find(x => x.alias.includes(commandName))) {
-		msg.channel.sendTyping();
-		client.commands.find(x => x.alias.includes(commandName)).run(msg, args, author, isInteraction)
-		.then(content => {
-			replier(msg, content)
-		})
 	}
 }
 
 async function handleFollowUp(interaction, name) {
-	const ans = await client.commands.get(name).handle(interaction, interaction.values[0])
+	const ans = await cmdManager.handle(name, interaction)
 }
 
 // Slash commands handler
@@ -96,6 +90,8 @@ client.on('interactionCreate', interaction => {
 		executeCommand(interaction.commandName, interaction, args, interaction.user, true)
 	} else if (interaction.isSelectMenu()) {
 		handleFollowUp(interaction, interaction.customId)
+	} else if (interaction.isButton()) {
+		handleFollowUp(interaction, interaction.customId.split(" ")[0])
 	} else return;
 })
 

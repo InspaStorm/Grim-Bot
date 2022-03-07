@@ -4,7 +4,7 @@ import achievementList from './achievementList.js';
 import {replier} from '../helpers/apiResolver.js'
 import {lockAchievements} from '../startup/featureLocks.js'
 
-const collection = db.collection('Level')
+const collection = db.collection('level')
 
 let resolvingFoundAchievement = new Map();
 

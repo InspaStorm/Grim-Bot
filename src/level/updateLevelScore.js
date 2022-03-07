@@ -28,7 +28,7 @@ export async function updateLevel(msg) {
 		recentMsg.add(msg.author.id)
 		setTimeout(() => {recentMsg.delete(msg.author.id)}, 30000)
 
-		const collection = db.collection('Level');
+		const collection = db.collection('level');
 
 		const data = await collection.findOne({id: msg.author.id})
 		if (data != undefined) {

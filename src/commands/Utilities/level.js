@@ -1,7 +1,6 @@
 import {db} from '../../startup/database.js';
 import level from '../../level/levelScore.js';
 import canvacord from 'canvacord';
-import discord from 'discord.js';
 import {replier} from '../../helpers/apiResolver.js';
 import {fetchMember, inputMemberCheck} from '../../helpers/member.js';
 
@@ -27,7 +26,7 @@ async function makeCard(score, user) {
 	return await rank.build()
 }
 
-const collection = db.collection('Level')
+const collection = db.collection('level')
 
 export default {
 	name: 'level',
@@ -76,7 +75,7 @@ export default {
 		try {
 			const score = (data != null) ? data.scores.find(x => x.guild == msg.guild.id).score : undefined
 			if (score != undefined) {
-				const reply = await replier(msg, {content: `**Processing ${userToBeChecked.username}'s card** <a:loading:944275536274935835>'`}, isInteraction)
+				const reply = await replier(msg, {content: `**Processing ${userToBeChecked.username}'s card** <a:loading:944275536274935835>`}, isInteraction)
 				const levelCard = await makeCard(score, userToBeChecked)
 				return ({
 					content: '\u200b',
