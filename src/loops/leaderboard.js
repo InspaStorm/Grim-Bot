@@ -1,6 +1,6 @@
 import discord from 'discord.js';
 import {db} from '../startup/database.js';
-const collection = db.collection('Chat');
+const collection = db.collection('thc');
 import {fetchMember} from '../helpers/member.js';
 
 export async function updateLeader(client) {

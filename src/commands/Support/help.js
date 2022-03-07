@@ -1,5 +1,5 @@
 import discord, { MessageActionRow, MessageSelectMenu } from 'discord.js';
-import { getCmdDetails } from '../../startup/commandLoader.js'
+import { getCmdDetails } from '../../helpers/prepareCmdInfo.js'
 import config from '../../../config.js'
 
 const prefix = config.prefix
@@ -82,8 +82,8 @@ export default {
 		return helpEmbed
 	},
 
-	async handle(msg, value) {
-		const embed = prepareCategoryEmbed(value)
+	async handle(msg) {
+		const embed = prepareCategoryEmbed(msg.values[0])
 		msg.update({embeds: [embed], files: []})
 		setTimeout(async () => {
 			const toBeUpdated = await msg.fetchReply()

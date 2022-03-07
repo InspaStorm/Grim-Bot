@@ -31,7 +31,7 @@ export async function lockAchievements(client, isInitialize = false) {
 
     client.locks.delete('achievement')
 
-    const collection = db.collection('Level');
+    const collection = db.collection('level');
 
     const dbEntry = await collection.find({}).toArray();
 

@@ -1,19 +1,13 @@
 import {MongoClient} from 'mongodb'
+import fs from 'fs';
 import config from '../../config.js'
 
-const test_dbUrl = config.test_dbUrl
-const main_dbUrl = config.main_dbUrl
+const dbUrl = (fs.existsSync('./.dev')) ? config.test_dbUrl : config.main_dbUrl;
 
-const test_mongo = new MongoClient(test_dbUrl)
-const main_mongo = new MongoClient(main_dbUrl)
-export const db = main_mongo.db('Grim-Town')
+const mongoClient = new MongoClient(dbUrl)
 
-export async function startDbAsDev() {
+export const db = mongoClient.db('Grim-Town')
 
-    await test_mongo.connect()
-}
-
-export async function startDbAsProd() {
-
-    await main_mongo.connect()
+export async function startDb() {    
+    await mongoClient.connect()
 }

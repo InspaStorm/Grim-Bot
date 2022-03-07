@@ -6,5 +6,3 @@ export default {
   main_dbUrl : 'mongodb+srv://Main:PEace.love-brr@grim-cluster.z1yk5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
   test_dbUrl: "mongodb://localhost:27017"
 };
-
-// UponHk.05

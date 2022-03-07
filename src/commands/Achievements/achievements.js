@@ -4,7 +4,7 @@ import discord from 'discord.js';
 import {inputMemberCheck} from '../../helpers/member.js';
 
 async function makeAwardEmbed(user){
-	const res = await singleFind('Level', {id: user.id})
+	const res = await singleFind('level', {id: user.id})
 
 	const achievementIndexes = res?.achievements || []
 	const achievements = []
