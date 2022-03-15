@@ -1,4 +1,3 @@
-import discord from 'discord.js';
 import {db} from './database.js';
 
 

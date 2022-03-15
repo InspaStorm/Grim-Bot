@@ -1,10 +1,12 @@
-import {singleFind} from '../../helpers/dbCrud.js';
+import dbManager from '../../helpers/dbCrud.js';
 import achievementList from '../../achievements/achievementList.js';
 import discord from 'discord.js';
 import {inputMemberCheck} from '../../helpers/member.js';
 
+const db = new dbManager('level')
+
 async function makeAwardEmbed(user){
-	const res = await singleFind('level', {id: user.id})
+	const res = await db.singleFind({id: user.id})
 
 	const achievementIndexes = res?.achievements || []
 	const achievements = []

@@ -1,12 +1,14 @@
-import {db} from '../../startup/database.js';
-import {replier, followUp} from '../../helpers/apiResolver.js';
-import discord from 'discord.js';
+import dbManager from '../../helpers/dbCrud.js';
+import discord, { Collection } from 'discord.js';
 
 const shop_items = ['chm']
 
 const item_details = [
 	{itemName: 'chm', cost: 1000},
 ]
+
+const thc = new dbManager('thc')
+const inventory = new dbManager('inventory')
 
 class item {
 	constructor(buyer, name, cost) {
@@ -16,7 +18,7 @@ class item {
 	}
 }
 
-class items {
+class Market {
 	constructor() {
 		this.pending = [];
 	}
@@ -32,6 +34,8 @@ class items {
 
 		this.pending.push(newItem)
 
+		setTimeout(() => this.remove(buyer), 30_000)
+	
 		return newItem
 	}
 
@@ -40,15 +44,43 @@ class items {
 
 		this.pending.splice(indexOfPending, 1)
 
-		return 'Successfull'
+		return {content: "Cancelled your order"}
 	}
 
-	proceedPurchase(buyer) {
-		
+	async process(buyer) {
+		let item = this.has(buyer)
+		if (!item) return {content: 'Start a new session using `g!shop <item>`'}
+
+		this.remove(buyer)
+		const availablePoints = await thc.singleFind({id: item.owner})
+		if (availablePoints == null) return {content: 'It seems you dont have much THP, gather some by sending `hmm` in chat'}
+
+		if (availablePoints.count < item.cost) return {content: `You are short by **${item.cost - availablePoints.count} THP**!`}
+		await thc.singleUpdate({id: buyer}, {$inc :{count: -item.cost}})
+		const receipt = await this.purchase(buyer, item)
+		return receipt
+	}
+
+	async purchase(buyer, itemDetails) {
+		const userInventory = await inventory.singleFind({id: buyer})
+
+		if (userInventory != null) {
+			await inventory.singleUpdate({id: buyer}, {$inc: {[itemDetails.name]: 1}})
+		} else {
+			const newEntry = {
+				id: buyer
+			}
+
+			for (let thing in shop_items) newEntry[thing] = 0;
+
+			inventory.singleInsert(newEntry)
+
+		}
+		return {content: `You purchased **${itemDetails.name}** for **${itemDetails.cost}**!\n\nCheck it out using: **g!inventory**`}
 	}
 }
 
-const register = new items()
+const register = new Market()
 
 export default {
 
@@ -60,7 +92,6 @@ export default {
 	],
 
 	async run(msg, args, author = msg.author, isInteraction = false) {
-		return {content: 'WIP 🚧'}
 		let item;
 		if (isInteraction) {
 
@@ -97,10 +128,17 @@ export default {
 
 		if (args[0] == 1){
 			if (register.has(msg.user.id)) {
-				register.remove(msg.user.id)
-				msg.update({content: 'Purchase Verified', components: []})
+				const res = await register.process(msg.user.id)
+				res.components = []
+				msg.update(res)
 			}
 			
-		} else msg.update({content: 'Purchase Cancelled', components: []})
+		} else {
+			if (register.has(msg.user.id)) {
+				const res = await register.process(msg.user.id)
+				res.components = []
+				msg.update(res)
+			}
+		}
 	}
 }
