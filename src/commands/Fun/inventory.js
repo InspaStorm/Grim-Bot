@@ -58,7 +58,7 @@ export default {
             Object.keys(items).forEach(e => list.push([`> **${alteredLook(e)}**`, `${items[e]}`]));
 
 			list.push(['\u200b'], ['*NB: This feature is not yet completely usable =(*'])
-        } else list += '**Empty Inventory**'
+        } else list.push(['**Empty Inventory**'])
 
 		const data = Table(list, {hsep: '  **-**  '})
 
