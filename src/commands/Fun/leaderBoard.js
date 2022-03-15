@@ -36,7 +36,7 @@ export default {
 	    .setThumbnail(user.displayAvatarURL())
 	    .addField(crownHolder, placeHolders)
 	    .setColor('#FFFF00')
-	    .setFooter({text: `These points might have a use in future ;p`})
+	    .setFooter({text: `Redeem the points in \`g!shop\``})
 
 	    return {embeds:[leaderboard] }
 	}

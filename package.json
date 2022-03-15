@@ -19,7 +19,8 @@
     "gradient-string": "^2.0.0",
     "mongodb": "^4.1.0",
     "nanospinner": "^1.0.0",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "text-table": "^0.2.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0"

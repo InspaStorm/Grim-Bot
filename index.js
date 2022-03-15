@@ -15,7 +15,7 @@ const token = (devolopment) ? config.test_key:config.main_key
 
 const startingBot = createSpinner('Starting the bot...');
 
-const cmdManager = (devolopment) ? await startAsDevolopment(client, token, startingBot) : await startAsProduction(client, token);
+global.cmdManager = (devolopment) ? await startAsDevolopment(client, token, startingBot) : await startAsProduction(client, token);
 
 import {updateLevel} from'./src/level/updateLevelScore.js';
 import { lookForAchievement} from'./src/achievements/achievementCheck.js';
