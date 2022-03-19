@@ -17,7 +17,7 @@ function alteredLook(e) {
 export default {
 
 	name: 'inventory',
-	description:'Preview the chad chatters',
+	description:'Get a look inside of your inventory',
 	alias: ['e', 'pocket'],
 	options: [],
 
@@ -59,6 +59,7 @@ export default {
 
 			list.push(['\u200b'], ['*NB: This feature is not yet completely usable =(*'])
         } else list.push(['**Empty Inventory**'])
+		
 
 		const data = Table(list, {hsep: '  **-**  '})
 

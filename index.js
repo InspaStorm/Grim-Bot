@@ -5,7 +5,6 @@ import fs from 'fs';
 import { createSpinner } from 'nanospinner';
 
 const client = new discord.Client({intents: [discord.Intents.FLAGS.GUILD_MESSAGES, discord.Intents.FLAGS.GUILD_VOICE_STATES, discord.Intents.FLAGS.GUILDS]});
-client.commands = new discord.Collection();
 client.locks = new discord.Collection();
 
 let devolopment = false;
@@ -60,12 +59,12 @@ function lookingAchievements(msg, author) {
 
 // Executes the commands
 async function executeCommand(commandName, msg, args, author, isInteraction = false) {
-	if (cmdManager.availableCommands.includes(commandName)) {
+	if (global.cmdManager.availableCommands.includes(commandName)) {
 		try {
 
 			if(!isInteraction) msg.channel.sendTyping();
 			
-			const ans = await cmdManager.runCmd(commandName, msg, args, author, isInteraction)
+			const ans = await global.cmdManager.runCmd(commandName, msg, args, author, isInteraction)
 			if (ans.hasOwnProperty('followUp')) {
 				const reply = ans.followUp
 				delete ans.followUp;
@@ -80,7 +79,7 @@ async function executeCommand(commandName, msg, args, author, isInteraction = fa
 }
 
 async function handleFollowUp(interaction, name) {
-	const ans = await cmdManager.handle(name, interaction)
+	const ans = await global.cmdManager.handle(name, interaction)
 }
 
 // Slash commands handler
@@ -118,5 +117,5 @@ client.on('messageCreate', async msg => {
 		msg.channel.send(res)
 	}
 
-	if (msg.mentions.has(client.user) && !msg.mentions.everyone) executeCommand('help', msg, [], msg.author);
+	if (msg.mentions.has(client.user) && !msg.mentions.everyone && !msg.mentions.repliedUser) msg.reply({content: `My prefix is **${prefix}**\nRefer **${prefix}help** for additional help =)`})
 });
