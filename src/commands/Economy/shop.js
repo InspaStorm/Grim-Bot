@@ -1,5 +1,5 @@
 import dbManager from '../../helpers/dbCrud.js';
-import discord, { Collection } from 'discord.js';
+import discord from 'discord.js';
 
 const shop_items = ['chm']
 

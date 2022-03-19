@@ -42,7 +42,7 @@ function prepareCategoryEmbed(categoryName) {
 	const helpEmbed = new discord.MessageEmbed()
 		.setColor('#00ffff')
 		.setTitle(category.label)
-		.setDescription(category.description)
+		.setDescription(category.detail)
 		.addField('\u200b',category.cmdInfo)
 	return helpEmbed
 }
@@ -83,6 +83,13 @@ export default {
 	},
 
 	async handle(msg) {
+		if (typeof userCommands == 'undefined') {
+			const cmdDetails = getCmdDetails()
+
+			userCommands = cmdDetails.userCommands
+			staffCommands = cmdDetails.staffCommands
+			categoryDetails = cmdDetails.categoryDetails
+		}
 		const embed = prepareCategoryEmbed(msg.values[0])
 		msg.update({embeds: [embed], files: []})
 		setTimeout(async () => {

@@ -21,13 +21,16 @@ async function checkCategoryInfo(path, folderName) {
 
 		const arr = configFile.toString().replace(/\r\n/g,'\n').split('\n');
 
-    	categoryInfo.name = arr[0] //arr[0] represents 1st line of th file
+    	categoryInfo.name = arr[0] //arr[0] represents 1st line of the file
 		categoryInfo.description = arr[1] || 'None'
+        arr.splice(0, 2)
+        categoryInfo.moreDetails = arr.join('\n') || categoryInfo.description
 
 	} else {
 		categoryInfo.name = folderName
-		categoryInfo.description = 'None'
-	}
+        categoryInfo.description = 'None'
+		categoryInfo.moreDetails = 'None'
+    }
 	categoryInfo.value = folderName
 	return categoryInfo
 }
@@ -40,7 +43,7 @@ let categoryNames = [];
 
 export async function collectCmdInfo(command, folder) {
 
-    let infoFormat = `\n**${command.name}** \`Aliases [${command.alias}]\`:
+    let infoFormat = `\n__**${command.name}**__ \`Aliases [${command.alias}]\`:
     ${command.description}\n`;
 
     const categoryData = await checkCategoryInfo(`${pathToCmds}/${folder}/config.txt`, folder)
@@ -68,7 +71,7 @@ export async function collectCmdInfo(command, folder) {
         i ++;
     }
 
-    categoryDetails.set(folder, {label: categoryData.name, description:categoryData.description, value: categoryData.value, cmdInfo:infoFormat})
+    categoryDetails.set(folder, {label: categoryData.name, description:categoryData.description, value: categoryData.value, detail: categoryData.moreDetails,cmdInfo:infoFormat})
     categoryNames.push(categoryData.name)
     
     }
