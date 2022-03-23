@@ -10,7 +10,14 @@ export default {
 		{name: "Index", desc: "The position of task (Can be seen in g!task command) to be marked as done", required: true, type: "string"},
 	],
 
-	async run(msg, args, author = msg.author, isInteraction = false) {
+	/**
+     * 
+     * @param {Message} msg message
+     * @param {String[]} args array of args
+     * @param {GuildMember} author author of the message
+     * @param {Boolean} isInteraction whether the message is from interaction or not
+     */
+    async run(msg, args, author = msg.author, isInteraction = false) {
 		const authorID = author.id
 
 		let taskIndex;
