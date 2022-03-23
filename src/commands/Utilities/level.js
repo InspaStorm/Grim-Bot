@@ -36,7 +36,14 @@ export default {
 		{name: "user", desc: "Mention the user/give the user's name", required: false, type: "user"},
 	],
 
-	async run(msg, args, author = msg.author, isInteraction = false) {
+	/**
+     * 
+     * @param {Message} msg message
+     * @param {String[]} args array of args
+     * @param {GuildMember} author author of the message
+     * @param {Boolean} isInteraction whether the message is from interaction or not
+     */
+    async run(msg, args, author = msg.author, isInteraction = false) {
 		if (!msg.client.locks.get('level').includes(msg.guild.id)) return {content: '**Level system is off** in this server =(\n\nAdmins can turn it on using: `g!serverconf level on`'}
 
 

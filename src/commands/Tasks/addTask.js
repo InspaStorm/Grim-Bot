@@ -12,7 +12,14 @@ export default {
     {name: "Task", desc: "Task to be added to the list", required: true, type: "string"},
   ],
 
-  async run(msg, args, author = msg.author, isInteraction = false)  {
+  /**
+     * 
+     * @param {Message} msg message
+     * @param {String[]} args array of args
+     * @param {GuildMember} author author of the message
+     * @param {Boolean} isInteraction whether the message is from interaction or not
+     */
+    async run(msg, args, author = msg.author, isInteraction = false)  {
     const authorId = author.id
     let specifiedTask;
     if (isInteraction) {

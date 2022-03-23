@@ -13,7 +13,14 @@ export default {
 	{name: "decision", desc: "Your decision on how to change it", required: true, type: "string", choices: validDecisions},
   ],
 
-	async run(msg, args, author = msg.author, isInteraction = false) {
+	/**
+     * 
+     * @param {Message} msg message
+     * @param {String[]} args array of args
+     * @param {GuildMember} author author of the message
+     * @param {Boolean} isInteraction whether the message is from interaction or not
+     */
+    async run(msg, args, author = msg.author, isInteraction = false) {
     	if (!msg.member.permissions.has('MANAGE_GUILD')) return {content: 'You are lacking permission of: `Manage Server` =/'}
 		let featureName;
 		let decision;

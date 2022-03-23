@@ -11,7 +11,14 @@ export default {
 	isStaff: true,
 	options: [],
 
-	async run(msg, args, author = msg.author, isInteraction = false) {
+	/**
+     * 
+     * @param {Message} msg message
+     * @param {String[]} args array of args
+     * @param {GuildMember} author author of the message
+     * @param {Boolean} isInteraction whether the message is from interaction or not
+     */
+    async run(msg, args, author = msg.author, isInteraction = false) {
 
 		const status = {
 			1: '<a:notify:871230575342649354>',

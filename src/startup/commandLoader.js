@@ -46,12 +46,8 @@ class CmdManager {
 	}
 
 	async runCmd(name, msg, args, author, isInteraction) {
-		try {
-			const exe = await this.commands.find(cmd => cmd.name == name || cmd.aliases.includes(name)).run(msg, args, author, isInteraction)
-			return exe
-		} catch(err) {
-			console.log(err);
-		}
+		const exe = await this.commands.find(cmd => cmd.name == name || cmd.aliases.includes(name)).run(msg, args, author, isInteraction)
+		return exe
 	}
 
 	async handle(name, interaction) {

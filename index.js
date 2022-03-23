@@ -60,20 +60,20 @@ function lookingAchievements(msg, author) {
 // Executes the commands
 async function executeCommand(commandName, msg, args, author, isInteraction = false) {
 	if (global.cmdManager.availableCommands.includes(commandName)) {
-		try {
 
-			if(!isInteraction) msg.channel.sendTyping();
-			
-			const ans = await global.cmdManager.runCmd(commandName, msg, args, author, isInteraction)
-			if (ans.hasOwnProperty('followUp')) {
-				const reply = ans.followUp
-				delete ans.followUp;
-				await followUp(reply, ans, isInteraction);
-			} else {
-				await replier(msg, ans)
-			}
-		} catch (err) {
-			console.log(`Something went wrong executing command: ${err}`)
+		if(!isInteraction) msg.channel.sendTyping();
+		
+		const ans = await global.cmdManager.runCmd(commandName, msg, args, author, isInteraction)
+
+		// selfRun property means that it will handle the sending / replying on its own
+		if (ans.hasOwnProperty('selfRun')) return;
+
+		if (ans.hasOwnProperty('followUp')) {
+			const reply = ans.followUp
+			delete ans.followUp;
+			await followUp(reply, ans, isInteraction);
+		} else {
+			await replier(msg, ans)
 		}
 	}
 }

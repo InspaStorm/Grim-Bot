@@ -52,7 +52,14 @@ export default {
 	description: 'The complete guide for all commands made available by Mr. Grim',
 	alias: ['h'],
 
-	async run(msg,args, author, isInteraction) {
+	/**
+     * 
+     * @param {Message} msg message
+     * @param {String[]} args array of args
+     * @param {GuildMember} author author of the message
+     * @param {Boolean} isInteraction whether the message is from interaction or not
+     */
+    async run(msg,args, author, isInteraction) {
 		if (typeof userCommands == 'undefined') {
 			const cmdDetails = getCmdDetails()
 

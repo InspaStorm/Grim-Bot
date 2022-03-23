@@ -1,18 +1,28 @@
 // This file is made to make testing the whole code easier
-import discord from 'discord.js';
+import { Message } from "discord.js";
 
+/**
+ * 
+ * @param {Message} destination The message/interaction to reply to
+ * @param {Object} content The message/thing to be sent
+ * @param {Boolean} isInteraction 
+ * @returns {Message}
+ */
 export async function replier(destination, content, isInteraction = false) {
-    try{
-        if (isInteraction) content.fetchReply = true
-        const reply = await destination.reply(content)
-        return reply
-    } catch {
-        console.log('Error with content:\n\t', content)
-    }
+    if (isInteraction) content.fetchReply = true
+    const reply = await destination.reply(content)
+    return reply
 }
 
-export function sender(destination, content) {
-    destination.channel.send(content)
+/**
+ * 
+ * @param {Message} destination The message/interaction to reply to
+ * @param {Object} content The message/thing to be sent
+ * @returns {Message}
+ */
+export async function sender(destination, content) {
+    const messageInfo = await destination.channel.send(content)
+    return messageInfo
 }
 
 export async function followUp(destination, content, isInteraction) {

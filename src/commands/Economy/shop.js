@@ -91,7 +91,14 @@ export default {
 		{name: "item", desc: "Item to be purchased", required: true, type: "string", choices: shop_items},
 	],
 
-	async run(msg, args, author = msg.author, isInteraction = false) {
+	/**
+     * 
+     * @param {Message} msg message
+     * @param {String[]} args array of args
+     * @param {GuildMember} author author of the message
+     * @param {Boolean} isInteraction whether the message is from interaction or not
+     */
+    async run(msg, args, author = msg.author, isInteraction = false) {
 		let item;
 		if (isInteraction) {
 
