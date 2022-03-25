@@ -1,32 +1,62 @@
-import { Message, GuildMember, Collector } from "discord.js";
-import { replier , sender } from '../../helpers/apiResolver.js'
+import { Message, GuildMember, Collector, MessageAttachment } from "discord.js";
+import { followUp , sender } from '../../helpers/apiResolver.js';
+import axios from 'axios';
+import { joinImages } from 'join-images';
 
-function rollDice(quantity) {
-    const randNums = [];
-    let i = 0;
-    while (i <= quantity) {
-        const randNum = Math.floor(Math.random() * 6)
-        if (randNum != 0) {
-            randNums.push(randNum)
-        } else i -= 1
+/**
+ * 
+ * @param {Buffer[]} imgBuffers Array of buffer of the images
+ * @returns {MessageAttachment} The message attachment that can be sent 
+ */
+async function prepareImgs(imgBuffers) {
+    
+    
+    const resultImg = await joinImages(imgBuffers, {direction: 'horizontal', color: '#000000'})
+    resultImg.toFormat('png')
+    const buffer = await resultImg.toBuffer()
+    
+    const result = new MessageAttachment(buffer, 'dice-image.png')
 
-        i++
-    }
-
-    return randNums
+    return result
 }
 
-function createQuestion() {
+/**
+ * 
+ * @param {number} quantity Number of dices to be rolled
+ * @returns {{buffers: Buffer, numbers: number[]}}
+ */
+async function rollDice(quantity) {
+    const imgBuffers = [];
+    const numbers = [];
+    
+    let i = 0;
 
-    // const specialChars = {
-    //     '*' : 'x',
-    // }
+    while (i < quantity) {
+        const randInt = Math.floor(Math.random() * 6);
+        if (randInt > 0) {
+            numbers.push(randInt);
+            i++;
+        }
+    }
 
-    const questionNumbers = rollDice(2)
+    for (let num of numbers) {
+        let url = `http://roll.diceapi.com/images/poorly-drawn/d6/${num}.png`
+        const response = await axios.get(url,  { responseType: 'arraybuffer' })
+        const buffer = Buffer.from(response.data, "utf-8")
+        
+        imgBuffers.push(buffer)
+    }
 
-    const question = questionNumbers.join(" " + '*' + " ")
+    return {buffers: imgBuffers, numbers: numbers}
+}
 
-    const answer = questionNumbers.reduce((total, value) => total * value)
+async function createQuestion() {
+
+    const questionNumbers = await rollDice(3)
+
+    const question = await prepareImgs(questionNumbers.buffers)
+
+    const answer = questionNumbers.numbers.reduce((total, value) => total * value)
     return {q: question, a: answer}
 
 }
@@ -44,16 +74,23 @@ export default {
      * @param {Boolean} isInteraction whether the message is from interaction or not
      */
     async run(msg, args, author = msg.author, isInteraction = false) {
-        const quiz = createQuestion()
+        const loading = await msg.channel.send({content: '<a:dice_rolling:956854476143218728>'})
 
-        const filter = m => m.content.includes(quiz.a)
+        const quiz = await createQuestion()
+
+        // End this function if the message was deleted
+        try {
+            await followUp(loading, {content: 'What would be the product of these?',files: [quiz.q], isInteraction})
+        } catch {
+            return {selfRun: true}
+        }
+        const filter = m => m.content == quiz.a
     
-        replier(msg, {content: `What is ${quiz.q}?`}, isInteraction)
 
         /**
          * @type {Collector}
          */
-        const replyChecker= await msg.channel.createMessageCollector({filter: filter, time: 10000, max: 1})
+        const replyChecker= await msg.channel.createMessageCollector({filter: filter, time: 10000})
 
         replyChecker.on('end',async (_ans, reason)=> {
 
@@ -62,11 +99,13 @@ export default {
         })
         
         replyChecker.on('collect', async (ans)=> {
+            if (ans.author.bot) return;
 
             replyChecker.stop('found')
             sender(msg, {content: `🥳 **${ans.author}** got the right answer!`})
         })
 
+        // Indicating the command will run on its own.
         return {selfRun: true}
 
     }

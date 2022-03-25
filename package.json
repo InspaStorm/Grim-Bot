@@ -12,14 +12,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.26.1",
     "canvacord": "^5.2.3",
     "chalk": "^4.1.2",
     "discord.js": "^13.1.0",
     "figlet": "^1.5.2",
     "gradient-string": "^2.0.0",
+    "join-images": "^1.0.0",
+    "merge-images": "^2.0.0",
     "mongodb": "^4.1.0",
     "nanospinner": "^1.0.0",
-    "node-fetch": "^2.6.1",
+    "sharp": "^0.30.3",
     "text-table": "^0.2.0"
   },
   "devDependencies": {
