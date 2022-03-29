@@ -1,30 +1,30 @@
 import {db} from '../../startup/database.js';
 import level from '../../level/levelScore.js';
-import canvacord from 'canvacord';
+// import canvacord from 'canvacord';
 import {replier} from '../../helpers/apiResolver.js';
 import {fetchMember, inputMemberCheck} from '../../helpers/member.js';
 
-async function makeCard(score, user) {
-	const arrayOfScores = Object.keys(level)
-	const CurrentLevelScore = arrayOfScores.find(x => x > score)
-	const CurrentLevel = level[CurrentLevelScore] - 1
-	const img = user.displayAvatarURL({format: 'png',size: 256});
+// async function makeCard(score, user) {
+	// const arrayOfScores = Object.keys(level)
+	// const CurrentLevelScore = arrayOfScores.find(x => x > score)
+	// const CurrentLevel = level[CurrentLevelScore] - 1
+// 	const img = user.displayAvatarURL({format: 'png',size: 256});
 
-	const rank = new canvacord.Rank()
-	    .setAvatar(img)
-		.setLevel(parseInt(CurrentLevel))
-	    .setCurrentXP(score)
-		.setOverlay('grey', 0.7, false)
-		.setBackground('IMAGE', './src/pics/level_card_bg.jpg')
-	    .setRequiredXP(parseInt(CurrentLevelScore))
-	    .setStatus("online")
-	    .setProgressBar(["#df75ec", "#f90a0a"], "GRADIENT")
-	    .setUsername(user.username)
-	    .setDiscriminator(user.discriminator)
-		.setRank(0, 'No Rank', false);
+// 	const rank = new canvacord.Rank()
+// 	    .setAvatar(img)
+// 		.setLevel(parseInt(CurrentLevel))
+// 	    .setCurrentXP(score)
+// 		.setOverlay('grey', 0.7, false)
+// 		.setBackground('IMAGE', './src/pics/level_card_bg.jpg')
+// 	    .setRequiredXP(parseInt(CurrentLevelScore))
+// 	    .setStatus("online")
+// 	    .setProgressBar(["#df75ec", "#f90a0a"], "GRADIENT")
+// 	    .setUsername(user.username)
+// 	    .setDiscriminator(user.discriminator)
+// 		.setRank(0, 'No Rank', false);
 
-	return await rank.build()
-}
+// 	return await rank.build()
+// }
 
 const collection = db.collection('level')
 
@@ -82,27 +82,44 @@ export default {
 		try {
 			const score = (data != null) ? data.scores.find(x => x.guild == msg.guild.id).score : undefined
 			if (score != undefined) {
+				
 				const reply = await replier(msg, {content: `**Processing ${userToBeChecked.username}'s card** <a:loading:944275536274935835>`}, isInteraction)
-				const levelCard = await makeCard(score, userToBeChecked)
-				return ({
-					content: '\u200b',
-					followUp: reply,
-					files: [{
-					attachment: levelCard,
-					name: 'rank-card.png'
-				}],
-				})
+				const arrayOfScores = Object.keys(level)
+				const CurrentLevelScore = arrayOfScores.find(x => x > score)
+				const CurrentLevel = level[CurrentLevelScore] - 1
+
+				return {
+					content: `Level **${CurrentLevel}**\n\nScore:\n${score} out of ${CurrentLevelScore} --- **${(score/CurrentLevelScore) * 100}%**`,
+					followUp: reply
+				}
+				
+				// const levelCard = await makeCard(score, userToBeChecked)
+				// return ({
+				// 	content: '\u200b',
+				// 	followUp: reply,
+				// 	files: [{
+				// 	attachment: levelCard,
+				// 	name: 'rank-card.png'
+				// }],
+				// })
 			} else {
 				const reply = await replier(msg, {content: '**Making a new level card** <a:loading:944275536274935835>'}, isInteraction)
-				const levelCard = await makeCard(0, userToBeChecked)
-				return ({
-					content: '\u200b',
-					followUp: reply,
-					files: [{
-					attachment: levelCard,
-					name: 'rank-card.png'
-				}],
-				})
+				const arrayOfScores = Object.keys(level)
+				const CurrentLevelScore = arrayOfScores.find(x => x > 0)
+				const CurrentLevel = level[CurrentLevelScore] - 1
+				return {
+					content: `Level **${CurrentLevel}**\n\nScore:\n${score} out of ${CurrentLevelScore} ---> **${(score/CurrentLevelScore) * 100}%**`,
+					followUp: reply
+				}
+				// const levelCard = await makeCard(0, userToBeChecked)
+				// return ({
+				// 	content: '\u200b',
+				// 	followUp: reply,
+				// 	files: [{
+				// 	attachment: levelCard,
+				// 	name: 'rank-card.png'
+				// }],
+				// })
 			}
 		} catch (err){
 			console.log(err)

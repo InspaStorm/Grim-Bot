@@ -1,11 +1,60 @@
 import dbManager from '../../helpers/dbCrud.js';
-import Table from 'text-table';
+
+class TableCreator {
+
+	constructor() {
+		this.items = [];
+		this.padding;
+		this.table = [];
+	}
+
+	addItem(label, quantity) {
+		const newItem = {name: label, quantity: quantity};
+
+		this.items.push(newItem);
+	}
+
+	fixPadding() {
+		let maxLen = 0;
+		
+		for (let item of this.items) {
+			let nameLength = item.name.length
+			if (nameLength > maxLen) maxLen = nameLength
+		}
+
+		this.padding = maxLen
+		return this.padding
+	}
+
+	createTable() {
+
+		this.fixPadding()
+
+		for (let item of this.items) {
+
+			if (item.quantity == false) {
+				this.table.push(item.name)
+				continue
+			}
+
+			let nameLength = item.name.length
+			if (nameLength < this.padding) {
+				item.name += ' '.repeat(this.padding - nameLength)
+			}
+
+			this.table.push(`> **${item.name}** **>>** ${item.quantity}`)
+		}
+	}
+}
 
 
 const inv = new dbManager('inventory')
 
+const alias = {
+	chm: 'Custom Hm Message Token'
+}
+
 function alteredLook(e) {
-	const alias = {chm: "✉️ Custom Hmm Message Token",}
 
 	if (Object.keys(alias).includes(e)) {
 		return alias[e]
@@ -31,46 +80,20 @@ export default {
     async run(msg, args, author = msg.author, isInteraction = false) {
         const user =author
         const items = await inv.singleFind({id: user.id})
-
-		const config = {
-			border: {
-			  topBody: `─`,
-			  topJoin: `┬`,
-			  topLeft: `┌`,
-			  topRight: `┐`,
-		  
-			  bottomBody: `─`,
-			  bottomJoin: `┴`,
-			  bottomLeft: `└`,
-			  bottomRight: `┘`,
-		  
-			  bodyLeft: `│`,
-			  bodyRight: `│`,
-			  bodyJoin: `│`,
-		  
-			  joinBody: `─`,
-			  joinLeft: `├`,
-			  joinRight: `┤`,
-			  joinJoin: `┼`
-			}
-		  };
 		
-		// [`**${user.username}'s Inventory:**\n\n`]
-		let list = [];
-		list.push([`\`\`\`${user.username}'s Inventory:\`\`\``])
+		const table = new TableCreator()
+
+		table.addItem(`\`\`\`${user.username}'s Inventory:\`\`\``, false)
         
         if (items != null) {
             ['id', '_id'].forEach(key => delete items[key])
+            Object.keys(items).forEach(e => table.addItem(alteredLook(e), items[e]));
 
-            Object.keys(items).forEach(e => list.push([`> **${alteredLook(e)}**`, `${items[e]}`]));
+        } else table.addItem('**Empty Inventory**', false)
 
-			list.push(['\u200b'], ['*NB: This feature is not yet completely usable =(*'])
-        } else list.push(['**Empty Inventory**'])
-		
+		table.createTable()
 
-		const data = Table(list, {hsep: '  **-**  '})
-
-        return {content: data}
+        return {content: table.table.join('\n')}
 	}
 
 }
