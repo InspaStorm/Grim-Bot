@@ -1,0 +1,35 @@
+{
+	// Place your Grim-Bot workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	"New command format": {
+		"scope": "javascript,typescript",
+		"prefix": "nc",
+		"body": [
+			"export default {",
+			"\tname: '$1',",
+			"\tdescription:'$2',",
+			"\talias: [],",
+			"\toptions: [],",
+			"\t/**",
+			"\t*",
+			"\t* @param {Message} msg message",
+			"\t* @param {String[]} args array of args",
+			"\t* @param {GuildMember} author author of the message",
+			"\t* @param {Boolean} isInteraction whether the message is from interaction or not",
+			"\t*/",
+		
+			"\tasync run(msg, args, author = msg.author, isInteraction = false) {",
+				"\t\t$3",
+			"\t}",
+
+			"}"
+		],
+		"description": "Log output to console"
+	}
+}
+

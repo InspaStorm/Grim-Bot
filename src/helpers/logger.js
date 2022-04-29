@@ -1,12 +1,5 @@
 import chalk from 'chalk';
-import fs from 'fs';
 import util from 'util';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const pathToCurrentFile = `${path.dirname(__filename)}/`;
-const log_file = fs.createWriteStream(pathToCurrentFile + '../error.log', {flags : 'w'});
 
 export function logger(err) {
 
@@ -39,8 +32,6 @@ export function logger(err) {
 		}
 
 		console.log('\n' + chalk.red(level) + ' ' + chalk.hex('#FCC3C3')(stack.join('\n\t')))
-		log_file.write(util.format(stack.join('\n')) + '\n');
-
 	} else {
 		console.log(chalk.yellow('Provided a non-error arg'))
 	}

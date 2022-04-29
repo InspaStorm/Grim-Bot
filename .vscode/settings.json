@@ -1,0 +1,10 @@
+{
+    // 1. enables vscode native bracket colorization
+    "editor.bracketPairColorization.enabled": true,
+    
+    // 2. enables vscode pair guides
+    "editor.guides.bracketPairs": true,
+
+    // 5. enable parameter hints
+    "typescript.inlayHints.parameterNames.enabled": "all",
+}

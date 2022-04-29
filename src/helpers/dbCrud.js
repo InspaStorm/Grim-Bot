@@ -1,6 +1,9 @@
 import {db} from '../startup/database.js'
 
 export default class dbManager {
+    /**
+     * @param {string} name name of the collection present in db
+     */
     constructor(name) {
         this.collection = db.collection(name)
     }
@@ -23,9 +26,9 @@ export default class dbManager {
         return res;
     }
     
-    async singleUpdate(query, updateValue) {
-      
-        await this.collection.updateOne(query, updateValue)
+    async singleUpdate(query, updateValue, options) {
+        if (options) return await this.collection.updateOne(query, updateValue)
+        return await this.collection.updateOne(query, updateValue)
     }
     
     async singleInsert(insertValue) {

@@ -1,4 +1,4 @@
-import {db} from '../startup/database.js';
+import {db} from '../../startup/database.js';
 const recentMsg = new Set();
 
 const collection = db.collection('thc')

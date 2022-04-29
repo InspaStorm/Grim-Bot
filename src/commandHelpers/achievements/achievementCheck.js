@@ -1,8 +1,8 @@
 import discord from 'discord.js'
-import {db} from '../startup/database.js';
+import {db} from '../../startup/database.js';
 import achievementList from './achievementList.js';
-import {replier} from '../helpers/apiResolver.js'
-import {lockAchievements} from '../startup/featureLocks.js'
+import {replier} from '../../helpers/apiResolver.js'
+import {lockAchievements} from '../../startup/featureLocks.js'
 
 const collection = db.collection('level')
 

@@ -5,7 +5,6 @@ import figlet from 'figlet'
 import {cmdLoader} from'./commandLoader.js';
 import initLock from './featureLocks.js'
 import {startDb} from'../startup/database.js';
-// import {updateLeader} from'../loops/leaderboard.js';
 
 // wait for some time (default = 2 secs)
 const sleep = (ms = 2000) => new Promise(resolve => setTimeout(resolve, ms));
@@ -13,9 +12,9 @@ const sleep = (ms = 2000) => new Promise(resolve => setTimeout(resolve, ms));
 export async function startAsDevolopment (client, token, loadingBot) {
 
     console.clear();
-    await figlet('Mr. Grim',{
+    figlet('Mr. Grim',{
     	font: "Small Slant",
-    }, (err, data) => {
+    }, (_err, data) => {
     	console.log(gradient.rainbow.multiline(data))
     });
     // wait for the text to be rendered
@@ -27,14 +26,13 @@ export async function startAsDevolopment (client, token, loadingBot) {
     loadingDb.success({text: 'Connected to Database'});
 
     const cmdLoading = createSpinner('Loading commands..').start();
-    const cmdManager = await cmdLoader();
+    global.cmdManager = await cmdLoader();
     cmdLoading.success({text: 'Commands got loaded'})
 
     await initLock(client)
     loadingBot.start();
-    client.login(token)
+    await client.login(token)
 
-    return cmdManager
 }
 
 export async function startAsProduction (client, token) {
@@ -46,14 +44,10 @@ export async function startAsProduction (client, token) {
   await startDb()
   console.log('📊  Connected to Database');
 
-  const cmdManager = await cmdLoader();
+  global.cmdManager = await cmdLoader();
 
   console.log('📨  Commands got loaded ')
 
   await initLock(client)
   await client.login(token)
-  // .then(updateLeader(client))
-
-  return cmdManager
-
 }
