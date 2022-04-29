@@ -1,11 +1,5 @@
-package-lock.json
 src/test.js
-src/pics/rank_bg.png
-ecosystem.config.js
-src/slashCommands.js
-Discord Tokens.json
-.vscode/
 node_modules/
 src/researchArea.js
-src/error.log
 .dev
+.env

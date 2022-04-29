@@ -26,5 +26,6 @@ export async function sender(destination, content) {
 }
 
 export async function followUp(destination, content, isInteraction) {
-    await destination.edit(content)
+    const msg = await destination.edit(content)
+    return msg
 }

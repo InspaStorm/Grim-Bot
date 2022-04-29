@@ -1,6 +1,6 @@
-import {db} from '../startup/database.js';
+import {db} from '../../startup/database.js';
 import levels from './levelScore.js';
-import {replier} from '../helpers/apiResolver.js'
+import {replier} from '../../helpers/apiResolver.js'
 
 const recentMsg = new Set();
 

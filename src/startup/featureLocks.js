@@ -3,7 +3,7 @@ import {db} from './database.js';
 
 export async function lockLevel(client, isInitialize = false) {
 
-    client.locks.delete('level')
+    global.locks.delete('level')
 
     const collection = db.collection('server-conf');
 
@@ -15,11 +15,11 @@ export async function lockLevel(client, isInitialize = false) {
     if (guild.level == 'on') levelEnabledGuild.push(guild.guildId);
     }
 
-    client.locks.set('level', levelEnabledGuild)
+    global.locks.set('level', levelEnabledGuild)
 }
 
 export default async function initAllLocks(client) {
-  client.locks.clear();
+  global.locks.clear();
 
   await lockLevel(client, true)
   await lockAchievements(client, true)
@@ -28,7 +28,7 @@ export default async function initAllLocks(client) {
 
 export async function lockAchievements(client, isInitialize = false) {
 
-    client.locks.delete('achievement')
+    global.locks.delete('achievement')
 
     const collection = db.collection('level');
 
@@ -52,5 +52,5 @@ export async function lockAchievements(client, isInitialize = false) {
         }
     }
 
-    client.locks.set('achievement', userDetails)
+    global.locks.set('achievement', userDetails)
 }

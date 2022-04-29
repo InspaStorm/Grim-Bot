@@ -1,5 +1,5 @@
 import {db} from '../../startup/database.js';
-import level from '../../level/levelScore.js';
+import level from '../../commandHelpers/level/levelScore.js';
 // import canvacord from 'canvacord';
 import {replier} from '../../helpers/apiResolver.js';
 import {fetchMember, inputMemberCheck} from '../../helpers/member.js';
@@ -44,7 +44,7 @@ export default {
      * @param {Boolean} isInteraction whether the message is from interaction or not
      */
     async run(msg, args, author = msg.author, isInteraction = false) {
-		if (!msg.client.locks.get('level').includes(msg.guild.id)) return {content: '**Level system is off** in this server =(\n\nAdmins can turn it on using: `g!serverconf level on`'}
+		if (!msg.global.locks.get('level').includes(msg.guild.id)) return {content: '**Level system is off** in this server =(\n\nAdmins can turn it on using: `g!serverconf level on`'}
 
 
 		async function mentionCheck(msg,author, args, isInteraction) {

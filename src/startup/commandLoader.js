@@ -1,7 +1,8 @@
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 import { fileURLToPath } from 'url';
-import {collectCmdInfo} from '../helpers/prepareCmdInfo.js'
+import { collectCmdInfo } from '../helpers/prepareCmdInfo.js';
+import {MessageComponentInteraction} from 'discord.js';
 
 class Command {
 	constructor(name,aliases, cmdCode, interactionCode) {
@@ -50,6 +51,10 @@ class CmdManager {
 		return exe
 	}
 
+	/**
+	 * @param {string} name Name of the command that should handle this interaction
+	 * @param {MessageComponentInteraction} interaction The interaction that was sent to be handled
+	 */
 	async handle(name, interaction) {
 		const exe = await this.commands.find(cmd => cmd.name == name || cmd.aliases.includes(name)).handle(interaction)
 	}
@@ -58,23 +63,26 @@ class CmdManager {
 // Specify the paths Commands folder from this file
 const __filename = fileURLToPath(import.meta.url);
 const pathToCmds = `${path.dirname(__filename)}/../commands`
-const commandFiles = fs.readdirSync(pathToCmds);
+const cmdFolder = fs.readdirSync(pathToCmds);
 
+/**
+ * @async
+ * @returns {Promise<CmdManager>} Returns the overall cmdManager class
+ */
 export async function cmdLoader() {
 	const executableCmd = new CmdManager()
-	for (const folder of commandFiles) {
 
-		const commandFolders = fs.readdirSync(`${pathToCmds}/${folder}`)
+	for (const folder of cmdFolder) {
 
-		for (const file of commandFolders) {
+		const commandFolder = fs.readdirSync(`${pathToCmds}/${folder}`)
+
+		for (const file of commandFolder) {
 			if (path.extname(file) == '.js') {
-
-				let obj = await import(`${pathToCmds}/${folder}/${file}?update=${new Date()}`)
-				// Fetches exported values and create command from it
+				// for dynamic updation: `${pathToCmds}/${folder}/${file}?update=${new Date()}`
+				const obj = await import(`${pathToCmds}/${folder}/${file}`)
+				
 				executableCmd.addCmd(obj.default)
-
 				await collectCmdInfo(obj.default, folder)
-
 			}
 		}
 	}

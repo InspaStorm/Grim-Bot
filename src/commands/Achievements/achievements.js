@@ -1,5 +1,5 @@
 import dbManager from '../../helpers/dbCrud.js';
-import achievementList from '../../achievements/achievementList.js';
+import achievementList from '../../commandHelpers/achievements/achievementList.js';
 import discord from 'discord.js';
 import {inputMemberCheck} from '../../helpers/member.js';
 

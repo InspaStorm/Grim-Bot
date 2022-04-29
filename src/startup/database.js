@@ -1,10 +1,6 @@
-import {MongoClient} from 'mongodb'
-import fs from 'fs';
-import config from '../../config.js'
+import {MongoClient} from 'mongodb';
 
-const dbUrl = (fs.existsSync('./.dev')) ? config.test_dbUrl : config.main_dbUrl;
-
-const mongoClient = new MongoClient(dbUrl)
+const mongoClient = new MongoClient(process.env.dbKey)
 
 export const db = mongoClient.db('Grim-Town')
 

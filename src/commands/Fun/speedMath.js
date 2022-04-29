@@ -3,87 +3,124 @@ import { followUp , replier} from '../../helpers/apiResolver.js';
 import axios from 'axios';
 import { joinImages } from 'join-images';
 
-const ansHandler = new Collection()
-
-class Games {
+class GameManager {
     constructor() {
-        this.currentGames = new Collection();
+        this.runningGames = new Collection();
     }
 
-    addGame(playerId, answer, options, timer) {
-        this.currentGames.set(playerId, {ans: answer, options: options, timer: timer})
+    addGame(msgId, playerId, playerName, answer, components) {
+        this.runningGames.set(msgId, new Game(msgId, playerId, playerName, answer, components))
     }
     
-    hasGame(playerId) {
-        const isPresent = this.currentGames.has(playerId)
+    hasGame(msgId) {
+        const isPresent = this.runningGames.has(msgId)
 
         if (isPresent) {
-            return this.currentGames.get(playerId)
+            return this.runningGames.get(msgId)
         }
 
         return false;
     }
 
-    updateGameInfo(playerId, answer, options) {
-        this.removeOldTimer(playerId)
-        
-        const timer = setTimeout(() => this.removeGame(playerId), 15_000)
-        this.removeGame(playerId)
-        this.addGame(playerId, answer, options, timer)
-    }
-
-    disableOptions(playerId, optionToBeDisabled) {
-        const game = this.hasGame(playerId)
-
-        if (game) {
-            let indexOfOption;
-            let indexOfRow = 0;
-            let updatingOption;
-
-            for (let row of game.options) {
-                updatingOption = row.components.find((currentValue, indexOfValue) => {
-                    indexOfOption = indexOfValue
-                    return currentValue.label == optionToBeDisabled.label;
-                });
-
-                if (updatingOption) break;
-                indexOfRow ++
-            }
-
-
-            updatingOption.setDisabled()
-
-            game.options[indexOfRow].components[indexOfOption] = updatingOption;
-
-            this.updateGameInfo(playerId, game.ans, game.options)
-
-            return game.options;
-        }
-    }
-
-    isCorrectAns(playerId, answerGiven) {
-        const game = this.hasGame(playerId)
-
-        if (game.ans == answerGiven) return true;
-
-        return false;
-    }
-
-    removeOldTimer(playerId) {
-        const game = this.hasGame(playerId)
-
-        clearTimeout(game.timer)
-    }
-
-    removeGame(playerId) {
-        if (this.currentGames.has(playerId)) {
-            this.currentGames.delete(playerId)
+    removeGame(msgId) {
+        if (this.runningGames.has(msgId)) {
+            this.runningGames.delete(msgId)
             return true
         }
-
+        
         return false;
     }
 }
+
+const lobby = new GameManager()
+
+function endGame(msgId) {
+    lobby.removeGame(msgId)
+}
+
+class Game {
+    /**
+     * 
+     * @param {number} msgId ID of the game message
+     * @param {string} playerId ID of the player
+     * @param {number} answer Answer for the current question
+     * @param {MessageActionRow[]} components Array of action rows containing btton components
+     */
+    constructor(msgId, playerId, playerName, answer, components) {
+        this.gameId = msgId;
+        this.playerId = playerId;
+        this.playerName = playerName;
+        this.ans = answer;
+        this.components = components;
+            
+        this.numOfAttempts = 0;
+        this.startTime = Date.now()
+        this.timer = setTimeout(() => endGame(this.msgId), 15_000);
+    }
+
+    get stats() {
+        const timeTaken = this.timeTakenInGame
+
+        const stats = `**${this.playerName}'s** Speed Math summary:
+
+> ⏱️ Time taken: **${timeTaken} seconds**
+> 📝 Number of attempts: **${this.numOfAttempts}**`
+
+        return stats
+    }
+
+    get timeTakenInGame() {
+        const currentTime = Date.now()
+
+        const timeTaken = currentTime - this.startTime
+
+        return timeTaken/1000
+    }
+
+    checkResponse(answerGiven) {
+        this.numOfAttempts ++;
+        if (answerGiven == this.ans) return this.stats;
+        return false;
+    }
+
+    disableButton(buttonToBeDisabled) {
+        let indexOfOption;
+        let indexOfRow = 0;
+        let updatingOption;
+
+        for (let row of this.components) {
+            updatingOption = row.components.find((currentValue, indexOfValue) => {
+                indexOfOption = indexOfValue
+                return currentValue.label == buttonToBeDisabled.label;
+            });
+
+            if (updatingOption) break;
+            indexOfRow ++
+        }
+
+
+        updatingOption.setDisabled()
+
+        this.components[indexOfRow].components[indexOfOption] = updatingOption;
+
+        this.updateButtons(this.components)
+
+        return this.components;
+    }
+
+    updateTimer() {
+        clearTimeout(this.timer)
+
+        this.timer = setTimeout(() => endGame(), 15_000)
+    }
+
+    updateButtons(buttonComponents) {
+        this.updateTimer()
+
+        this.components = buttonComponents
+    }
+}
+
 
 /**
  * 
@@ -178,7 +215,6 @@ async function createQuestion() {
 
 }
 
-const lobby = new Games()
 
 export default {
     name: 'speedmath',
@@ -199,8 +235,8 @@ export default {
 
         // End this function if the message was deleted
         try {
-            await followUp(loading, {content: 'What would be the product of these?',files: [quiz.q],components: quiz.components}, isInteraction)
-            lobby.addGame(author.id, quiz.a, quiz.components, setTimeout(() => lobby.removeGame(author.id), 15_000))
+            const gameMsg = await followUp(loading, {content: 'What would be the product of these?',files: [quiz.q],components: quiz.components}, isInteraction)
+            lobby.addGame(gameMsg.id, author.id, author.username, quiz.a, quiz.components)
         } catch(err) {
             console.log(err);
             return {selfRun: true}
@@ -210,28 +246,35 @@ export default {
 
     },
 
-    async handle(msg) {
-        const args = msg.customId.split(" ")
-		args.shift()
+    async handle(interaction) {
+        const argsAsArray = interaction.customId.split(" ")
+		argsAsArray.shift()
 
-        const player = msg.user
+        const gameId = interaction.message.id
+        const player = interaction.user
 
-        const interactedGame = lobby.hasGame(player.id)
+        const interactedGame = lobby.hasGame(gameId)
 
         if (interactedGame) {
-            if (lobby.isCorrectAns(player.id, args[0])) {
-                msg.update({content: `🥳 **${msg.user.username}** got the right answer!`, files: [], components: []})
 
-                lobby.removeGame(msg.user.id)
+            if (player != interactedGame.playerId) {
+                interaction.reply({content: 'This is an ongoing game started by someone else, Why not start a new session by yourself ;p',ephemeral: true})
+            }
+
+            const gameStats = interactedGame.checkResponse(argsAsArray[0])
+            if (gameStats) {
+                interaction.update({content: `${gameStats}`, files: [], components: []})
+
+                lobby.removeGame(gameId)
                 return;
             }
             
-            const updatedButtons = lobby.disableOptions(player.id, msg.component)
-            msg.update({components: updatedButtons})
+            const updatedButtons = interactedGame.disableButton(interaction.component)
+            interaction.update({components: updatedButtons})
             return;
         }
 
-        msg.update({content: `This game is no longer playable, consider starting a new session =)`, files: [], components: []})
+        interaction.update({content: `This game is no longer playable, consider starting a new session =)`, files: [], components: []})
         return;
     }
 }

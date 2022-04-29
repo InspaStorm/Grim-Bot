@@ -1,8 +1,7 @@
 import discord, { MessageActionRow, MessageSelectMenu } from 'discord.js';
 import { getCmdDetails } from '../../helpers/prepareCmdInfo.js'
-import config from '../../../config.js'
+import { prefix } from '../../../config.js'
 
-const prefix = config.prefix
 const devs = ['599489300672806913', '681766482803163147', '520625717885534228', '660785366110044210', '760954344421195867']
 
 let userCommands;

@@ -1,11 +1,11 @@
 {
   "name": "grim-bot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "An entertaining bot made by InspaStorm team!",
   "type": "module",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,7 @@
     "canvacord": "^5.2.3",
     "chalk": "^4.1.2",
     "discord.js": "^13.1.0",
+    "dotenv": "^16.0.0",
     "figlet": "^1.5.2",
     "gradient-string": "^2.0.0",
     "join-images": "^1.0.0",
