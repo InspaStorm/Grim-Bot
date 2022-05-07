@@ -2,10 +2,10 @@ import dbManager from '../../helpers/dbCrud.js';
 import discord from 'discord.js';
 import { Inventory } from '../../helpers/database/schemas.js'
 
-const shop_items = ['chm']
+const shop_items = ['custom hm message']
 
 const item_details = [
-	{itemName: 'chm', cost: 1000},
+	{itemName: 'custom hm message', cost: 1000},
 ]
 
 const thc = new dbManager('thc')
@@ -63,23 +63,21 @@ class Market {
 	}
 
 	async purchase(buyer, itemDetails) {
-		const inv = new Inventory(buyer)
-		await inv.addItem(itemDetails.name)
-		
-		// const userInventory = await inventory.singleFind({id: buyer})
+	
+		const userInventory = await inventory.singleFind({id: buyer})
 
-		// if (userInventory != null) {
-		// 	await inventory.singleUpdate({id: buyer}, {$inc: {[itemDetails.name]: 1}})
-		// } else {
-		// 	const newEntry = {
-		// 		id: buyer
-		// 	}
+		if (userInventory != null) {
+			await inventory.singleUpdate({id: buyer}, {$inc: {[itemDetails.name]: 1}})
+		} else {
+			const newEntry = {
+				id: buyer
+			}
 
-		// 	for (let thing in shop_items) newEntry[thing] = 0;
+			newEntry[itemDetails.name] = 1
 
-		// 	inventory.singleInsert(newEntry)
+			inventory.singleInsert(newEntry)
 
-		// }
+		}
 		return {content: `You purchased **${itemDetails.name}** for **${itemDetails.cost}**!\n\nCheck it out using: **g!inventory**`}
 	}
 }
