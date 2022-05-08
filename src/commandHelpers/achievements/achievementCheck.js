@@ -1,10 +1,10 @@
 import discord from 'discord.js'
-import {db} from '../../startup/database.js';
+import dbManager from '../../helpers/dbCrud.js';
 import achievementList from './achievementList.js';
 import {replier} from '../../helpers/apiResolver.js'
 import {lockAchievements} from '../../startup/featureLocks.js'
 
-const collection = db.collection('level')
+const collection = new dbManager('level')
 
 let resolvingFoundAchievement = new Map();
 
@@ -22,7 +22,7 @@ export async function lookForAchievement(msg, user, userData) {
           		.addFields(achievementList[index])
 				.setFooter({text: `Found ${amountOfUnlockedAwards} out of ${Object.keys(achievementList).length} achievements`})
 
-		await collection.updateOne({id: userID}, {$addToSet: {achievements: index}})
+		await collection.singleUpdate({id: userID}, {$addToSet: {achievements: index}})
 		replier(msg, {embeds:[unlockedEmbed]})
 		await lockAchievements(msg.client)
 	}

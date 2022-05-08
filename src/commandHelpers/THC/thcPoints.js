@@ -1,7 +1,7 @@
-import {db} from '../../startup/database.js';
+import dbManager from '../../helpers/dbCrud.js';
 const recentMsg = new Set();
 
-const collection = db.collection('thc')
+const collection = new dbManager('thc')
 
 async function createNewEntry(collection, user) {
     const pointInit = {
@@ -10,7 +10,7 @@ async function createNewEntry(collection, user) {
         count: 1
     }
 
-    await collection.insertOne(pointInit)
+    await collection.singleInsert(pointInit)
 }
 
 export async function updateThcPoint(user) {
@@ -19,14 +19,14 @@ export async function updateThcPoint(user) {
     recentMsg.add(user.id)
     setTimeout(() => {recentMsg.delete(user.id)}, 1500)
 
-    const res = await collection.findOne({id: user.id})
+    const res = await collection.singleFind({id: user.id})
     if (res == null) {
         await createNewEntry(collection, user)
         return;
     }
 
     if (typeof res.id != 'undefined') {
-        if (res.name != user.username) collection.updateOne({id: user.id}, {$set: {name: user.username}})
-        collection.updateOne({id: `${user.id}`}, {$inc: {count: 1}})
+        if (res.name != user.username) collection.singleUpdate({id: user.id}, {$set: {name: user.username}})
+        collection.singleUpdate({id: `${user.id}`}, {$inc: {count: 1}})
     } else await createNewEntry(collection, user)
 }

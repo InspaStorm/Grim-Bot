@@ -1,4 +1,4 @@
-import {db} from '../../startup/database.js';
+import dbManager from "../../helpers/dbCrud.js";
 
 export default {
 
@@ -31,15 +31,15 @@ export default {
 		if (!isNaN(taskIndex)) {
 
 			const taskNumber = taskIndex - 1
-			const collection = db.collection('Tasks')
+			const collection = new dbManager('tasks')
 
-			const res = await collection.findOne({id : `${authorID}`})
+			const res = await collection.singleFind({id : `${authorID}`})
 
 			if (res.tasks.length >= taskIndex && res.tasks.length > 0) {
 
 				res.tasks[taskNumber].status = 3
 
-				await collection.updateOne({id: authorID}, {$set :{tasks: res.tasks}})
+				await collection.singleUpdate({id: authorID}, {$set :{tasks: res.tasks}})
 
 				return (`${res.tasks[taskNumber].name} has been marked as cancelled`)
 
