@@ -1,7 +1,8 @@
-import {db} from '../../startup/database.js';
+import dbManager from '../../helpers/dbCrud.js';
 import levels from './levelScore.js';
 import {replier} from '../../helpers/apiResolver.js'
 
+const collection = new dbManager('level');
 const recentMsg = new Set();
 
 
@@ -28,9 +29,8 @@ export async function updateLevel(msg) {
 		recentMsg.add(msg.author.id)
 		setTimeout(() => {recentMsg.delete(msg.author.id)}, 30000)
 
-		const collection = db.collection('level');
 
-		const data = await collection.findOne({id: msg.author.id})
+		const data = await collection.singleFind({id: msg.author.id})
 		if (data != undefined) {
 			let score = Math.floor(Math.random() * 7)
 
@@ -42,9 +42,9 @@ export async function updateLevel(msg) {
 					const points = levelCheck(TotalScore + score, msg, score)
 					if (typeof points == 'number') {
 
-						collection.updateOne({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points}})
+						collection.singleUpdate({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points}})
 					} else {
-						collection.updateOne({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points.score}})
+						collection.singleUpdate({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points.score}})
 						replier(msg, {content: points.message})
 					}
 				} else {
@@ -53,7 +53,7 @@ export async function updateLevel(msg) {
 						score: 2
 					}
 
-					collection.updateOne({id: msg.author.id}, {$push: {scores: newGuild}})
+					collection.singleUpdate({id: msg.author.id}, {$push: {scores: newGuild}})
 				}
 			} catch {
 				const newGuild = {
@@ -61,7 +61,7 @@ export async function updateLevel(msg) {
 					score: 2
 				}
 
-				collection.updateOne({id: msg.author.id}, {$push: {scores: newGuild}})
+				collection.singleUpdate({id: msg.author.id}, {$push: {scores: newGuild}})
 			}
 
 		} else {
@@ -72,7 +72,7 @@ export async function updateLevel(msg) {
 				achievements: []
 			}
 
-			collection.insertOne(newUserObject)
+			collection.singleInsert(newUserObject)
 		}
 	}
 }

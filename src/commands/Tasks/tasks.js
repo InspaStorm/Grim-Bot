@@ -1,7 +1,7 @@
 import discord from 'discord.js';
-import {db} from '../../startup/database.js';
+import dbManager from '../../helpers/dbCrud.js';
 
-const collection = db.collection('Tasks')
+const collection = new dbManager('tasks')
 
 export default {
 
@@ -34,7 +34,7 @@ export default {
 		try {
 
 
-			const res = await collection.find({id : authorID}).toArray()
+			const res = await collection.multiFind({id : authorID}, true);
 
 			let data = res[0]
 

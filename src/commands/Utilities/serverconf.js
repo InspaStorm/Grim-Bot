@@ -1,4 +1,4 @@
-import {db} from '../../startup/database.js';
+import dbManager from '../../helpers/dbCrud.js';
 import {lockLevel} from '../../startup/featureLocks.js'
 
 const currentFeatures = ['level', 'custom_replies']
@@ -38,13 +38,13 @@ export default {
 			if (!validDecisions.includes(decision)) return {content: `**${decision}** is not a valid option\nValid options: \`${validDecisions.join(', ')}\`\n\n${cmdFormat}`};
 		}
 
-		const collection = db.collection('server-conf');
+		const collection = new dbManager('server-conf');
 
 
-		const entry = await collection.findOne({guildId: msg.guild.id});
+		const entry = await collection.singleFind({guildId: msg.guild.id});
 		if (entry != null) {
 
-			await collection.updateOne({guildId: msg.guild.id}, {$set: {[featureName]: decision}})
+			await collection.singleUpdate({guildId: msg.guild.id}, {$set: {[featureName]: decision}})
 
 			await lockLevel(msg.client)
 			return {content: `**${featureName} system** has been turned **${decision}** for this server!`}
@@ -58,7 +58,7 @@ export default {
 
 			newGuildEntry[featureName] = decision
 
-			await collection.insertOne(newGuildEntry)
+			await collection.singleInsert(newGuildEntry)
 			return {content: `🎉 **${featureName}** has been turned **${decision}** on this server for the 1st time!`}
 		}
 	}

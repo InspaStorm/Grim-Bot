@@ -1,6 +1,6 @@
-import {db} from '../../startup/database.js';
+import dbManager from '../../helpers/dbCrud.js';
 
-const collection = db.collection('Tasks')
+const collection = new dbManager('tasks')
 const owners = ['599489300672806913']
 
 export default {
@@ -27,7 +27,7 @@ export default {
       //   taskIndex = args[0]
       // }
 
-      const dbEntry = await collection.updateOne({id: authorId}, {$pop: {tasks: 1 }});
+      const dbEntry = await collection.singleUpdate({id: authorId}, {$pop: {tasks: 1 }});
 
       return {content: `Task list has been cleared!`}
 
