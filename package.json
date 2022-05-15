@@ -1,6 +1,6 @@
 {
   "name": "grim-bot",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "An entertaining bot made by InspaStorm team!",
   "type": "module",
   "main": "src/index.js",

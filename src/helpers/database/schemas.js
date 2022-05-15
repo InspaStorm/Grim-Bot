@@ -22,10 +22,8 @@ export class Inventory extends dbManager {
         const isValidItem = this.validItems.includes(item.toLowerCase())
 
         if (!isValidItem) return 'Thats not a valid item';
+        await this.singleUpdate({id: this.id,"items.name": item.toLowerCase()},{$inc: {"items.$.quantity": 1}})
 
-        const process = await this.singleUpdate({id: this.id,"items.name": item.toLowerCase()},{$inc: {"items.$.quantity": 1}})
-
-        console.log(process);
         return true;
     }
 }
