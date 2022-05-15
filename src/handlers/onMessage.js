@@ -28,10 +28,17 @@ export async function handleMessage(msg) {
 
 	if (lowerCasedMsg.startsWith(prefix)) {
 		const commandName = lowerCasedMsg.split(" ")[0].substr(2);
-		const args = lowerCasedMsg.split(" ");
-		args.shift();
 
-		executeCommand(commandName, msg, args, msg.author);
+		if (commandName == 'ping') {
+			const args = lowerCasedMsg.split(" ");
+			args.shift();
+	
+			executeCommand(commandName, msg, args, msg.author);
+
+			return;
+		}
+
+		msg.channel.reply("Type `/` and then select command to run the command!")
 	}
 
 
