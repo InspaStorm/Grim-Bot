@@ -38,7 +38,7 @@ export async function handleMessage(msg) {
 			return;
 		}
 
-		msg.channel.reply("Type `/` and then select command to run the command!")
+		msg.reply("Type `/` and then select the command!\n**Got stuck? Read:**\nhttps://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ")
 	}
 
 
