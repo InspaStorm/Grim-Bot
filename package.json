@@ -4,6 +4,9 @@
   "description": "An entertaining bot made by InspaStorm team!",
   "type": "module",
   "main": "src/index.js",
+  "engines": {
+    "node": "17.x"
+  },
   "scripts": {
     "start": "node src/index.js"
   },
