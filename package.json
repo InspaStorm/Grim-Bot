@@ -15,7 +15,6 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.26.1",
-    "canvacord": "^5.2.3",
     "chalk": "^4.1.2",
     "discord.js": "^13.1.0",
     "dotenv": "^16.0.0",

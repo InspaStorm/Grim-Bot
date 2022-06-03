@@ -1,7 +1,9 @@
 import { Collection,Message, GuildMember, MessageAttachment, MessageActionRow, MessageButton } from "discord.js";
 import { followUp , replier} from '../../helpers/apiResolver.js';
-import axios from 'axios';
+import sharp from 'sharp';
 import { joinImages } from 'join-images';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 class GameManager {
     constructor() {
@@ -121,6 +123,9 @@ class Game {
     }
 }
 
+const __filename = fileURLToPath(import.meta.url);
+const pathToDiceImgs = `${dirname(__filename)}/../../pics/dice`;
+
 
 /**
  * 
@@ -130,7 +135,7 @@ class Game {
 async function prepareImgs(imgBuffers) {
     
     
-    const resultImg = await joinImages(imgBuffers, {direction: 'horizontal', color: '#000000'})
+    const resultImg = await joinImages(imgBuffers, {direction: 'horizontal', color: "#FFF", margin: {top:7, right:7, bottom:7}})
     resultImg.toFormat('png')
     const buffer = await resultImg.toBuffer()
     
@@ -158,11 +163,11 @@ async function rollDice(quantity) {
     }
 
     for (let num of numbers) {
-        let url = `http://roll.diceapi.com/images/poorly-drawn/d6/${num}.png`
-        const response = await axios.get(url,  { responseType: 'arraybuffer' })
-        const buffer = Buffer.from(response.data, "utf-8")
+        const imagePath = pathToDiceImgs + `/dice-${num}.png`
+
+        let image = await sharp(imagePath).toBuffer();
         
-        imgBuffers.push(buffer)
+        imgBuffers.push(image)
     }
 
     return {buffers: imgBuffers, numbers: numbers}
