@@ -1,225 +1,136 @@
-import { Collection,Message, GuildMember, MessageAttachment, MessageActionRow, MessageButton } from "discord.js";
+import { Message, GuildMember, MessageAttachment, MessageActionRow, MessageButton } from "discord.js";
 import { followUp , replier} from '../../helpers/apiResolver.js';
 import sharp from 'sharp';
 import { joinImages } from 'join-images';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-class GameManager {
-    constructor() {
-        this.runningGames = new Collection();
-    }
+import GameManager from "../../commandHelpers/games/gameManager.js";
+import buttonGame from "../../commandHelpers/games/buttonGame.js";
 
-    addGame(msgId, playerId, playerName, answer, components) {
-        this.runningGames.set(msgId, new Game(msgId, playerId, playerName, answer, components))
-    }
-    
-    hasGame(msgId) {
-        const isPresent = this.runningGames.has(msgId)
-
-        if (isPresent) {
-            return this.runningGames.get(msgId)
-        }
-
-        return false;
-    }
-
-    removeGame(msgId) {
-        if (this.runningGames.has(msgId)) {
-            this.runningGames.delete(msgId)
-            return true
-        }
-        
-        return false;
-    }
-}
-
-const lobby = new GameManager()
-
-function endGame(msgId) {
-    lobby.removeGame(msgId)
-}
-
-class Game {
-    /**
-     * 
-     * @param {number} msgId ID of the game message
-     * @param {string} playerId ID of the player
-     * @param {number} answer Answer for the current question
-     * @param {MessageActionRow[]} components Array of action rows containing btton components
-     */
-    constructor(msgId, playerId, playerName, answer, components) {
-        this.gameId = msgId;
-        this.playerId = playerId;
-        this.playerName = playerName;
-        this.ans = answer;
-        this.components = components;
-            
-        this.numOfAttempts = 0;
-        this.startTime = Date.now()
-        this.timer = setTimeout(() => endGame(this.msgId), 15_000);
-    }
-
-    get stats() {
-        const timeTaken = this.timeTakenInGame
-
-        const stats = `**${this.playerName}'s** Speed Math summary:
-
-> ⏱️ Time taken: **${timeTaken} seconds**
-> 📝 Number of attempts: **${this.numOfAttempts}**`
-
-        return stats
-    }
-
-    get timeTakenInGame() {
-        const currentTime = Date.now()
-
-        const timeTaken = currentTime - this.startTime
-
-        return timeTaken/1000
-    }
-
-    checkResponse(answerGiven) {
-        this.numOfAttempts ++;
-        if (answerGiven == this.ans) return this.stats;
-        return false;
-    }
-
-    disableButton(buttonToBeDisabled) {
-        let indexOfOption;
-        let indexOfRow = 0;
-        let updatingOption;
-
-        for (let row of this.components) {
-            updatingOption = row.components.find((currentValue, indexOfValue) => {
-                indexOfOption = indexOfValue
-                return currentValue.label == buttonToBeDisabled.label;
-            });
-
-            if (updatingOption) break;
-            indexOfRow ++
-        }
-
-
-        updatingOption.setDisabled()
-
-        this.components[indexOfRow].components[indexOfOption] = updatingOption;
-
-        this.updateButtons(this.components)
-
-        return this.components;
-    }
-
-    updateTimer() {
-        clearTimeout(this.timer)
-
-        this.timer = setTimeout(() => endGame(), 15_000)
-    }
-
-    updateButtons(buttonComponents) {
-        this.updateTimer()
-
-        this.components = buttonComponents
-    }
-}
+const lobby = new GameManager(buttonGame);
 
 const __filename = fileURLToPath(import.meta.url);
 const pathToDiceImgs = `${dirname(__filename)}/../../pics/dice`;
 
+class DiceGame {
 
-/**
- * 
- * @param {Buffer[]} imgBuffers Array of buffer of the images
- * @returns {MessageAttachment} The message attachment that can be sent 
- */
-async function prepareImgs(imgBuffers) {
-    
-    
-    const resultImg = await joinImages(imgBuffers, {direction: 'horizontal', color: "#FFF", margin: {top:7, right:7, bottom:7}})
-    resultImg.toFormat('png')
-    const buffer = await resultImg.toBuffer()
-    
-    const result = new MessageAttachment(buffer, 'dice-image.png')
+    constructor(msgID, playerInfo) {
+        const questionInfo = this.createQuestion();
 
-    return result
-}
+        this.qImage = questionInfo.q;
+        this.answer = questionInfo.a;
+        this.optionButtons = questionInfo.components;
 
-/**
- * @param {number} quantity Number of dices to be rolled
- * @returns {{buffers: Buffer, numbers: number[]}}
- */
-async function rollDice(quantity) {
-    const imgBuffers = [];
-    const numbers = [];
-    
-    let i = 0;
+        lobby.addGame({msgId: msgID, playerId: playerInfo.id, playerName:playerInfo.username,
+            answer: this.answer, components: this.optionButtons,
+            endCallback: msgID => {
+                lobby.removeGame(msgID);
+            }
+        })
+    }
 
-    while (i < quantity) {
-        const randInt = Math.floor(Math.random() * 6);
-        if (randInt > 0) {
-            numbers.push(randInt);
-            i++;
+    get getGameQuestion() {
+        return {
+            content: "What will be the product of these?",
+            files: [this.qImage],
+            components: this.optionButtons
         }
     }
 
-    for (let num of numbers) {
-        const imagePath = pathToDiceImgs + `/dice-${num}.png`
-
-        let image = await sharp(imagePath).toBuffer();
+    async createQuestion() {
+    
+        const questionNumbers = await this.rollDice(3)
+    
+        const question = await this.prepareImgs(questionNumbers.buffers)
         
-        imgBuffers.push(image)
+        const answer = questionNumbers.numbers.reduce((total, value) => total * value)
+        
+        const options = this.makeButtons(answer)
+    
+        return {q: question, a: answer, components: options}
+        
     }
 
-    return {buffers: imgBuffers, numbers: numbers}
-}
+    /**
+     * @param {number} quantity Number of dices to be rolled
+     * @returns {{buffers: Buffer, numbers: number[]}}
+     */
 
-function makeButtons(ansNumber) {
-    let randNums = [];
-    let buttons = [];
-    
-    while (randNums.length <= 8) {
-        const randInt = Math.floor(Math.random() * 99);
-        if (randInt > 0 && !randNums.includes(randInt) && randInt != ansNumber) randNums.push(randInt)
+    async rollDice(quantity) {
+        const imgBuffers = [];
+        const numbers = [];
+        
+        let i = 0;
+
+        while (i < quantity) {
+            const randInt = Math.floor(Math.random() * 6);
+            if (randInt > 0) {
+                numbers.push(randInt);
+                i++;
+            }
+        }
+
+        for (let num of numbers) {
+            const imagePath = pathToDiceImgs + `/dice-${num}.png`
+
+            let image = await sharp(imagePath).toBuffer();
+            
+            imgBuffers.push(image)
+        }
+
+        return {buffers: imgBuffers, numbers: numbers}
     }
-
-    const randPos = Math.floor(Math.random() * 9);
-
-    randNums[randPos] = ansNumber
-
-    for (let num of randNums) {
-        let button = new MessageButton()
-            .setCustomId(`speedmath ${num.toString()}`)
-            .setLabel(num.toString())
-            .setStyle('PRIMARY')
-
-        buttons.push(button)
+    
+    /**
+     * 
+     * @param {Buffer[]} imgBuffers Array of buffer of the images
+     * @returns {MessageAttachment} The message attachment that can be sent 
+     */
+     async prepareImgs(imgBuffers) {
+        
+        
+        const resultImg = await joinImages(imgBuffers, {direction: 'horizontal', color: "#FFF", margin: {top:7, right:7, bottom:7}})
+        resultImg.toFormat('png')
+        const buffer = await resultImg.toBuffer()
+        
+        const result = new MessageAttachment(buffer, 'dice-image.png')
+        return result
     }
     
-    
-    const row = new MessageActionRow()
-    .addComponents(buttons.slice(0, 5))
-    
-    const secondRow =new MessageActionRow()
-    .addComponents(buttons.slice(5))
-    
-    const components = [row, secondRow];
-    return components
+    makeButtons(ansNumber) {
+        let randNums = [];
+        let buttons = [];
+        
+        while (randNums.length <= 8) {
+            const randInt = Math.floor(Math.random() * 99);
+            if (randInt > 0 && !randNums.includes(randInt) && randInt != ansNumber) randNums.push(randInt)
+        }
+
+        const randPos = Math.floor(Math.random() * 9);
+
+        randNums[randPos] = ansNumber
+
+        for (let num of randNums) {
+            let button = new MessageButton()
+                .setCustomId(`speedmath ${num.toString()}`)
+                .setLabel(num.toString())
+                .setStyle('PRIMARY')
+
+            buttons.push(button)
+        }
+        
+        
+        const row = new MessageActionRow()
+        .addComponents(buttons.slice(0, 5))
+        
+        const secondRow =new MessageActionRow()
+        .addComponents(buttons.slice(5))
+        
+        const components = [row, secondRow];
+        return components
+    }
 }
-
-async function createQuestion() {
-
-    const questionNumbers = await rollDice(3)
-
-    const question = await prepareImgs(questionNumbers.buffers)
-
-    const answer = questionNumbers.numbers.reduce((total, value) => total * value)
-
-    const options = makeButtons(answer)
-
-    return {q: question, a: answer, components: options}
-
-}
-
 
 export default {
     name: 'speedmath',
@@ -236,12 +147,11 @@ export default {
     async run(msg, args, author = msg.author, isInteraction = false) {
         const loading = await replier(msg, {content: '<a:dice_rolling:956854476143218728>'}, isInteraction)
 
-        const quiz = await createQuestion()
+        const gameInstance = new DiceGame(msg.id, author);
 
         // End this function if the message was deleted
         try {
-            const gameMsg = await followUp(loading, {content: 'What would be the product of these?',files: [quiz.q],components: quiz.components}, isInteraction)
-            lobby.addGame(gameMsg.id, author.id, author.username, quiz.a, quiz.components)
+            const gameMsg = await followUp(loading, gameInstance.getGameQuestion, isInteraction)
         } catch(err) {
             console.log(err);
             return {selfRun: true}
