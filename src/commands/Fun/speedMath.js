@@ -1,9 +1,10 @@
-import { Message, GuildMember, MessageAttachment, MessageActionRow, MessageButton } from "discord.js";
+import { Message, ButtonInteraction, GuildMember, MessageAttachment, MessageActionRow, MessageButton } from "discord.js";
 import { followUp , replier} from '../../helpers/apiResolver.js';
 import sharp from 'sharp';
 import { joinImages } from 'join-images';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { EventEmitter } from 'events';
 
 import GameManager from "../../commandHelpers/games/gameManager.js";
 import buttonGame from "../../commandHelpers/games/buttonGame.js";
@@ -13,21 +14,35 @@ const lobby = new GameManager(buttonGame);
 const __filename = fileURLToPath(import.meta.url);
 const pathToDiceImgs = `${dirname(__filename)}/../../pics/dice`;
 
-class DiceGame {
+class DiceGame extends EventEmitter{
 
     constructor(msgID, playerInfo) {
-        const questionInfo = this.createQuestion();
+        super()
+        this.init(msgID, playerInfo);
 
-        this.qImage = questionInfo.q;
-        this.answer = questionInfo.a;
-        this.optionButtons = questionInfo.components;
+        this.qImage;
+        this.answer;
+        this.optionButtons;
 
-        lobby.addGame({msgId: msgID, playerId: playerInfo.id, playerName:playerInfo.username,
-            answer: this.answer, components: this.optionButtons,
-            endCallback: msgID => {
-                lobby.removeGame(msgID);
+    }
+    
+    init(msgID, playerInfo) {
+        this.createQuestion()
+        .then(
+            info => {
+                this.qImage = info.q
+                this.answer = info.a
+                this.optionButtons = info.components
+                
+                lobby.addGame({msgId: msgID, playerId: playerInfo.id, playerName:playerInfo.username,
+                    answer: this.answer, components: this.optionButtons,
+                    endCallback: msgID => {
+                        lobby.removeGame(msgID);
+                    }
+                })
+                this.emit('ready')
             }
-        })
+        )
     }
 
     get getGameQuestion() {
@@ -47,7 +62,6 @@ class DiceGame {
         const answer = questionNumbers.numbers.reduce((total, value) => total * value)
         
         const options = this.makeButtons(answer)
-    
         return {q: question, a: answer, components: options}
         
     }
@@ -147,19 +161,25 @@ export default {
     async run(msg, args, author = msg.author, isInteraction = false) {
         const loading = await replier(msg, {content: '<a:dice_rolling:956854476143218728>'}, isInteraction)
 
-        const gameInstance = new DiceGame(msg.id, author);
-
+        const gameInstance = new DiceGame(loading.id, author);
+        
         // End this function if the message was deleted
-        try {
-            const gameMsg = await followUp(loading, gameInstance.getGameQuestion, isInteraction)
-        } catch(err) {
-            console.log(err);
-            return {selfRun: true}
-        }
-        // Indicating the command will run on its own.
+        gameInstance.on('ready', async () => {
+            try {
+                await followUp(loading, gameInstance.getGameQuestion, isInteraction)
+            } catch(err) {
+                console.log(err);
+            }
+            // Indicating the command will run on its own.
+        })
         return {selfRun: true}
-
     },
+
+    /**
+     * 
+     * @param {ButtonInteraction} interaction Interaction called upon clicking button
+     * @returns 
+     */
 
     async handle(interaction) {
         const argsAsArray = interaction.customId.split(" ")
@@ -169,7 +189,6 @@ export default {
         const player = interaction.user
 
         const interactedGame = lobby.hasGame(gameId)
-
         if (interactedGame) {
 
             if (player != interactedGame.playerId) {
