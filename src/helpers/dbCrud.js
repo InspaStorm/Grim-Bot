@@ -25,7 +25,6 @@ export default class dbManager {
     
     async singleFind(query) {
         
-        console.log(query, this.collection);
         const res = await this.collection.findOne(query)
     
         return res;

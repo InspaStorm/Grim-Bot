@@ -23,9 +23,6 @@ export function logger(err) {
 			if (moddedLine.startsWith('at')) {
 
 				stack.push(moddedLine)
-				break;
-			} else {
-				stack.push(moddedLine)
 			}
 
 			i++;

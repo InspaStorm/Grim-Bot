@@ -1,12 +1,7 @@
 import dbManager from '../../helpers/dbCrud.js';
 import discord from 'discord.js';
-import { Inventory } from '../../helpers/database/schemas.js'
-
-const shop_items = ['custom hm message']
-
-const item_details = [
-	{itemName: 'custom hm message', cost: 1000},
-]
+import { SHOP_ITEMS } from '../../commandHelpers/economy/shopItems.js';
+import { ITEM_DETAILS } from '../../commandHelpers/economy/shopItems.js';
 
 const thc = new dbManager('thc')
 const inventory = new dbManager('inventory')
@@ -29,7 +24,7 @@ class Market {
 	}
 
 	add(buyer, name) {
-		const itemCost = item_details.find(x => x.itemName = item).cost
+		const itemCost = ITEM_DETAILS.find(x => x.itemName = item).cost
 		
 		let newItem = new item(buyer, name, itemCost)
 
@@ -90,7 +85,7 @@ export default {
 	description:'Exchange THC for some spicy items',
 	alias: ['redeem'],
 	options: [
-		{name: "item", desc: "Item to be purchased", required: true, type: "string", choices: shop_items},
+		{name: "item", desc: "Item to be purchased", required: true, type: "string", choices: SHOP_ITEMS},
 	],
 
 	/**
@@ -110,7 +105,7 @@ export default {
 			item = args[0]
 			const cmdFormat = 'Command format: `g!shop <shop item>`\nEg: **g!shop chm**'
 			
-			if (typeof item == 'undefined' || !shop_items.includes(item)) return {content: `**${item}** is not an available item\nitems include: \`${shop_items.join(', ')}\`\n\n${cmdFormat}`};
+			if (typeof item == 'undefined' || !SHOP_ITEMS.includes(item)) return {content: `**${item}** is not an available item\nitems include: \`${SHOP_ITEMS.join(', ')}\`\n\n${cmdFormat}`};
 		}
 
 		const pendingDeal = register.add(author.id, item)
