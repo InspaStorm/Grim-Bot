@@ -4,8 +4,8 @@ import { editReply, replier } from '../../helpers/apiResolver.js';
 import { SHOP_ITEMS } from '../../commandHelpers/economy/shopItems.js';
 
 const db = new dbManager('inventory'); 
-const YES = 1,
-NO = 2,
+const YES_BUTTON = 1,
+NO_BUTTON = 2,
 MODAL_SUBMIT = 3;
 
 export default {
@@ -28,24 +28,24 @@ export default {
 
         if (userInv) {
             ['id', '_id'].forEach(key => delete userInv[key]);
-            const itemCount = userInv[itemToBeUsed]
+            const itemCount = userInv[itemToBeUsed];
 
             if (itemCount) {
                 const CHOICE_BUTTONS_ROW = new MessageActionRow()
                 .addComponents(
                     new MessageButton()
-                        .setCustomId('use 1')
+                        .setCustomId(`use ${YES_BUTTON}`)
                         .setLabel('Yes')
                         .setStyle('SUCCESS'),
                     new MessageButton()
-                        .setCustomId('use 2')
+                        .setCustomId(`use ${NO_BUTTON}`)
                         .setLabel('No')
                         .setStyle('DANGER')
                         );
                         const confirmation = await replier(msg, {content: `Do you wanna use 1 of your ${userInv[itemToBeUsed]} ${itemToBeUsed}`, components: [CHOICE_BUTTONS_ROW]});
                         return {selfRun: true}
             } else {
-                return {content: `ou don't have **${itemToBeUsed}** in your inventory`}
+                return {content: `You don't have **${itemToBeUsed}** in your inventory`}
             }
         }
     },
@@ -62,20 +62,21 @@ export default {
 			const customReplyInput = new TextInputComponent()
 			.setCustomId('customReplyInput')
 		    // The label is the prompt the user sees for this input
-			.setLabel("Enter your short custom reply")
+			.setLabel("Enter your short custom reply:")
 		    // Short means only a single line of text
 			.setStyle('SHORT');
 
             const actionRow = new MessageActionRow().addComponents(customReplyInput);
             modal.addComponents(actionRow)
-
+            
             await msg.showModal(modal);
+            await editReply(msg.message, {content: "Opening a text input..", components: []}, true)
 			
 		} if (args[0] == NO) {
-			return
+			return 0
 		} if (args[0] == MODAL_SUBMIT) {
             const newCustomReply = msg.fields.getTextInputValue('customReplyInput');
-            editReply(msg.message, {content: 'You used the item!', components: []}, true)
+            msg.reply(newCustomReply)
         }
 
 	}
