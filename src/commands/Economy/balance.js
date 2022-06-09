@@ -1,13 +1,14 @@
 import dbManager from '../../helpers/dbCrud.js';
 import discord from 'discord.js';
 import {inputMemberCheck} from '../../helpers/member.js';
+import { GRIMS_EMOJI } from '../../helpers/emojis.js';
 
 const db = new dbManager('thc')
 
 export default {
 
-	name: 'thp',
-	description:'View your hard earned THP(s)!',
+	name: 'balance',
+	description:'View your hard earned Grims!',
 	alias: ['point', 'points'],
 	options: [
         {name: "user", desc: "Mention the user/give the user's name", required: false, type: "user"},
@@ -29,11 +30,11 @@ export default {
         const score = (res != null) ? res.count.toString() : '0';
 
 	    const thpEmbed = new discord.MessageEmbed()
-	    .setTitle(`The Hmm Points of ${userInfo.username}`)
-	    .setDescription(score)
+	    .setTitle(`The balance of ${userInfo.username}`)
+	    .setDescription(`${GRIMS_EMOJI} ${score}`)
 	    .setThumbnail(userInfo.displayAvatarURL())
 	    .setColor('#FFFF00')
-	    .setFooter({text: `Redeem the points using g!shop`})
+	    .setFooter({text: `Redeem the currency using /shop`})
 
         return {embeds: [thpEmbed]}
 	}
