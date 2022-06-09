@@ -21,7 +21,7 @@ export default {
      * @param {Boolean} isInteraction whether the message is from interaction or not
      */
     async run(msg, args, author = msg.author, isInteraction = false) {
-		if (!msg.global.locks.get('level').includes(msg.guild.id)) return {content: '**Level system is off** in this server =(\n\nAdmins can turn it on using: `g!serverconf level on`'}
+		if (!global.locks.get('level').includes(msg.guild.id)) return {content: '**Level system is off** in this server =(\n\nAdmins can turn it on using: `/serverconf level on`'}
 
 
 		async function mentionCheck(msg,author, args, isInteraction) {
@@ -66,7 +66,7 @@ export default {
 				const CurrentLevel = level[CurrentLevelScore] - 1
 
 				return {
-					content: `Level **${CurrentLevel}**\n\nScore:\n${score} out of ${CurrentLevelScore} --- **${(score/CurrentLevelScore) * 100}%**`,
+					content: `Level **${CurrentLevel}**    [ **${(score/CurrentLevelScore) * 100}%** ]\n\n${score} out of ${CurrentLevelScore}`,
 					followUp: reply
 				}
 				
@@ -76,7 +76,7 @@ export default {
 				const CurrentLevelScore = arrayOfScores.find(x => x > 0)
 				const CurrentLevel = level[CurrentLevelScore] - 1
 				return {
-					content: `Level **${CurrentLevel}**\n\nScore:\n${score} out of ${CurrentLevelScore} ---> **${(score/CurrentLevelScore) * 100}%**`,
+					content: `Level **${CurrentLevel}** [ **${(score/CurrentLevelScore) * 100}%** ]\n\n${score} out of ${CurrentLevelScore}`,
 					followUp: reply
 				}
 			}
