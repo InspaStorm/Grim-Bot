@@ -38,14 +38,14 @@ export async function handleMessage(msg) {
 			return;
 		}
 
-		msg.reply("Type `/` and then select the command!\n**Got stuck? Read:**\nhttps://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ")
+		msg.reply("Commands can now only be accessed via slash(/) commands\nType `/` and then select the command!\n**Got stuck? Read:**\nhttps://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ")
 	}
 
 
 	if (lowerCasedMsg.startsWith('hm')) {
-		const res = replyHm(lowerCasedMsg, msg.author)
+		const res = await replyHm(lowerCasedMsg, msg.author, msg.guild)
 		msg.channel.send(res)
 	}
 
-	if (msg.mentions.has(msg.client.user) && !msg.mentions.everyone && !msg.mentions.repliedUser) msg.reply({content: `My prefix is **${prefix}**\nRefer **${prefix}help** for additional help =)`})
+	if (msg.mentions.has(msg.client.user) && !msg.mentions.everyone && !msg.mentions.repliedUser) msg.reply({content: `Refer **/help** for help =)`})
 }

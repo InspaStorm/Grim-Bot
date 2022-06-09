@@ -32,7 +32,7 @@ export async function sender(destination, content) {
  * @param {boolean} isInteraction 
  * @returns 
  */
-export async function followUp(destination, content, isInteraction) {
+export async function editReply(destination, content, isInteraction) {
     const msg = await destination.edit(content)
     return msg
 }

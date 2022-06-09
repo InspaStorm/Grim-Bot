@@ -1,6 +1,5 @@
 import discord, { MessageActionRow, MessageSelectMenu } from 'discord.js';
 import { getCmdDetails } from '../../helpers/prepareCmdInfo.js'
-import { prefix } from '../../../config.js'
 
 const devs = ['599489300672806913', '681766482803163147', '520625717885534228', '660785366110044210', '760954344421195867']
 
@@ -26,9 +25,8 @@ function prepareMainEmbed(msg, isStaff = false) {
 	const helpEmbed = new discord.MessageEmbed()
 		.setColor('#00ffff')
 		.setTitle('Command Support')
-		.setDescription(`My prefix is **${prefix}**
-				Command format: \`${prefix}<command> <options>\`
-					Eg: \`${prefix}help\``)
+		.setDescription(`command format: \`/<command> <options>\`
+					Eg: \`/help\``)
 		.addFields(commandsList)
 		.setImage(embedPic)
 		.setFooter({text: 'Developed by the InspaStorm Team @DeadlineBoss & @Ranger'});

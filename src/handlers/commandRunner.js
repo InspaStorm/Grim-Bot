@@ -1,4 +1,4 @@
-import { replier, followUp } from "../helpers/apiResolver.js";
+import { replier, editReply } from "../helpers/apiResolver.js";
 
 // Executes the commands
 export async function executeCommand(commandName, msg, args, author, isInteraction = false) {
@@ -14,7 +14,7 @@ export async function executeCommand(commandName, msg, args, author, isInteracti
 		if (ans?.followUp) {
 			const reply = ans.followUp
 			delete ans.followUp;
-			await followUp(reply, ans, isInteraction);
+			await editReply(reply, ans, isInteraction);
 		} else {
 			await replier(msg, ans)
 		}

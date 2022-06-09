@@ -1,6 +1,15 @@
 import { updateThcPoint } from './thcPoints.js';
+import dbManager from '../../helpers/dbCrud.js';
 
-export function replyHm(triggerWord, user){
+const serverConfDb = new dbManager('server-conf');
+
+async function getCustomReply(msgGuildId) {
+  const guildInfo = await serverConfDb.singleFind({guildId: msgGuildId}); 
+  const customReply = guildInfo.custom_replies_list[Math.floor(Math.random()*guildInfo.custom_replies_list.length)];
+  return `*${customReply}*`
+}
+
+export async function replyHm(triggerWord, user, guild){
   const randInt = Math.floor(Math.random() * 5);
   const luck = Math.floor(Math.random() * 101);
 
@@ -13,12 +22,15 @@ export function replyHm(triggerWord, user){
     'hmmmmmmm hmmm hmmm >:3'
   ];
 
-  if(luck > 5) {
+  updateThcPoint(user);
+
+  if (luck > 90) {
+    const customReply = await getCustomReply(guild.id)
+    return customReply
+  } else if(luck > 5) {
     const greetBack = triggerWord.slice(0, -1) + (triggerWord.substr(-1).repeat(randInt))
-    updateThcPoint(user);
     return greetBack
   } else if(luck <= 5) {
-    updateThcPoint(user);
-    return customReplies[luck - 1]
+    return customReplies[Math.floor(Math.random()* customReplies.length)]
   }
 }
