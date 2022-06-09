@@ -1,13 +1,13 @@
-import {db} from './database.js';
+import dbManager from '../helpers/dbCrud.js';
 
+const serverConfigDb = new dbManager('server-conf');
+const achievementDb = new dbManager('level');
 
 export async function lockLevel(client, isInitialize = false) {
 
     global.locks.delete('level')
 
-    const collection = db.collection('server-conf');
-
-    const dbEntry = await collection.find({}).toArray();
+    const dbEntry = await serverConfigDb.executeCustom(collection => collection.find({}).toArray());
 
     const levelEnabledGuild = [];
 
@@ -30,9 +30,7 @@ export async function lockAchievements(client, isInitialize = false) {
 
     global.locks.delete('achievement')
 
-    const collection = db.collection('level');
-
-    const dbEntry = await collection.find({}).toArray();
+    const dbEntry = await achievementDb.executeCustom(collection => collection.find({}).toArray());
 
     let userDetails = [];
 

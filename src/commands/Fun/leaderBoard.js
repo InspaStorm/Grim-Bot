@@ -1,8 +1,8 @@
 import discord from 'discord.js';
-import {db} from '../../startup/database.js';
 import { makeEmbed } from "../../helpers/embedManager.js";
+import dbManager from '../../helpers/dbCrud.js';
 
-const collection = db.collection('thc')
+const thcDb = new dbManager('thc')
 
 export default {
 
@@ -20,7 +20,7 @@ export default {
      */
     async run(msg, args, author = msg.author, isInteraction = false) {
 
-		const res = await collection.find().sort({count: -1}).limit(10).toArray()
+		const res = await thcDb.executeCustom((collection) => collection.find().sort({count: -1}).limit(10).toArray())
 	    let i = 1;
 	    let placeHolders= '';
 	    for (let entry of res) {

@@ -1,5 +1,5 @@
 import { Message, ButtonInteraction, GuildMember, MessageAttachment, MessageActionRow, MessageButton } from "discord.js";
-import { followUp , replier} from '../../helpers/apiResolver.js';
+import { editReply , replier} from '../../helpers/apiResolver.js';
 import sharp from 'sharp';
 import { joinImages } from 'join-images';
 import { dirname } from 'path';
@@ -166,7 +166,7 @@ export default {
         // End this function if the message was deleted
         gameInstance.on('ready', async () => {
             try {
-                await followUp(loading, gameInstance.getGameQuestion, isInteraction)
+                await editReply(loading, gameInstance.getGameQuestion, isInteraction)
             } catch(err) {
                 console.log(err);
             }
