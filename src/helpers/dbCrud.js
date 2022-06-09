@@ -51,5 +51,10 @@ export default class dbManager {
         await this.collection.insertOne(insertValue)
     }
 
+    async executeCustom(callback) {
+        const result = await callback(this.collection);
+        return result
+    }
+
 }
 

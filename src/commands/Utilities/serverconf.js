@@ -1,6 +1,8 @@
 import dbManager from '../../helpers/dbCrud.js';
 import {lockLevel} from '../../startup/featureLocks.js'
 
+const collection = new dbManager('server-conf');
+
 const currentFeatures = ['level', 'custom_replies']
 const validDecisions = ['on', 'off']
 
@@ -38,10 +40,8 @@ export default {
 			if (!validDecisions.includes(decision)) return {content: `**${decision}** is not a valid option\nValid options: \`${validDecisions.join(', ')}\`\n\n${cmdFormat}`};
 		}
 
-		const collection = new dbManager('server-conf');
-
-
 		const entry = await collection.singleFind({guildId: msg.guild.id});
+
 		if (entry != null) {
 
 			await collection.singleUpdate({guildId: msg.guild.id}, {$set: {[featureName]: decision}})
