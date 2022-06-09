@@ -1,12 +1,17 @@
-import { CommandInteraction, MessageActionRow, MessageButton, Modal, TextInputComponent } from 'discord.js';
+import { ButtonInteraction, CommandInteraction, MessageActionRow, MessageButton, Modal, TextInputComponent } from 'discord.js';
 import dbManager from '../../helpers/dbCrud.js';
 import { editReply, replier } from '../../helpers/apiResolver.js';
 import { SHOP_ITEMS } from '../../commandHelpers/economy/shopItems.js';
+import ItemUsageManager from '../../commandHelpers/economy/usageManager.js';
 
-const db = new dbManager('inventory'); 
+const userInvDb = new dbManager('inventory');
+const serverConf = new dbManager('server-conf');
+
 const YES_BUTTON = 1,
 NO_BUTTON = 2,
 MODAL_SUBMIT = 3;
+
+const usageManager = new ItemUsageManager();
 
 export default {
     name: 'use',
@@ -23,7 +28,8 @@ export default {
     * @param {Boolean} isInteraction whether the message is from interaction or not
     */
     async run(msg, args, author = msg.author, isInteraction = false) {
-        const userInv = await db.singleFind({id: author.id});
+        const userId = author.id
+        const userInv = await userInvDb.singleFind({id: userId});
         const itemToBeUsed = msg.options.getString('item');
 
         if (userInv) {
@@ -41,20 +47,37 @@ export default {
                         .setCustomId(`use ${NO_BUTTON}`)
                         .setLabel('No')
                         .setStyle('DANGER')
-                        );
-                        const confirmation = await replier(msg, {content: `Do you wanna use 1 of your ${userInv[itemToBeUsed]} ${itemToBeUsed}`, components: [CHOICE_BUTTONS_ROW]});
-                        return {selfRun: true}
+                );
+                
+                usageManager.addNewEntry(userId, itemToBeUsed)
+                const confirmation = await replier(msg, {content: `Do you wanna use 1 of your ${userInv[itemToBeUsed]} ${itemToBeUsed}`, components: [CHOICE_BUTTONS_ROW]});
+                return {selfRun: true}
             } else {
                 return {content: `You don't have **${itemToBeUsed}** in your inventory`}
             }
         }
     },
 
+    /**
+     * 
+     * @param {ButtonInteraction} msg 
+     * @returns 
+     */
+
     async handle(msg) {
+        const userId = msg.user.id;
 		const args = msg.customId.split(" ")
 		args.shift()
+        
+		if (args[0] == YES_BUTTON){
 
-		if (args[0] == YES){
+            if (!usageManager.has(userId)) {
+                msg.reply('Hmm?')
+                return
+            }
+
+            usageManager.remove(userId)
+
             const modal = new Modal()
             .setCustomId('use 3')
             .setTitle('Custom Reply');
@@ -72,11 +95,13 @@ export default {
             await msg.showModal(modal);
             await editReply(msg.message, {content: "Opening a text input..", components: []}, true)
 			
-		} if (args[0] == NO) {
+		} if (args[0] == NO_BUTTON) {
 			return 0
 		} if (args[0] == MODAL_SUBMIT) {
             const newCustomReply = msg.fields.getTextInputValue('customReplyInput');
-            msg.reply(newCustomReply)
+            userInvDb.singleUpdate({id: userId}, {"$inc":{"Custom Reply": -1}})
+            serverConf.singleUpdate({guildId: msg.guild.id}, {"$push": {"cutom_replies":newCustomReply}})
+            msg.reply("Added your custom reply!")
         }
 
 	}
