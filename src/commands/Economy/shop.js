@@ -1,7 +1,7 @@
 import dbManager from '../../helpers/dbCrud.js';
 import discord from 'discord.js';
-import { SHOP_ITEMS } from '../../commandHelpers/economy/shopItems.js';
-import { ITEM_DETAILS } from '../../commandHelpers/economy/shopItems.js';
+import { SHOP_ITEMS, ITEM_DETAILS } from '../../commandHelpers/economy/shopItems.js';
+import { GRIMS_EMOJI } from '../../helpers/emojis.js';
 
 const thc = new dbManager('thc')
 const inventory = new dbManager('inventory')
@@ -45,13 +45,13 @@ class Market {
 
 	async process(buyer) {
 		let item = this.has(buyer)
-		if (!item) return {content: 'Start a new session using `g!shop <item>`'}
+		if (!item) return {content: 'Start a new session using `/shop`'}
 
 		this.remove(buyer)
 		const availablePoints = await thc.singleFind({id: item.owner})
-		if (availablePoints == null) return {content: 'It seems you dont have much THP, gather some by sending `hmm` in chat'}
+		if (availablePoints == null) return {content: 'It seems you dont have much Grims, gather some by sending `hmm` in chat'}
 
-		if (availablePoints.count < item.cost) return {content: `You are short by **${item.cost - availablePoints.count} THP**!`}
+		if (availablePoints.count < item.cost) return {content: `You are short by ${GRIMS_EMOJI}**${item.cost - availablePoints.count}**!`}
 		await thc.singleUpdate({id: buyer}, {$inc :{count: -item.cost}})
 		const receipt = await this.purchase(buyer, item)
 		return receipt
@@ -73,7 +73,7 @@ class Market {
 			inventory.singleInsert(newEntry)
 
 		}
-		return {content: `You purchased **${itemDetails.name}** for **${itemDetails.cost}**!\n\nCheck it out using: **g!inventory**`}
+		return {content: `You purchased **${itemDetails.name}** for ${GRIMS_EMOJI}**${itemDetails.cost}**!\n\nCheck it out using: **g!inventory**`}
 	}
 }
 
@@ -82,7 +82,7 @@ const register = new Market()
 export default {
 
 	name: 'shop',
-	description:'Exchange THC for some spicy items',
+	description:'Exchange Grims for some spicy items',
 	alias: ['redeem'],
 	options: [
 		{name: "item", desc: "Item to be purchased", required: true, type: "string", choices: SHOP_ITEMS},
@@ -103,7 +103,7 @@ export default {
 
 		} else {
 			item = args[0]
-			const cmdFormat = 'Command format: `g!shop <shop item>`\nEg: **g!shop chm**'
+			const cmdFormat = 'Command format: `/shop`\nEg: **/shop**'
 			
 			if (typeof item == 'undefined' || !SHOP_ITEMS.includes(item)) return {content: `**${item}** is not an available item\nitems include: \`${SHOP_ITEMS.join(', ')}\`\n\n${cmdFormat}`};
 		}
@@ -122,7 +122,7 @@ export default {
 					.setStyle('DANGER')
 			);
 
-		return ({content: `Are you sure on buying **${pendingDeal.name}** from **${pendingDeal.cost} THP(s)**?`, components: [buttons]})
+		return ({content: `Are you sure on buying **${pendingDeal.name}** from ${GRIMS_EMOJI}**${pendingDeal.cost}**?`, components: [buttons]})
 
     },
 

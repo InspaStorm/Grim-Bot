@@ -100,7 +100,7 @@ export default {
 		} if (args[0] == MODAL_SUBMIT) {
             const newCustomReply = msg.fields.getTextInputValue('customReplyInput');
             userInvDb.singleUpdate({id: userId}, {"$inc":{"Custom Reply": -1}})
-            serverConf.singleUpdate({guildId: msg.guild.id}, {"$push": {"cutom_replies":newCustomReply}})
+            serverConf.singleUpdate({guildId: msg.guild.id}, {"$push": {"custom_replies_list":newCustomReply}})
             msg.reply("Added your custom reply!")
         }
 

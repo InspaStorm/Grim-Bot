@@ -43,7 +43,7 @@ export async function handleMessage(msg) {
 
 
 	if (lowerCasedMsg.startsWith('hm')) {
-		const res = replyHm(lowerCasedMsg, msg.author)
+		const res = await replyHm(lowerCasedMsg, msg.author, msg.guild)
 		msg.channel.send(res)
 	}
 
