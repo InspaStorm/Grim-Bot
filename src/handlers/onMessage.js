@@ -22,7 +22,7 @@ export async function handleMessage(msg) {
     const lowerCasedMsg = msg.content.toLowerCase()
 
 	if(msg.author.bot) return;
-	if (global.locks.get('level').includes(msg.guild.id)) await updateLevel(msg);
+	if (global.locks.get('level').includes(msg.guild.id)) await updateLevel(msg.author, msg.guild.id, msg);
 	lookingAchievements(msg, msg.author)
 
 

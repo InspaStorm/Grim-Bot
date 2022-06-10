@@ -1,5 +1,5 @@
 import dbManager from '../../helpers/dbCrud.js';
-import {lockLevel} from '../../startup/featureLocks.js'
+import { lockLevel, lockCustomReplies } from '../../startup/featureLocks.js'
 
 const collection = new dbManager('server-conf');
 
@@ -46,7 +46,15 @@ export default {
 
 			await collection.singleUpdate({guildId: msg.guild.id}, {$set: {[featureName]: decision}})
 
-			await lockLevel(msg.client)
+			switch (featureName) {
+				case "level":
+					await lockLevel(msg.client);
+					break;
+				case "custom_replies":
+					await lockCustomReplies(msg.client);
+					break;
+			}
+			
 			return {content: `**${featureName} system** has been turned **${decision}** for this server!`}
 
 		} else {

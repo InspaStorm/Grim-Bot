@@ -1,9 +1,21 @@
 import level from '../../commandHelpers/level/levelScore.js';
 import dbManager from '../../helpers/dbCrud.js';
 import {replier} from '../../helpers/apiResolver.js';
-import {fetchMember, inputMemberCheck} from '../../helpers/member.js';
+import { fetchMember } from '../../helpers/member.js';
+import { updateLevel } from '../../commandHelpers/level/updateLevelScore.js';
 
 const collection = new dbManager('level')
+
+function prepareLevelInfo(scoreOfUser) {
+
+	const arrayOfScores = Object.keys(level)
+	const CurrentLevelScore = arrayOfScores.find(x => x > scoreOfUser)
+	const CurrentLevel = level[CurrentLevelScore] - 1
+
+	const userLevelInfoFormat = `Level **${CurrentLevel}**    [ **${(scoreOfUser/CurrentLevelScore) * 100}%** ]\n\n${scoreOfUser} out of ${CurrentLevelScore}`;
+
+	return userLevelInfoFormat
+}
 
 export default {
 	name: 'level',
@@ -61,28 +73,35 @@ export default {
 			if (score != undefined) {
 				
 				const reply = await replier(msg, {content: `**Processing ${userToBeChecked.username}'s card** <a:loading:944275536274935835>`}, isInteraction)
-				const arrayOfScores = Object.keys(level)
-				const CurrentLevelScore = arrayOfScores.find(x => x > score)
-				const CurrentLevel = level[CurrentLevelScore] - 1
+				
+				const userLevelInfo = prepareLevelInfo(score);
 
 				return {
-					content: `Level **${CurrentLevel}**    [ **${(score/CurrentLevelScore) * 100}%** ]\n\n${score} out of ${CurrentLevelScore}`,
+					content: userLevelInfo,
 					followUp: reply
 				}
 				
 			} else {
 				const reply = await replier(msg, {content: '**Making a new level card** <a:loading:944275536274935835>'}, isInteraction)
-				const arrayOfScores = Object.keys(level)
-				const CurrentLevelScore = arrayOfScores.find(x => x > 0)
-				const CurrentLevel = level[CurrentLevelScore] - 1
+				
+				const userLevelInfo = prepareLevelInfo(0);
+
 				return {
-					content: `Level **${CurrentLevel}** [ **${(score/CurrentLevelScore) * 100}%** ]\n\n${score} out of ${CurrentLevelScore}`,
+					content: userLevelInfo,
 					followUp: reply
 				}
 			}
 		} catch (err){
-			console.log(err)
-			return ({content: 'Encountered An error =/'})
+			updateLevel(msg.user, msg.guild.id);
+
+			const reply = await replier(msg, {content: '**Making a new level card** <a:loading:944275536274935835>'}, isInteraction)
+				
+			const userLevelInfo = prepareLevelInfo(0);
+
+			return {
+				content: userLevelInfo,
+				followUp: reply
+			}
 		}
 	}
 }
