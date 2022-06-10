@@ -20,55 +20,62 @@ function levelCheck(totalScore, msg, score) {
 	} else return score
 }
 
-export async function updateLevel(msg) {
-	if (recentMsg.has(msg.author.id)) return;
+export async function updateLevel( user, guildId, msg = null) {
+	if (recentMsg.has(user.id)) return;
 
 	else {
 
 		// Making so that xp can only be given per 30 seconds
-		recentMsg.add(msg.author.id)
-		setTimeout(() => {recentMsg.delete(msg.author.id)}, 30000)
+		recentMsg.add(user.id)
+		setTimeout(() => {recentMsg.delete(user.id)}, 30000)
 
 
-		const data = await collection.singleFind({id: msg.author.id})
+		const data = await collection.singleFind({id: user.id})
 		if (data != undefined) {
 			let score = Math.floor(Math.random() * 7)
 
 			try {
-				const TotalScore = data.scores.find(x => x.guild == msg.guild.id).score
+				const TotalScore = data.scores.find(x => x.guild == guildId).score
 
 
 				if (TotalScore != undefined) {
 					const points = levelCheck(TotalScore + score, msg, score)
 					if (typeof points == 'number') {
+						// The score wasnt enough for next level i.e it is in the same level
 
-						collection.singleUpdate({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points}})
+						collection.singleUpdate({id: user.id, "scores.guild": guildId}, {$inc: {"scores.$.score": points}})
 					} else {
-						collection.singleUpdate({id: msg.author.id, "scores.guild": msg.guild.id}, {$inc: {"scores.$.score": points.score}})
+						// Reached new level!
+						collection.singleUpdate({id: user.id, "scores.guild": guildId}, {$inc: {"scores.$.score": points.score}})
 						replier(msg, {content: points.message})
 					}
 				} else {
 					const newGuild = {
-						guild: msg.guild.id,
+						guild: guildId,
 						score: 2
 					}
 
-					collection.singleUpdate({id: msg.author.id}, {$push: {scores: newGuild}})
+					collection.singleUpdate({id: user.id}, {$push: {scores: newGuild}})
 				}
 			} catch {
 				const newGuild = {
-					guild: msg.guild.id,
+					guild: guildId,
 					score: 2
 				}
 
-				collection.singleUpdate({id: msg.author.id}, {$push: {scores: newGuild}})
+				collection.singleUpdate({id: user.id}, {$push: {scores: newGuild}})
 			}
 
 		} else {
 			const newUserObject = {
-				id: msg.author.id,
-				name: msg.author.username,
-				scores: [],
+				id: user.id,
+				name: user.username,
+				scores: [
+					{
+						guild: guildId,
+						score: 2
+					}
+				],
 				achievements: []
 			}
 
