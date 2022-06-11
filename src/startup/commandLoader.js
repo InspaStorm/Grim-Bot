@@ -79,8 +79,12 @@ export async function cmdLoader() {
 		for (const file of commandFolder) {
 			if (path.extname(file) == '.js') {
 				// for dynamic updation: `${pathToCmds}/${folder}/${file}?update=${new Date()}`
-				const obj = await import(`${pathToCmds}/${folder}/${file}`)
-				
+				let obj;
+				try {
+					obj = await import(`${pathToCmds}/${folder}/${file}`)
+				} catch (err) {
+					console.error(err)
+				}
 				executableCmd.addCmd(obj.default)
 				await collectCmdInfo(obj.default, folder)
 			}
