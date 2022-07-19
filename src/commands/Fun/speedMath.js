@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 import { EventEmitter } from 'events';
 
 import GameManager from "../../commandHelpers/games/gameManager.js";
-import buttonGame from "../../commandHelpers/games/buttonGame.js";
+import buttonGame from "../../commandHelpers/games/buttonGameManager.js";
 
 const lobby = new GameManager(buttonGame);
 
