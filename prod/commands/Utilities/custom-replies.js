@@ -1,5 +1,5 @@
 import { MessageEmbed } from "discord.js";
-import dbManager from "../../helpers/dbCrud.js";
+import dbManager from "../../database/dbCrud.js";
 const customRepliesDb = new dbManager('server-conf');
 export default {
     name: 'custom-replies',

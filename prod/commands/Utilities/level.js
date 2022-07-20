@@ -1,8 +1,8 @@
-import level from '../../commandHelpers/level/levelScore.js';
-import dbManager from '../../helpers/dbCrud.js';
+import level from '../../commandHelpers/level/levelList.js';
+import dbManager from '../../database/dbCrud.js';
 import { replier } from '../../helpers/apiResolver.js';
 import { fetchMember } from '../../helpers/member.js';
-import { updateLevel } from '../../commandHelpers/level/updateLevelScore.js';
+import { updateLevel } from '../../commandHelpers/level/updateLevel.js';
 const collection = new dbManager('level');
 function prepareLevelInfo(scoreOfUser) {
     const arrayOfScores = Object.keys(level);

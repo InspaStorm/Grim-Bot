@@ -25,7 +25,8 @@
     "join-images": "^1.0.0",
     "mongodb": "^4.1.0",
     "nanospinner": "^1.0.0",
-    "sharp": "^0.30.3"
+    "sharp": "^0.30.3",
+    "to-words": "^3.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",

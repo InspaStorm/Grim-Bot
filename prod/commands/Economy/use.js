@@ -1,5 +1,5 @@
 import { MessageActionRow, MessageButton, Modal, TextInputComponent } from 'discord.js';
-import dbManager from '../../helpers/dbCrud.js';
+import dbManager from '../../database/dbCrud.js';
 import { editReply, replier } from '../../helpers/apiResolver.js';
 import { SHOP_ITEMS } from '../../commandHelpers/economy/shopItems.js';
 import ItemUsageManager from '../../commandHelpers/economy/usageManager.js';
