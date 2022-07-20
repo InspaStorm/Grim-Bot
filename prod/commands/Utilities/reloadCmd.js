@@ -1,4 +1,4 @@
-import { cmdLoader } from '../../startup/commandLoader.js';
+import { cmdLoader } from '../../startup/command-loading/commandLoader.js';
 export default {
     name: 'reloadcmd',
     description: 'reloads Command',

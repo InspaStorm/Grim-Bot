@@ -5,12 +5,12 @@ import { MessageEmbed } from 'discord.js';
  * @param {string} footer text to be set as footer
  */
 export function makeEmbed(title, description, fields, color, thumbnailUrl, footer) {
-    if (!description)
-        description = '\u200b';
     const embed = new MessageEmbed()
-        .setTitle(title)
-        .setDescription(description)
-        .addFields(fields);
+        .setTitle(title);
+    if (description)
+        embed.setDescription(description);
+    if (fields)
+        embed.addFields(fields);
     if (thumbnailUrl)
         embed.setThumbnail(thumbnailUrl);
     if (color)

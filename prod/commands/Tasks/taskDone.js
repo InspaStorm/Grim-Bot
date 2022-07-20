@@ -1,4 +1,4 @@
-import dbManager from '../../helpers/dbCrud.js';
+import dbManager from '../../database/dbCrud.js';
 export default {
     name: 'taskdone',
     description: 'Marks a task of the author as done',

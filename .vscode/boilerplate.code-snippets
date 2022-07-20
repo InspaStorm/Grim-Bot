@@ -15,13 +15,6 @@
 			"\tdescription:'$2',",
 			"\talias: [],",
 			"\toptions: [],",
-			"\t/**",
-			"\t*",
-			"\t* @param {Message} msg message",
-			"\t* @param {String[]} args array of args",
-			"\t* @param {GuildMember} author author of the message",
-			"\t* @param {Boolean} isInteraction whether the message is from interaction or not",
-			"\t*/",
 		
 			"\tasync run(msg, args, author = msg.author, isInteraction = false) {",
 				"\t\t$3",

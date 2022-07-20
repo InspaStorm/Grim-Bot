@@ -1,6 +1,6 @@
 import discord from 'discord.js';
 import { makeEmbed } from "../../helpers/embedManager.js";
-import dbManager from '../../helpers/dbCrud.js';
+import dbManager from '../../database/dbCrud.js';
 
 const thcDb = new dbManager('thc')
 

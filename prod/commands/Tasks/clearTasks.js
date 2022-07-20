@@ -1,4 +1,4 @@
-import dbManager from '../../helpers/dbCrud.js';
+import dbManager from '../../database/dbCrud.js';
 const collection = new dbManager('tasks');
 const owners = ['599489300672806913'];
 export default {

@@ -1,4 +1,4 @@
-import dbManager from "../../helpers/dbCrud.js";
+import dbManager from "../../database/dbCrud.js";
 export default {
     name: 'removetask',
     description: 'Removes a task to the existing user',

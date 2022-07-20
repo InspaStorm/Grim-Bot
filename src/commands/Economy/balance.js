@@ -1,4 +1,4 @@
-import dbManager from '../../helpers/dbCrud.js';
+import dbManager from '../../database/dbCrud.js';
 import discord from 'discord.js';
 import {inputMemberCheck} from '../../helpers/member.js';
 import { GRIMS_EMOJI } from '../../helpers/emojis.js';

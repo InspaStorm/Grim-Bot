@@ -1,10 +1,10 @@
-import dbManager from '../../helpers/dbCrud.js';
+import dbManager from '../../database/dbCrud.js';
 import { lockLevel, lockCustomReplies } from '../../startup/featureLocks.js';
 const collection = new dbManager('server-conf');
 const currentFeatures = ['level', 'custom_replies'];
 const validDecisions = ['on', 'off'];
 export default {
-    name: 'serverconf',
+    name: 'change-serverconf',
     description: 'Edit server config of this bot',
     alias: ['sc'],
     options: [
