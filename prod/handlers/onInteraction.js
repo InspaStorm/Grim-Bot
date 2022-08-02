@@ -4,8 +4,8 @@ async function handleFollowUp(interaction, name) {
 }
 export function handleInteraction(interaction) {
     if (interaction.isCommand()) {
-        const args = interaction.options;
-        executeCommand(interaction.commandName, interaction, args, interaction.user, true);
+        const cmdArguments = interaction.options.data;
+        executeCommand(interaction.commandName, { msg: interaction, author: interaction.user, isInteraction: true, args: cmdArguments });
     }
     else if (interaction.isSelectMenu()) {
         handleFollowUp(interaction, interaction.customId);

@@ -2,9 +2,10 @@
 import { CommandInteraction, Interaction, InteractionReplyOptions, Message, MessageEditOptions, MessageOptions } from "discord.js";
 
 export async function replier(destination: CommandInteraction | Message, content: InteractionReplyOptions | MessageOptions, isInteraction = false) {
+    console.log(content, isInteraction);
     if (isInteraction) {
         (content as InteractionReplyOptions).fetchReply = true
-        const interReply = (destination as CommandInteraction).reply((content as InteractionReplyOptions))
+        const interReply = await (destination as CommandInteraction).reply((content as InteractionReplyOptions))
         return interReply
     } else {
         const msgReply = await (destination as Message).reply((content as MessageOptions))

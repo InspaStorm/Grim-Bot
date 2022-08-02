@@ -1,21 +1,24 @@
-import { Collection } from "discord.js";
-import DiceGame from "./buttonGame.js";
+import { Collection, MessageActionRow } from "discord.js";
+import type { BasicGameInfoType } from "../../types/game";
 
 export default class GameManager {
-    /**
-     * 
-     * @param {DiceGame} gameType 
-     */
-    constructor(gameType) {
+    gameType: any;
+    runningGames: Collection<string, any>;
+
+    constructor(gameType: any) {
         this.gameType = gameType
         this.runningGames = new Collection();
     }
 
-    addGame({ msgId, playerId, playerName, answer, components, endCallback }) {
-        this.runningGames.set(msgId, new this.gameType(msgId, playerId, playerName, answer, components, endCallback))
+    addGame(gameInfo: BasicGameInfoType) {
+        const newGame = new this.gameType(gameInfo);
+
+        this.runningGames.set(gameInfo.msgId, newGame)
+
+        return newGame
     }
     
-    hasGame(msgId) {
+    hasGame(msgId: string) {
         const isPresent = this.runningGames.has(msgId)
 
         if (isPresent) {
@@ -25,7 +28,7 @@ export default class GameManager {
         return false;
     }
 
-    removeGame(msgId) {
+    removeGame(msgId: string) {
         console.log(`Game with ID: ${msgId} just ended!`);
         if (this.runningGames.has(msgId)) {
             this.runningGames.delete(msgId)

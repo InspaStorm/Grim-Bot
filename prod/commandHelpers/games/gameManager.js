@@ -1,15 +1,13 @@
 import { Collection } from "discord.js";
 export default class GameManager {
-    /**
-     *
-     * @param {DiceGame} gameType
-     */
     constructor(gameType) {
         this.gameType = gameType;
         this.runningGames = new Collection();
     }
-    addGame({ msgId, playerId, playerName, answer, components, endCallback }) {
-        this.runningGames.set(msgId, new this.gameType(msgId, playerId, playerName, answer, components, endCallback));
+    addGame(gameInfo) {
+        const newGame = new this.gameType(gameInfo);
+        this.runningGames.set(gameInfo.msgId, newGame);
+        return newGame;
     }
     hasGame(msgId) {
         const isPresent = this.runningGames.has(msgId);
