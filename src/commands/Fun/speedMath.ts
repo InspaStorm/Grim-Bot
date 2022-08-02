@@ -4,29 +4,30 @@ import sharp from 'sharp';
 import { joinImages } from 'join-images';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { EventEmitter } from 'events';
 
 import GameManager from "../../commandHelpers/games/gameManager.js";
-import buttonGame from "../../commandHelpers/games/buttonGameManager.js";
+import ButtonGame from "../../commandHelpers/games/buttonGameManager.js";
+import { BasicGameInfoType } from "../../types/game.js";
+import { CommandParamType } from "../../types/commands.js";
 
-const lobby = new GameManager(buttonGame);
 
 const __filename = fileURLToPath(import.meta.url);
 const pathToDiceImgs = `${dirname(__filename)}/../../pics/dice`;
 
-class DiceGame extends EventEmitter{
+class DiceGame extends ButtonGame{
+    qImage!: MessageAttachment;
+    answer: number;
+    optionButtons!: MessageActionRow[];
 
-    constructor(msgID, playerInfo) {
-        super()
-        this.init(msgID, playerInfo);
-
-        this.qImage;
-        this.answer;
-        this.optionButtons;
+    constructor(gameInfo: BasicGameInfoType) {
+        super(gameInfo)
+        this.init(gameInfo.msgId, gameInfo.playerId, gameInfo.playerName);
+        
+        this.answer = gameInfo.answer!;
 
     }
     
-    init(msgID, playerInfo) {
+    init(msgID: string, playerId: string, playerName: string) {
         this.createQuestion()
         .then(
             info => {
@@ -34,12 +35,6 @@ class DiceGame extends EventEmitter{
                 this.answer = info.a
                 this.optionButtons = info.components
                 
-                lobby.addGame({msgId: msgID, playerId: playerInfo.id, playerName:playerInfo.username,
-                    answer: this.answer, components: this.optionButtons,
-                    endCallback: msgID => {
-                        lobby.removeGame(msgID);
-                    }
-                })
                 this.emit('ready')
             }
         )
@@ -65,18 +60,13 @@ class DiceGame extends EventEmitter{
         return {q: question, a: answer, components: options}
         
     }
-
-    /**
-     * @param {number} quantity Number of dices to be rolled
-     * @returns {{buffers: Buffer, numbers: number[]}}
-     */
-
-    async rollDice(quantity) {
+    
+    async rollDice(quantity: number) {
         const imgBuffers = [];
         const numbers = [];
         
         let i = 0;
-
+        
         while (i < quantity) {
             const randInt = Math.floor(Math.random() * 6);
             if (randInt > 0) {
@@ -101,7 +91,7 @@ class DiceGame extends EventEmitter{
      * @param {Buffer[]} imgBuffers Array of buffer of the images
      * @returns {MessageAttachment} The message attachment that can be sent 
      */
-     async prepareImgs(imgBuffers) {
+     async prepareImgs(imgBuffers: Buffer[]) {
         
         
         const resultImg = await joinImages(imgBuffers, {direction: 'horizontal', color: "#FFF", margin: {top:7, right:7, bottom:7}})
@@ -112,8 +102,8 @@ class DiceGame extends EventEmitter{
         return result
     }
     
-    makeButtons(ansNumber) {
-        let randNums = [];
+    makeButtons(ansNumber: number) {
+        let randNums: number[] = [];
         let buttons = [];
         
         while (randNums.length <= 8) {
@@ -122,7 +112,7 @@ class DiceGame extends EventEmitter{
         }
 
         const randPos = Math.floor(Math.random() * 9);
-
+        
         randNums[randPos] = ansNumber
 
         for (let num of randNums) {
@@ -130,7 +120,7 @@ class DiceGame extends EventEmitter{
                 .setCustomId(`speedmath ${num.toString()}`)
                 .setLabel(num.toString())
                 .setStyle('PRIMARY')
-
+                
             buttons.push(button)
         }
         
@@ -146,69 +136,62 @@ class DiceGame extends EventEmitter{
     }
 }
 
+const lobby = new GameManager(DiceGame);
+
 export default {
     name: 'speedmath',
     description:'Calculate as fast as you can!',
     alias: ['math'],
     options: [],
-    /**
-     * 
-     * @param {Message} msg message
-     * @param {String[]} args array of args
-     * @param {GuildMember} author author of the message
-     * @param {Boolean} isInteraction whether the message is from interaction or not
-     */
-    async run(msg, args, author = msg.author, isInteraction = false) {
-        const loading = await replier(msg, {content: '<a:dice_rolling:956854476143218728>'}, isInteraction)
+    async run(invokInfo: CommandParamType) {
+        const loading = await replier(invokInfo.msg, {content: '<a:dice_rolling:956854476143218728>'}, invokInfo.isInteraction)
 
-        const gameInstance = new DiceGame(loading.id, author);
-        
+        const gameInstance =lobby.addGame({msgId: loading!.id, playerId: invokInfo.author.id, playerName: invokInfo.author.id, answer: null, components: null, endCallback: (msgID: string)=> {
+            lobby.removeGame(msgID);
+        }})
+
         // End this function if the message was deleted
         gameInstance.on('ready', async () => {
             try {
-                await editReply(loading, gameInstance.getGameQuestion, isInteraction)
+                console.log('Hi');
+                await editReply(loading!, gameInstance.getGameQuestion, invokInfo.isInteraction)
+                console.log('Not Hi');
             } catch(err) {
-                console.log(err);
+                console.log("Not ready "+err);
             }
             // Indicating the command will run on its own.
         })
         return {selfRun: true}
     },
 
-    /**
-     * 
-     * @param {ButtonInteraction} interaction Interaction called upon clicking button
-     * @returns 
-     */
-
-    async handle(interaction) {
-        const argsAsArray = interaction.customId.split(" ")
+    async handle(inter: ButtonInteraction) {
+        const argsAsArray = inter.customId.split(" ")
 		argsAsArray.shift()
 
-        const gameId = interaction.message.id
-        const player = interaction.user
+        const gameId = inter.message.id
+        const player = inter.user
 
         const interactedGame = lobby.hasGame(gameId)
         if (interactedGame) {
 
             if (player != interactedGame.playerId) {
-                interaction.reply({content: 'This is an ongoing game started by someone else, Why not start a new session by yourself ;p',ephemeral: true})
+                inter.reply({content: 'This is an ongoing game started by someone else, Why not start a new session by yourself ;p',ephemeral: true})
             }
 
             const gameStats = interactedGame.checkResponse(argsAsArray[0])
             if (gameStats) {
-                interaction.update({content: `${gameStats}`, files: [], components: []})
+                inter.update({content: `${gameStats}`, files: [], components: []})
 
                 lobby.removeGame(gameId)
                 return;
             }
             
-            const updatedButtons = interactedGame.disableButton(interaction.component)
-            interaction.update({components: updatedButtons})
+            const updatedButtons = interactedGame.disableButton(inter.component)
+            inter.update({components: updatedButtons})
             return;
         }
 
-        interaction.update({content: `This game is no longer playable, consider starting a new session =)`, files: [], components: []})
+        inter.update({content: `This game is no longer playable, consider starting a new session =)`, files: [], components: []})
         return;
     }
 }

@@ -1,22 +1,20 @@
-export default class buttonGame {
-    /**
-     *
-     * @param {number} msgId ID of the game message
-     * @param {string} playerId ID of the player
-     * @param {number} answer Answer for the current question
-     * @param {MessageActionRow[]} components Array of action rows containing btton components
-     * @param {CallableFunction} endCallback Function to be called when the game ends
-     */
-    constructor(msgId, playerId, playerName, answer, components, endCallback) {
-        this.gameId = msgId;
-        this.playerId = playerId;
-        this.playerName = playerName;
-        this.ans = answer;
-        this.components = components;
+import EventEmitter from "events";
+export default class ButtonGame extends EventEmitter {
+    constructor(gameInfo) {
+        super();
+        this.gameId = gameInfo.msgId;
+        this.playerId = gameInfo.playerId;
+        this.playerName = gameInfo.playerName;
+        this.components = gameInfo.components;
         this.numOfAttempts = 0;
         this.startTime = Date.now();
-        this.endGame = endCallback;
+        this.endGame = gameInfo.endCallback;
         this.timer = setTimeout(() => this.endGame(this.gameId), 15000);
+        if (gameInfo.answer)
+            this.initWithAns(gameInfo.answer);
+    }
+    initWithAns(ans) {
+        this.ans = ans;
     }
     get stats() {
         const timeTaken = this.timeTakenInGame;
@@ -37,23 +35,30 @@ export default class buttonGame {
             return this.stats;
         return false;
     }
-    disableButton(buttonToBeDisabled) {
-        let indexOfOption;
-        let indexOfRow = 0;
-        let updatingOption;
+    fetchButtonComponentData(buttonInfo) {
+        let indexOfButton = 0;
+        let indexOfActionRow = 0;
+        let requestedButton;
         for (let row of this.components) {
-            updatingOption = row.components.find((currentValue, indexOfValue) => {
-                indexOfOption = indexOfValue;
-                return currentValue.label == buttonToBeDisabled.label;
+            requestedButton = row.components.find((currentValue, indexOfValue) => {
+                indexOfButton = indexOfValue;
+                return currentValue.label == buttonInfo.label;
             });
-            if (updatingOption)
-                break;
-            indexOfRow++;
+            if (requestedButton) {
+                return { rowIndex: indexOfButton, buttonIndex: indexOfButton, button: requestedButton };
+            }
+            indexOfActionRow++;
         }
-        updatingOption.setDisabled();
-        this.components[indexOfRow].components[indexOfOption] = updatingOption;
-        this.updateButtons(this.components);
-        return this.components;
+        return null;
+    }
+    disableButton(buttonToBeDisabled) {
+        const fetchedButtonData = this.fetchButtonComponentData(buttonToBeDisabled);
+        if (fetchedButtonData) {
+            const diabledButton = fetchedButtonData.button.setDisabled();
+            this.components[fetchedButtonData.rowIndex].components[fetchedButtonData.buttonIndex] = diabledButton;
+            this.updateButtons(this.components);
+            return this.components;
+        }
     }
     updateTimer() {
         clearTimeout(this.timer);

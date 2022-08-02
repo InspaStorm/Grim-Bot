@@ -10,12 +10,13 @@
   "scripts": {
     "build": "tsc",
     "start": "node -r dotenv/config ./prod/index.js",
-    "watch": "ts-node-dev src/index.ts"
+    "watch": "tsc-watch --onSuccess \"node -r dotenv/config ./prod/index.js\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/sharp": "^0.30.4",
     "axios": "^0.26.1",
     "chalk": "^4.1.2",
     "discord.js": "^13.1.0",
@@ -26,7 +27,8 @@
     "mongodb": "^4.1.0",
     "nanospinner": "^1.0.0",
     "sharp": "^0.30.3",
-    "to-words": "^3.2.0"
+    "to-words": "^3.2.0",
+    "tsc-watch": "^5.0.3"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
