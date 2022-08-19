@@ -13,11 +13,8 @@ class TicTacToe extends ButtonGame {
         this.board = board;
     }
     updateBoard(buttonPressed) {
-        console.log(buttonPressed);
         this.disableButton(buttonPressed);
-        console.log("Yes!");
         const buttonInfo = this.fetchButtonComponentData(buttonPressed);
-        console.log(buttonInfo);
         if (buttonInfo) {
             this.board[buttonInfo.rowIndex][buttonInfo.buttonIndex] = ":smile:";
             const boardAsEmbed = makeEmbed(stringifyGame(this.board));
@@ -83,14 +80,14 @@ export default {
     description: 'A simple tic tac toe game',
     alias: [],
     options: [],
-    async run(msg, args, author = msg.user, isInteraction = false) {
+    async run(invokInfo) {
         const NUM_OF_COLS = 3;
         const NUM_OF_ROWS = 3;
         let initialBoard = prepareBoard(NUM_OF_COLS, NUM_OF_ROWS);
         const gameEmbed = makeEmbed(stringifyGame(initialBoard.usableBoard));
         const gameButtons = makeButtonComponents(initialBoard.bareBoard);
-        const gameMessage = await replier(msg, { content: "Starting the game.." }, true);
-        const newGame = tttLobby.addGame({ msgId: gameMessage.id, playerId: author.id, playerName: author.username, answer: null, components: gameButtons, endCallback: (msgID) => {
+        const gameMessage = await replier(invokInfo.msg, { content: "Starting the game.." }, true);
+        const newGame = tttLobby.addGame({ msgId: gameMessage.id, playerId: invokInfo.author.id, playerName: invokInfo.author.username, answer: null, components: gameButtons, endCallback: (msgID) => {
                 tttLobby.removeGame(msgID);
             } });
         newGame.setBoard(initialBoard.usableBoard);
