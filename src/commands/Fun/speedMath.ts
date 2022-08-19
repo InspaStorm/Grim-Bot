@@ -1,4 +1,4 @@
-import { Message, ButtonInteraction, GuildMember, MessageAttachment, MessageActionRow, MessageButton } from "discord.js";
+import { ButtonInteraction, GuildMember, MessageAttachment, MessageActionRow, MessageButton } from "discord.js";
 import { editReply , replier} from '../../helpers/apiResolver.js';
 import sharp from 'sharp';
 import { joinImages } from 'join-images';
@@ -12,18 +12,15 @@ import { CommandParamType } from "../../types/commands.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
-const pathToDiceImgs = `${dirname(__filename)}/../../pics/dice`;
+const pathToDiceImgs = `${dirname(__filename)}/../../images/dice`;
 
 class DiceGame extends ButtonGame{
     qImage!: MessageAttachment;
-    answer: number;
-    optionButtons!: MessageActionRow[];
-
     constructor(gameInfo: BasicGameInfoType) {
         super(gameInfo)
         this.init(gameInfo.msgId, gameInfo.playerId, gameInfo.playerName);
         
-        this.answer = gameInfo.answer!;
+        this.ans = gameInfo.answer!;
 
     }
     
@@ -32,8 +29,8 @@ class DiceGame extends ButtonGame{
         .then(
             info => {
                 this.qImage = info.q
-                this.answer = info.a
-                this.optionButtons = info.components
+                this.ans = info.a
+                this.components = info.components
                 
                 this.emit('ready')
             }
@@ -44,7 +41,7 @@ class DiceGame extends ButtonGame{
         return {
             content: "What will be the product of these?",
             files: [this.qImage],
-            components: this.optionButtons
+            components: this.components
         }
     }
 
@@ -85,12 +82,7 @@ class DiceGame extends ButtonGame{
 
         return {buffers: imgBuffers, numbers: numbers}
     }
-    
-    /**
-     * 
-     * @param {Buffer[]} imgBuffers Array of buffer of the images
-     * @returns {MessageAttachment} The message attachment that can be sent 
-     */
+
      async prepareImgs(imgBuffers: Buffer[]) {
         
         
@@ -146,16 +138,16 @@ export default {
     async run(invokInfo: CommandParamType) {
         const loading = await replier(invokInfo.msg, {content: '<a:dice_rolling:956854476143218728>'}, invokInfo.isInteraction)
 
-        const gameInstance =lobby.addGame({msgId: loading!.id, playerId: invokInfo.author.id, playerName: invokInfo.author.id, answer: null, components: null, endCallback: (msgID: string)=> {
+        const gameInstance =lobby.addGame({msgId: loading!.id, playerId: invokInfo.author.id, playerName: invokInfo.author.username, answer: null, components: null, endCallback: (msgID: string)=> {
             lobby.removeGame(msgID);
         }})
 
+        console.log('Ok');
+        
         // End this function if the message was deleted
         gameInstance.on('ready', async () => {
             try {
-                console.log('Hi');
                 await editReply(loading!, gameInstance.getGameQuestion, invokInfo.isInteraction)
-                console.log('Not Hi');
             } catch(err) {
                 console.log("Not ready "+err);
             }
@@ -171,14 +163,14 @@ export default {
         const gameId = inter.message.id
         const player = inter.user
 
-        const interactedGame = lobby.hasGame(gameId)
+        const interactedGame: DiceGame = lobby.hasGame(gameId)
         if (interactedGame) {
 
-            if (player != interactedGame.playerId) {
+            if (player.id != interactedGame.playerId) {
                 inter.reply({content: 'This is an ongoing game started by someone else, Why not start a new session by yourself ;p',ephemeral: true})
             }
 
-            const gameStats = interactedGame.checkResponse(argsAsArray[0])
+            const gameStats = interactedGame.checkResponse(parseInt(argsAsArray[0]))
             if (gameStats) {
                 inter.update({content: `${gameStats}`, files: [], components: []})
 
@@ -186,7 +178,7 @@ export default {
                 return;
             }
             
-            const updatedButtons = interactedGame.disableButton(inter.component)
+            const updatedButtons = interactedGame.disableButton((inter.component as MessageButton))
             inter.update({components: updatedButtons})
             return;
         }

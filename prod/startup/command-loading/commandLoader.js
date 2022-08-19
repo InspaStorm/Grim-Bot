@@ -9,8 +9,8 @@ class Command {
         this.cmdExecutable = cmdCode;
         this.handler = interactionCode;
     }
-    async run(msg, args, author, isInteraction) {
-        const res = await this.cmdExecutable(msg, args, author, isInteraction);
+    async run(cmdParams) {
+        const res = await this.cmdExecutable(cmdParams);
         return res;
     }
     async handle(interaction) {
@@ -35,7 +35,7 @@ export class CmdManager {
         this.commands.push(refreshedCmd);
     }
     async runCmd(name, msg, args, author, isInteraction) {
-        const exe = await this.commands.find(cmd => cmd.name == name || cmd.aliases.includes(name)).run(msg, args, author, isInteraction);
+        const exe = await this.commands.find(cmd => cmd.name == name || cmd.aliases.includes(name)).run({ msg: msg, args: args, author: author, isInteraction: isInteraction });
         return exe;
     }
     async handle(name, interaction) {

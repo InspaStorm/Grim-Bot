@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 export function logger(err: Error) {
 	if (err instanceof Error) {
+		
 		const info = err.stack!.toString().split('\n');
 		const stack = [];
 
@@ -16,6 +17,7 @@ export function logger(err: Error) {
 				level = moddedLine.split(" ")[0]
 				firstLineAsArr.shift()
 				moddedLine = firstLineAsArr.join(" ")
+				stack.push(moddedLine + "\n")
 			}
 
 			if (moddedLine.startsWith('at')) {
@@ -26,7 +28,7 @@ export function logger(err: Error) {
 			i++;
 		}
 
-		console.log('\n' + chalk.red(level) + ' ' + chalk.hex('#FCC3C3')(stack.join('\n\t')))
+		console.log('\n' + chalk.red("[Logger] " + level) + ' ' + chalk.hex('#FCC3C3')(stack.join('\n\t')))
 	} else {
 		console.log(chalk.yellow('Provided a non-error arg'))
 	}

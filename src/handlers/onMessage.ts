@@ -31,14 +31,14 @@ export async function handleMessage(msg: Message) {
 	if (lowerCasedMsg.startsWith(prefix)) {
 		const commandName = lowerCasedMsg.split(" ")[0].substr(2);
 
-		if (commandName == 'ping') {
-			const args = lowerCasedMsg.split(" ");
-			args.shift();
+		// if (commandName == 'ping') {
+		// 	const args = lowerCasedMsg.split(" ");
+		// 	args.shift();
 	
-			executeCommand(commandName, msg, args, msg.author);
+		// 	executeCommand(commandName, {msg: msg, author: msg.user, isInteraction: false, args: args});
 
-			return;
-		}
+		// 	return;
+		// }
 
 		msg.reply("Commands can now only be accessed via slash(/) commands\nType `/` and then select the command!\n**Got stuck? Read:**\nhttps://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ")
 	}

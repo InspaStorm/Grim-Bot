@@ -71,8 +71,8 @@ export default class ButtonGame extends EventEmitter {
                 return (currentValue as MessageButton).label == buttonInfo.label;
             });
 
-            if (requestedButton) {
-                return {rowIndex: indexOfButton, buttonIndex: indexOfButton ,button: requestedButton}
+            if (requestedButton) {                
+                return {rowIndex: indexOfActionRow, buttonIndex: indexOfButton ,button: requestedButton}
             }
             indexOfActionRow ++
         }
@@ -83,10 +83,10 @@ export default class ButtonGame extends EventEmitter {
     disableButton(buttonToBeDisabled: MessageButton) {
         const fetchedButtonData = this.fetchButtonComponentData(buttonToBeDisabled);
         if (fetchedButtonData) {
-            const diabledButton = fetchedButtonData.button.setDisabled()
 
-            this.components[fetchedButtonData.rowIndex].components[fetchedButtonData.buttonIndex] = diabledButton;
-
+            const disabledButton = fetchedButtonData.button.setDisabled()
+            
+            this.components[fetchedButtonData.rowIndex].components[fetchedButtonData.buttonIndex] = disabledButton;
             this.updateButtons(this.components)
 
             return this.components;

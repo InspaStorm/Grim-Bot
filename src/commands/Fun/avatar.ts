@@ -1,5 +1,6 @@
 import discord from 'discord.js';
 import {inputMemberCheck} from '../../helpers/member.js';
+import { CommandParamType } from '../../types/commands.js';
 
 export default {
 
@@ -17,9 +18,9 @@ export default {
      * @param {GuildMember} author author of the message
      * @param {Boolean} isInteraction whether the message is from interaction or not
      */
-    async run(msg, args, author = msg.author, isInteraction = false) {
+    async run(invokeParams: CommandParamType) {
 
-		const userInfo = await inputMemberCheck(msg, author, args, isInteraction)
+		const userInfo = await inputMemberCheck(invokeParams.msg.guild!, invokeParams.author, invokeParams.args, invokeParams.isInteraction)
 
 		if (typeof userInfo == 'string') return {content: userInfo}
 		
