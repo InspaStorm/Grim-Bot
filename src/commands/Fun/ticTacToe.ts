@@ -1,4 +1,11 @@
-import { ButtonInteraction, MessageActionRow, MessageButton } from "discord.js";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonComponent,
+  ButtonInteraction,
+  ButtonStyle,
+  Message,
+} from "discord.js";
 import { makeEmbed } from "../../helpers/embedManager.js";
 import { ToWords } from "to-words";
 import GameManager from "../../commandHelpers/games/gameManager.js";
@@ -19,7 +26,7 @@ class TicTacToe extends ButtonGame {
     this.board = board;
   }
 
-  updateBoard(buttonPressed: MessageButton) {
+  updateBoard(buttonPressed: ButtonBuilder) {
     this.disableButton(buttonPressed);
     const buttonInfo = this.fetchButtonComponentData(buttonPressed);
 
@@ -81,17 +88,19 @@ function prepareBoard(NUM_OF_COLS: number, NUM_OF_ROWS: number) {
   return { bareBoard: bareBoard, usableBoard: usableBoard };
 }
 
-function makeButtonComponents(gameBoardItems: number[][]): MessageActionRow[] {
-  let preparedComponents: MessageActionRow[] = [];
+function makeButtonComponents(
+  gameBoardItems: number[][]
+): ActionRowBuilder<ButtonBuilder>[] {
+  let preparedComponents: ActionRowBuilder<ButtonBuilder>[] = [];
 
   for (let row of gameBoardItems) {
-    let newRow = new MessageActionRow();
+    let newRow = new ActionRowBuilder<ButtonBuilder>();
 
     for (let valueOfCell of row) {
       newRow.addComponents(
-        new MessageButton()
+        new ButtonBuilder()
           .setCustomId(`tic-tac-toe ${valueOfCell}`)
-          .setStyle("PRIMARY")
+          .setStyle(ButtonStyle.Primary)
           .setLabel(valueOfCell.toString())
       );
     }
@@ -111,6 +120,7 @@ export default {
   name: "tic-tac-toe",
   description: "A simple tic tac toe game",
   alias: [],
+  notReady: true,
   options: [],
 
   async run(invokInfo: CommandParamType) {
@@ -142,7 +152,7 @@ export default {
     newGame.setBoard(initialBoard.usableBoard);
 
     editReply(
-      gameMessage!,
+      gameMessage! as Message,
       { content: " ", embeds: [gameEmbed], components: gameButtons },
       true
     );
@@ -171,7 +181,7 @@ export default {
       }
 
       const updatedButtons = interactedGame.updateBoard(
-        interactedButton as MessageButton
+        ButtonBuilder.from(interactedButton)
       );
       inter.update({
         embeds: [updatedButtons.embed],

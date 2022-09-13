@@ -1,8 +1,8 @@
-import dbManager from '../../database/dbCrud.js';
+import dbManager from "../../database/dbCrud.js";
 class TableCreator {
     constructor() {
         this.items = [];
-        this.padding;
+        this.padding = 0;
         this.table = [];
     }
     addTitle(title) {
@@ -26,22 +26,22 @@ class TableCreator {
     createTable(title) {
         this.fixPadding();
         this.addTitle(title);
-        if (!this.items.length > 0) {
-            this.table.push('||Psst... Your inventory is empty =(||');
+        if (this.items.length < 1) {
+            this.table.push("||Psst... Your inventory is empty =(||");
             return;
         }
         for (let item of this.items) {
             let nameLength = item.name.length;
             if (nameLength < this.padding) {
-                item.name += ' '.repeat(this.padding - nameLength);
+                item.name += " ".repeat(this.padding - nameLength);
             }
             this.table.push(`> **${item.name}** **>>** ${item.quantity}`);
         }
     }
 }
-const inv = new dbManager('inventory');
+const inv = new dbManager("inventory");
 const alias = {
-    chm: 'Custom Hm Message Token'
+    chm: "Custom Hm Message Token",
 };
 function alteredLook(e) {
     if (Object.keys(alias).includes(e)) {
@@ -50,9 +50,9 @@ function alteredLook(e) {
     return e;
 }
 export default {
-    name: 'inventory',
-    description: 'Get a look inside of your inventory',
-    alias: ['e', 'pocket'],
+    name: "inventory",
+    description: "Get a look inside of your inventory",
+    alias: ["e", "pocket"],
     options: [],
     /**
      *
@@ -61,15 +61,16 @@ export default {
      * @param {GuildMember} author author of the message
      * @param {Boolean} isInteraction whether the message is from interaction or not
      */
-    async run(msg, args, user = msg.author, isInteraction = false) {
+    async run(invokeParams) {
+        const user = invokeParams.author;
         const items = await inv.singleFind({ id: user.id });
         const table = new TableCreator();
         if (items != null) {
             // Deleting id & _id field found in the document(Database)
-            ['id', '_id'].forEach(key => delete items[key]);
-            Object.keys(items).forEach(e => table.addItem(alteredLook(e), items[e]));
+            ["id", "_id"].forEach((key) => delete items[key]);
+            Object.keys(items).forEach((e) => table.addItem(alteredLook(e), items[e]));
         }
         table.createTable(`${user.username}'s inventory:`);
-        return { content: table.table.join('\n') };
-    }
+        return { content: table.table.join("\n") };
+    },
 };

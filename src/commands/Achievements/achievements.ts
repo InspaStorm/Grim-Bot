@@ -1,6 +1,6 @@
 import dbManager from "../../database/dbCrud.js";
 import achievementList from "../../commandHelpers/achievements/achievementList.js";
-import discord, { User } from "discord.js";
+import { ApplicationCommandOptionType, EmbedBuilder, User } from "discord.js";
 import { inputMemberCheck } from "../../helpers/member.js";
 import { CommandParamType } from "../../types/commands";
 
@@ -22,7 +22,7 @@ async function makeAwardEmbed(user: User) {
       achievements.push(achievementList[index]);
     }
   }
-  const achievementEmbed = new discord.MessageEmbed()
+  const achievementEmbed = new EmbedBuilder()
     .setTitle("<:achievement:939468591395377213> Unlocked achievement(s)")
     .setDescription(user.username)
     .addFields(achievements)
@@ -45,7 +45,7 @@ export default {
       name: "user",
       desc: "Mention the user/give the user's name",
       required: false,
-      type: "user",
+      type: ApplicationCommandOptionType.User,
     },
   ],
 

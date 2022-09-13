@@ -1,38 +1,42 @@
-import discord from 'discord.js';
-import {inputMemberCheck} from '../../helpers/member.js';
-import { CommandParamType } from '../../types/commands.js';
+import { ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
+import { inputMemberCheck } from "../../helpers/member.js";
+import { CommandParamType } from "../../types/commands.js";
 
 export default {
+  name: "avatar",
+  description: "Shows off your avatar",
+  alias: [],
+  options: [
+    {
+      name: "user",
+      desc: "Mention the user/give the user's name",
+      required: false,
+      type: ApplicationCommandOptionType.User,
+    },
+  ],
 
-	name: 'avatar',
-	description:'Shows off your avatar',
-	alias: [],
-	options: [
-		{name: "user", desc: "Mention the user/give the user's name", required: false, type: "user"},
-	],
+  /**
+   *
+   * @param {Message} msg message
+   * @param {String[]} args array of args
+   * @param {GuildMember} author author of the message
+   * @param {Boolean} isInteraction whether the message is from interaction or not
+   */
+  async run(invokeParams: CommandParamType) {
+    const userInfo = await inputMemberCheck(
+      invokeParams.msg.guild!,
+      invokeParams.author,
+      invokeParams.args,
+      invokeParams.isInteraction
+    );
 
-	/**
-     * 
-     * @param {Message} msg message
-     * @param {String[]} args array of args
-     * @param {GuildMember} author author of the message
-     * @param {Boolean} isInteraction whether the message is from interaction or not
-     */
-    async run(invokeParams: CommandParamType) {
+    if (typeof userInfo == "string") return { content: userInfo };
 
-		const userInfo = await inputMemberCheck(invokeParams.msg.guild!, invokeParams.author, invokeParams.args, invokeParams.isInteraction)
+    const name = userInfo.username;
+    const img = userInfo.displayAvatarURL({ size: 256 });
 
-		if (typeof userInfo == 'string') return {content: userInfo}
-		
-		const name  = userInfo.username
-		const img = userInfo.displayAvatarURL({format: 'png',size: 256})
+    const avatarEmbed = new EmbedBuilder().setDescription(name).setImage(img);
 
-		const avatarEmbed = new discord.MessageEmbed()
-		.setDescription(name)
-		.setImage(img);
-
-		return ({embeds:[avatarEmbed] })
-
-	}
-
-}
+    return { embeds: [avatarEmbed] };
+  },
+};

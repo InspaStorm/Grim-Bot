@@ -1,5 +1,10 @@
 import "dotenv/config";
-import { Client, Intents, Collection } from "discord.js";
+import {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  ActivityType,
+} from "discord.js";
 import {
   startAsDevolopment,
   startAsProduction,
@@ -8,9 +13,9 @@ import { createSpinner } from "nanospinner";
 
 export const client = new Client({
   intents: [
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_VOICE_STATES,
-    Intents.FLAGS.GUILDS,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent,
   ],
 });
 global.locks = new Collection();
@@ -30,8 +35,8 @@ client.once("ready", () => {
   client.user!.setPresence({
     activities: [
       {
-        name: "InspArmy | g!help",
-        type: "WATCHING",
+        name: "InspArmy",
+        type: ActivityType.Watching,
       },
     ],
     status: "idle",
