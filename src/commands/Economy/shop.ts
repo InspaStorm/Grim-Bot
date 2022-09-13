@@ -1,5 +1,10 @@
 import dbManager from "../../database/dbCrud.js";
-import discord from "discord.js";
+import discord, {
+  ActionRowBuilder,
+  ApplicationCommandOptionType,
+  ButtonBuilder,
+  ButtonStyle,
+} from "discord.js";
 import {
   SHOP_ITEMS,
   ITEM_DETAILS,
@@ -96,7 +101,7 @@ class Market {
       inventory.singleInsert(newEntry);
     }
     return {
-      content: `You purchased **${itemDetails.name}** for ${GRIMS_EMOJI}**${itemDetails.cost}**!\n\nCheck it out using: **g!inventory**`,
+      content: `You purchased **${itemDetails.name}** for ${GRIMS_EMOJI}**${itemDetails.cost}**!\n\nCheck it out using: **/inventory**`,
       components: [],
     };
   }
@@ -113,7 +118,7 @@ export default {
       name: "item",
       desc: "Item to be purchased",
       required: true,
-      type: "string",
+      type: ApplicationCommandOptionType.String,
       choices: SHOP_ITEMS,
     },
   ],
@@ -126,19 +131,19 @@ export default {
    * @param {Boolean} isInteraction whether the message is from interaction or not
    */
   async run(invokeParams: CommandParamType) {
-    let item = invokeParams.msg.options.getString("item")!;
+    let item = invokeParams.msg.options.get("item")?.value! as string;
 
     const pendingDeal = register.add(invokeParams.author.id, item);
 
-    const buttons = new discord.MessageActionRow().addComponents(
-      new discord.MessageButton()
+    const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new discord.ButtonBuilder()
         .setCustomId("shop 1")
         .setLabel("Yes")
-        .setStyle("SUCCESS"),
-      new discord.MessageButton()
+        .setStyle(ButtonStyle.Success),
+      new discord.ButtonBuilder()
         .setCustomId("shop 2")
         .setLabel("No")
-        .setStyle("DANGER")
+        .setStyle(ButtonStyle.Danger)
     );
 
     return {

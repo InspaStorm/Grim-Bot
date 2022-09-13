@@ -42,10 +42,14 @@ export default class ButtonGame extends EventEmitter {
         for (let row of this.components) {
             requestedButton = row.components.find((currentValue, indexOfValue) => {
                 indexOfButton = indexOfValue;
-                return currentValue.label == buttonInfo.label;
+                return currentValue.data.label == buttonInfo.data.label;
             });
             if (requestedButton) {
-                return { rowIndex: indexOfActionRow, buttonIndex: indexOfButton, button: requestedButton };
+                return {
+                    rowIndex: indexOfActionRow,
+                    buttonIndex: indexOfButton,
+                    button: requestedButton,
+                };
             }
             indexOfActionRow++;
         }

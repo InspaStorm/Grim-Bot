@@ -1,5 +1,4 @@
 export async function replier(destination, content, isInteraction = false) {
-    console.log(content, isInteraction);
     if (isInteraction) {
         content.fetchReply = true;
         const interReply = await destination.reply(content);

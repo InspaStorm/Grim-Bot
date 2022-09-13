@@ -1,4 +1,4 @@
-import { MessageActionRow, MessageButton } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, } from "discord.js";
 import { makeEmbed } from "../../helpers/embedManager.js";
 import { ToWords } from "to-words";
 import GameManager from "../../commandHelpers/games/gameManager.js";
@@ -51,7 +51,7 @@ function prepareBoard(NUM_OF_COLS, NUM_OF_ROWS) {
             newUsableCol.push(NUM_EMOJI_TEMPLATE(valueOfCell));
             newBareCol.push(valueOfCell);
             if (row_index === NUM_OF_ROWS - 1) {
-                lastRowNum += (row_index + 1);
+                lastRowNum += row_index + 1;
             }
         }
         usableBoard.push(newUsableCol);
@@ -62,11 +62,11 @@ function prepareBoard(NUM_OF_COLS, NUM_OF_ROWS) {
 function makeButtonComponents(gameBoardItems) {
     let preparedComponents = [];
     for (let row of gameBoardItems) {
-        let newRow = new MessageActionRow();
+        let newRow = new ActionRowBuilder();
         for (let valueOfCell of row) {
-            newRow.addComponents(new MessageButton()
+            newRow.addComponents(new ButtonBuilder()
                 .setCustomId(`tic-tac-toe ${valueOfCell}`)
-                .setStyle('PRIMARY')
+                .setStyle(ButtonStyle.Primary)
                 .setLabel(valueOfCell.toString()));
         }
         preparedComponents.push(newRow);
@@ -76,9 +76,10 @@ function makeButtonComponents(gameBoardItems) {
 const converter = new ToWords();
 const NUM_EMOJI_TEMPLATE = (number) => `:${converter.convert(number).toLowerCase()}:`;
 export default {
-    name: 'tic-tac-toe',
-    description: 'A simple tic tac toe game',
+    name: "tic-tac-toe",
+    description: "A simple tic tac toe game",
     alias: [],
+    notReady: true,
     options: [],
     async run(invokInfo) {
         const NUM_OF_COLS = 3;
@@ -87,11 +88,18 @@ export default {
         const gameEmbed = makeEmbed(stringifyGame(initialBoard.usableBoard));
         const gameButtons = makeButtonComponents(initialBoard.bareBoard);
         const gameMessage = await replier(invokInfo.msg, { content: "Starting the game.." }, true);
-        const newGame = tttLobby.addGame({ msgId: gameMessage.id, playerId: invokInfo.author.id, playerName: invokInfo.author.username, answer: null, components: gameButtons, endCallback: (msgID) => {
+        const newGame = tttLobby.addGame({
+            msgId: gameMessage.id,
+            playerId: invokInfo.author.id,
+            playerName: invokInfo.author.username,
+            answer: null,
+            components: gameButtons,
+            endCallback: (msgID) => {
                 tttLobby.removeGame(msgID);
-            } });
+            },
+        });
         newGame.setBoard(initialBoard.usableBoard);
-        editReply(gameMessage, { content: ' ', embeds: [gameEmbed], components: gameButtons }, true);
+        editReply(gameMessage, { content: " ", embeds: [gameEmbed], components: gameButtons }, true);
         return { selfRun: true };
     },
     async handle(inter) {
@@ -105,15 +113,25 @@ export default {
             const interactedButton = inter.component;
             console.table([player.id, interactedGame.playerId]);
             if (player.id != interactedGame.playerId) {
-                inter.reply({ content: 'This is an ongoing game started by someone else, Why not start a new session by yourself ;p', ephemeral: true });
+                inter.reply({
+                    content: "This is an ongoing game started by someone else, Why not start a new session by yourself ;p",
+                    ephemeral: true,
+                });
             }
-            const updatedButtons = interactedGame.updateBoard(interactedButton);
-            inter.update({ embeds: [updatedButtons.embed], components: updatedButtons.components });
+            const updatedButtons = interactedGame.updateBoard(ButtonBuilder.from(interactedButton));
+            inter.update({
+                embeds: [updatedButtons.embed],
+                components: updatedButtons.components,
+            });
             return;
         }
         else {
-            inter.update({ content: `This game is no longer playable, consider starting a new session =)`, files: [], components: [] });
+            inter.update({
+                content: `This game is no longer playable, consider starting a new session =)`,
+                files: [],
+                components: [],
+            });
             return;
         }
-    }
+    },
 };

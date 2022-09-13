@@ -1,13 +1,13 @@
-import discord from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
-export const CHOICE_BUTTONS_ROW = new discord.MessageActionRow()
-			.addComponents(
-				new discord.MessageButton()
-					.setCustomId('shop 1')
-					.setLabel('Yes')
-					.setStyle('SUCCESS'),
-				new discord.MessageButton()
-					.setCustomId('shop 2')
-					.setLabel('No')
-					.setStyle('DANGER')
-			);
+export const CHOICE_BUTTONS_ROW =
+  new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setCustomId("shop 1")
+      .setLabel("Yes")
+      .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
+      .setCustomId("shop 2")
+      .setLabel("No")
+      .setStyle(ButtonStyle.Danger)
+  );

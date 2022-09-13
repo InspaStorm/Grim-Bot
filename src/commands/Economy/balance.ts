@@ -1,5 +1,5 @@
 import dbManager from "../../database/dbCrud.js";
-import discord from "discord.js";
+import { ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 import { inputMemberCheck } from "../../helpers/member.js";
 import { GRIMS_EMOJI } from "../../helpers/emojis.js";
 import { CommandParamType } from "../../types/commands.js";
@@ -15,7 +15,7 @@ export default {
       name: "user",
       desc: "Mention the user/give the user's name",
       required: false,
-      type: "user",
+      type: ApplicationCommandOptionType.User,
     },
   ],
 
@@ -32,7 +32,7 @@ export default {
 
     const score = res != null ? res.count.toString() : "0";
 
-    const thpEmbed = new discord.MessageEmbed()
+    const thpEmbed = new EmbedBuilder()
       .setTitle(`The balance of ${userInfo.username}`)
       .setDescription(`${GRIMS_EMOJI} ${score}`)
       .setThumbnail(userInfo.displayAvatarURL())

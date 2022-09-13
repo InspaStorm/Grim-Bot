@@ -1,4 +1,3 @@
-import discord from "discord.js";
 import { makeEmbed } from "../../helpers/embedManager.js";
 import dbManager from "../../database/dbCrud.js";
 import { CommandParamType } from "../../types/commands.js";
@@ -38,14 +37,11 @@ export default {
 
     if (i <= 2) placeHolders = "----";
 
-    /**
-     * @type {discord.GuildMember}
-     */
     const user = await invokeOptions.msg.client.users.fetch(userId);
     const leaderboard = makeEmbed(
       "THC Leaderboard",
       "\u200b",
-      [{ name: crownHolder, value: placeHolders }],
+      [{ name: crownHolder, value: placeHolders, inline: false }],
       "#FFFF00",
       user.displayAvatarURL(),
       `Redeem the points in \`g!shop\``

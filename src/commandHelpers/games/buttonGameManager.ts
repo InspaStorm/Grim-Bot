@@ -1,107 +1,112 @@
-import { ButtonInteraction, MessageActionRow, MessageActionRowComponent, MessageButton } from "discord.js";
+import { ButtonBuilder, ButtonComponent, ActionRowBuilder } from "discord.js";
 import EventEmitter from "events";
 import type { BasicGameInfoType } from "../../types/game";
 
 export default class ButtonGame extends EventEmitter {
-    // ID of the message that is being used as game
-    gameId: String;
-    playerId: string;
-    playerName: string;
-    components: MessageActionRow[];
-    numOfAttempts: number;
-    startTime: number;
-    endGame: CallableFunction;
-    timer: any;
-    ans: any;
+  // ID of the message that is being used as game
+  gameId: String;
+  playerId: string;
+  playerName: string;
+  components: ActionRowBuilder<ButtonBuilder>[];
+  numOfAttempts: number;
+  startTime: number;
+  endGame: CallableFunction;
+  timer: any;
+  ans: any;
 
-    constructor(gameInfo: BasicGameInfoType) {
-        super();
-        this.gameId = gameInfo.msgId;
-        this.playerId = gameInfo.playerId;
-        this.playerName = gameInfo.playerName;
-        this.components = gameInfo.components!;
-        
-        this.numOfAttempts = 0;
-        this.startTime = Date.now()
-        this.endGame = gameInfo.endCallback
-        this.timer = setTimeout(() => this.endGame(this.gameId), 15_000);
+  constructor(gameInfo: BasicGameInfoType) {
+    super();
+    this.gameId = gameInfo.msgId;
+    this.playerId = gameInfo.playerId;
+    this.playerName = gameInfo.playerName;
+    this.components = gameInfo.components!;
 
-        if (gameInfo.answer) this.initWithAns(gameInfo.answer)
-    }
+    this.numOfAttempts = 0;
+    this.startTime = Date.now();
+    this.endGame = gameInfo.endCallback;
+    this.timer = setTimeout(() => this.endGame(this.gameId), 15_000);
 
-    initWithAns(ans: number) {
-        this.ans = ans
-    }
+    if (gameInfo.answer) this.initWithAns(gameInfo.answer);
+  }
 
-    get stats() {
-        const timeTaken = this.timeTakenInGame
+  initWithAns(ans: number) {
+    this.ans = ans;
+  }
 
-        const stats = `**${this.playerName}'s** Speed Math summary:
+  get stats() {
+    const timeTaken = this.timeTakenInGame;
+
+    const stats = `**${this.playerName}'s** Speed Math summary:
 
 > ⏱️ Time taken: **${timeTaken} seconds**
-> 📝 Number of attempts: **${this.numOfAttempts}**`
+> 📝 Number of attempts: **${this.numOfAttempts}**`;
 
-        return stats
-    }
+    return stats;
+  }
 
-    get timeTakenInGame() {
-        const currentTime = Date.now()
+  get timeTakenInGame() {
+    const currentTime = Date.now();
 
-        const timeTaken = currentTime - this.startTime
+    const timeTaken = currentTime - this.startTime;
 
-        return timeTaken/1000
-    }
+    return timeTaken / 1000;
+  }
 
-    checkResponse(answerGiven: number) {
-        this.numOfAttempts ++;
-        if (answerGiven == this.ans) return this.stats;
-        return false;
-    }
+  checkResponse(answerGiven: number) {
+    this.numOfAttempts++;
+    if (answerGiven == this.ans) return this.stats;
+    return false;
+  }
 
-    fetchButtonComponentData(buttonInfo: MessageButton) {
-        let indexOfButton: number = 0;
-        let indexOfActionRow = 0;
-        let requestedButton: MessageActionRowComponent | undefined;
-        
-        for (let row of this.components) {
-            
-            requestedButton = row.components.find((currentValue, indexOfValue) => {
-                
-                indexOfButton = indexOfValue
-                return (currentValue as MessageButton).label == buttonInfo.label;
-            });
+  fetchButtonComponentData(buttonInfo: ButtonBuilder) {
+    let indexOfButton: number = 0;
+    let indexOfActionRow = 0;
+    let requestedButton: any | undefined;
 
-            if (requestedButton) {                
-                return {rowIndex: indexOfActionRow, buttonIndex: indexOfButton ,button: requestedButton}
-            }
-            indexOfActionRow ++
+    for (let row of this.components) {
+      requestedButton = row.components.find(
+        (currentValue: ButtonBuilder, indexOfValue: number) => {
+          indexOfButton = indexOfValue;
+          return currentValue.data.label == buttonInfo.data.label;
         }
+      );
 
-        return null
+      if (requestedButton) {
+        return {
+          rowIndex: indexOfActionRow,
+          buttonIndex: indexOfButton,
+          button: requestedButton,
+        };
+      }
+      indexOfActionRow++;
     }
 
-    disableButton(buttonToBeDisabled: MessageButton) {
-        const fetchedButtonData = this.fetchButtonComponentData(buttonToBeDisabled);
-        if (fetchedButtonData) {
+    return null;
+  }
 
-            const disabledButton = fetchedButtonData.button.setDisabled()
-            
-            this.components[fetchedButtonData.rowIndex].components[fetchedButtonData.buttonIndex] = disabledButton;
-            this.updateButtons(this.components)
+  disableButton(buttonToBeDisabled: ButtonBuilder) {
+    const fetchedButtonData = this.fetchButtonComponentData(buttonToBeDisabled);
+    if (fetchedButtonData) {
+      const disabledButton = fetchedButtonData.button.setDisabled();
 
-            return this.components;
-        } 
+      this.components[fetchedButtonData.rowIndex].components[
+        fetchedButtonData.buttonIndex
+      ] = disabledButton;
+      this.updateButtons(this.components);
+
+      return this.components;
     }
+  }
 
-    updateTimer() {
-        clearTimeout(this.timer)
+  updateTimer() {
+    clearTimeout(this.timer);
 
-        this.timer = setTimeout(() => this.endGame(this.gameId), 15_000)
-    }
+    this.timer = setTimeout(() => this.endGame(this.gameId), 15_000);
+  }
 
-    updateButtons(buttonComponents: MessageActionRow[]) {
-        this.updateTimer()
+  updateButtons(buttonComponents: ActionRowBuilder<ButtonBuilder>[]) {
+    this.updateTimer();
 
-        this.components = buttonComponents
-    }
+    this.components = buttonComponents;
+  }
 }

@@ -1,4 +1,4 @@
-import { ColorResolvable, EmbedFieldData, MessageEmbed } from "discord.js";
+import { ColorResolvable, EmbedBuilder, EmbedField } from "discord.js";
 
 /**
  * @param {string} color Color to be set to embed
@@ -8,12 +8,12 @@ import { ColorResolvable, EmbedFieldData, MessageEmbed } from "discord.js";
 export function makeEmbed(
   title: string,
   description?: string,
-  fields?: EmbedFieldData[],
+  fields?: EmbedField[],
   color?: ColorResolvable,
   thumbnailUrl?: string,
   footer?: string
 ) {
-  const embed = new MessageEmbed().setTitle(title);
+  const embed = new EmbedBuilder().setTitle(title);
 
   if (description) embed.setDescription(description);
   if (fields) embed.addFields(fields);
