@@ -18,6 +18,7 @@ export const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 });
+
 global.locks = new Collection();
 
 const isDevolopment = process.env.IS_DEVOLOPMENT;

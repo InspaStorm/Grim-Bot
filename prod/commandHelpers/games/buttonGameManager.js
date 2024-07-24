@@ -35,14 +35,17 @@ export default class ButtonGame extends EventEmitter {
             return this.stats;
         return false;
     }
-    fetchButtonComponentData(buttonInfo) {
+    fetchButtonComponentData(buttonInfo, buttonLabel = undefined) {
         let indexOfButton = 0;
         let indexOfActionRow = 0;
         let requestedButton;
+        if (!buttonLabel) {
+            buttonLabel = buttonInfo.data.label;
+        }
         for (let row of this.components) {
             requestedButton = row.components.find((currentValue, indexOfValue) => {
                 indexOfButton = indexOfValue;
-                return currentValue.data.label == buttonInfo.data.label;
+                return currentValue.data.label == buttonLabel;
             });
             if (requestedButton) {
                 return {
