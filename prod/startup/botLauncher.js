@@ -15,13 +15,13 @@ export async function startAsDevolopment(client, token, loadingBot) {
     });
     // wait for the text to be rendered
     await sleep(1000);
-    const loadingDb = createSpinner("Connecting to local database..").start();
-    await startDb();
-    loadingDb.success({ text: "Connected to Database" });
+    // const loadingDb = createSpinner("Connecting to local database..").start();
+    // await startDb();
+    // loadingDb.success({ text: "Connected to Database" });
     const cmdLoading = createSpinner("Loading commands..").start();
     global.cmdManager = await cmdLoader();
     cmdLoading.success({ text: "Commands got loaded" });
-    await initLock();
+    // await initLock();
     loadingBot.start();
     await client.login(token);
 }

@@ -17,7 +17,6 @@ export default class GameManager {
         return false;
     }
     removeGame(msgId) {
-        console.log(`Game with ID: ${msgId} just ended!`);
         if (this.runningGames.has(msgId)) {
             this.runningGames.delete(msgId);
             return true;
