@@ -1,5 +1,5 @@
 import { Collection } from "discord.js";
-import type { BasicGameInfoType } from "../../types/game";
+import type { BasicGameInfoType } from "../../types/game.js";
 
 export default class GameManager {
   gameType: any;

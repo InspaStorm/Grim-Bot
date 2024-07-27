@@ -1,6 +1,6 @@
 import { ButtonBuilder, ButtonComponent, ActionRowBuilder } from "discord.js";
 import EventEmitter from "events";
-import type { BasicGameInfoType } from "../../types/game";
+import type { BasicGameInfoType } from "../../types/game.js";
 
 export default class ButtonGame extends EventEmitter {
   // ID of the message that is being used as game

@@ -10,7 +10,7 @@ import { ToWords } from "to-words";
 import GameManager from "../../commandHelpers/games/gameManager.js";
 import ButtonGame from "../../commandHelpers/games/buttonGameManager.js";
 import { editReply, replier } from "../../helpers/apiResolver.js";
-import type { BasicGameInfoType } from "../../types/game";
+import type { BasicGameInfoType } from "../../types/game.js";
 import { CommandParamType } from "../../types/commands.js";
 import TicTacToeAI from "../../commandHelpers/games/tic-tac-toe/ttt-ai.js";
 
@@ -18,7 +18,7 @@ function emojifyBoard(boardWithNumbers: number[][]) {
   let resultantBoard: string[][] = [];
 
   for (let row of boardWithNumbers) {
-    let newRow = [];
+    let newRow: string[] = [];
     for (let cellValue of row) {
       newRow.push(NUM_EMOJI_TEMPLATE(cellValue));
     }
@@ -143,14 +143,14 @@ function stringifyGame(gameBoard: Array<any>): string {
 
 function prepareInitialBoard(NUM_OF_COLS: number, NUM_OF_ROWS: number) {
   // Contains the item as simple number like 1, 2 ,3
-  let bareBoard = [];
+  let bareBoard: number[][] = [];
 
   // Contains items as emoji names :one:, :two:, etc.
   let usableBoard: string[][] = [];
   let lastRowNum: number = 1;
   // Makes specified no. of columns
   for (let col_index = 0; col_index <= NUM_OF_COLS - 1; col_index++) {
-    let newBareCol = [];
+    let newBareCol: number[] = [];
 
     // Assigns number to each cell, if its the last number of the row, remebers the value
     for (let row_index = 0; row_index <= NUM_OF_ROWS - 1; row_index++) {

@@ -4,7 +4,7 @@ export function logger(err: Error) {
 	if (err instanceof Error) {
 		
 		const info = err.stack!.toString().split('\n');
-		const stack = [];
+		const stack: string[] = [];
 
 		let i = 0;
 		let level;

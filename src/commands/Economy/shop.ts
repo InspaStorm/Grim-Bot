@@ -1,5 +1,5 @@
 import dbManager from "../../database/dbCrud.js";
-import discord, {
+import {
   ActionRowBuilder,
   ApplicationCommandOptionType,
   ButtonBuilder,
@@ -136,11 +136,11 @@ export default {
     const pendingDeal = register.add(invokeParams.author.id, item);
 
     const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new discord.ButtonBuilder()
+      new ButtonBuilder()
         .setCustomId("shop 1")
         .setLabel("Yes")
         .setStyle(ButtonStyle.Success),
-      new discord.ButtonBuilder()
+      new ButtonBuilder()
         .setCustomId("shop 2")
         .setLabel("No")
         .setStyle(ButtonStyle.Danger)

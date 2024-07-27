@@ -34,17 +34,18 @@ export async function lockAchievements(isInitialize = false) {
 
     const dbEntry = await achievementDb.executeCustom((collection: Collection) => collection.find({}).toArray());
 
-    let userDetails = [];
+    type userEntry = {
+        id: string,
+        achievements: number[]
+    }
+
+    let userDetails: userEntry[] = [];
 
     let user;
     for (user of dbEntry) {
 
         if (user.achievements.length > 0) {
 
-            type userEntry = {
-                id: string,
-                achievements: number[]
-            }
 
             let eachUser: userEntry = {id: user.id, achievements: []}
             let achievement;
@@ -66,7 +67,7 @@ export async function lockCustomReplies(isInitialize = false) {
 
     const dbEntry = await serverConfigDb.executeCustom((collection: Collection) => collection.find({}).toArray());
 
-    const customRepliableGuilds = [];
+    const customRepliableGuilds: number[] = [];
 
     for (let guild of dbEntry) {
         if (guild.custom_replies == 'on') customRepliableGuilds.push(guild.guildId);

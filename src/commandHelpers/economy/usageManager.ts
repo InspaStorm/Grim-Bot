@@ -1,6 +1,8 @@
 import { Collection } from "discord.js";
 
 export default class ItemUsageManager {
+    confirmationPending: Collection<number, string>
+
     constructor() {
         this.confirmationPending = new Collection();
     }

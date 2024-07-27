@@ -1,5 +1,4 @@
-import { Interaction } from "discord.js";
-import { CommandParamType } from "../../types/commands";
+import { CommandParamType } from "../../types/commands.js";
 
 export default {
   name: "about",

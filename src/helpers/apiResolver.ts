@@ -3,13 +3,14 @@ import {
   CommandInteraction,
   InteractionReplyOptions,
   Message,
+  MessageCreateOptions,
   MessageEditOptions,
-  MessageOptions,
+  MessageReplyOptions,
 } from "discord.js";
 
 export async function replier(
   destination: CommandInteraction | Message,
-  content: InteractionReplyOptions | MessageOptions,
+  content: InteractionReplyOptions | MessageReplyOptions,
   isInteraction = false
 ) {
   if (isInteraction) {
@@ -20,7 +21,7 @@ export async function replier(
     return interReply;
   } else {
     const msgReply = await (destination as Message).reply(
-      content as MessageOptions
+      content as MessageReplyOptions
     );
     return msgReply;
   }
@@ -34,7 +35,7 @@ export async function replier(
  */
 export async function sender(
   destination: CommandInteraction,
-  content: MessageOptions
+  content: MessageCreateOptions
 ) {
   const messageInfo = await destination.channel!.send(content);
   return messageInfo;
