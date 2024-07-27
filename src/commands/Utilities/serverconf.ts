@@ -34,39 +34,29 @@ export default {
     },
   ],
 
-  /**
-   *
-   * @param {Message} msg message
-   * @param {String[]} args array of args
-   * @param {GuildMember} author author of the message
-   * @param {Boolean} isInteraction whether the message is from interaction or not
-   */
   async run(invokeParams) {
     // if (!invokeParams.msg.member.permissions.has('MANAGE_GUILD')) return {content: 'You are lacking permission of: `Manage Server` =/'}
     let featureName;
     let decision;
-    if (invokeParams.isInteraction) {
-      featureName = invokeParams.msg.options.get("feature")?.value;
-      decision = invokeParams.msg.options.get("decision")?.value;
-    } else {
-      featureName = args[0];
-      decision = args[1];
-      const cmdFormat =
-        "Command format: `g!server-conf <feature name> <decision>`\nEg: **g!server-conf level on**";
+    featureName = invokeParams.msg.options.get("feature")?.value;
+    decision = invokeParams.msg.options.get("decision")?.value;
 
-      if (!currentFeatures.includes(featureName))
-        return {
-          content: `**${featureName}** is not an available feature\nfeatures include: \`${currentFeatures.join(
-            ", "
-          )}\`\n\n${cmdFormat}`,
-        };
-      if (!validDecisions.includes(decision))
-        return {
-          content: `**${decision}** is not a valid option\nValid options: \`${validDecisions.join(
-            ", "
-          )}\`\n\n${cmdFormat}`,
-        };
-    }
+    const cmdFormat =
+      "Command format: `g!server-conf <feature name> <decision>`\nEg: **g!server-conf level on**";
+
+    if (!currentFeatures.includes(featureName))
+      return {
+        content: `**${featureName}** is not an available feature\nfeatures include: \`${currentFeatures.join(
+          ", "
+        )}\`\n\n${cmdFormat}`,
+      };
+    if (!validDecisions.includes(decision))
+      return {
+        content: `**${decision}** is not a valid option\nValid options: \`${validDecisions.join(
+          ", "
+        )}\`\n\n${cmdFormat}`,
+      };
+
 
     const entry = await collection.singleFind({
       guildId: invokeParams.msg.guild.id,

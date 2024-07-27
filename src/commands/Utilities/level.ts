@@ -6,13 +6,13 @@ import { updateLevel } from "../../commandHelpers/level/updateLevel.js";
 
 const collection = new dbManager("level");
 
-function prepareLevelInfo(scoreOfUser) {
+function prepareLevelInfo(scoreOfUser: number) {
   const arrayOfScores = Object.keys(level);
-  const CurrentLevelScore = arrayOfScores.find((x) => x > scoreOfUser);
-  const CurrentLevel = level[CurrentLevelScore] - 1;
+  const CurrentLevelScore = arrayOfScores.find((x) => Number(x) > scoreOfUser);
+  const CurrentLevel = level[CurrentLevelScore!] - 1;
 
   const userLevelInfoFormat = `Level **${CurrentLevel}**    [ **${Math.round(
-    (scoreOfUser / CurrentLevelScore) * 100
+    (scoreOfUser / Number(CurrentLevelScore)!) * 100
   )}%** ]\n\n${scoreOfUser} out of ${CurrentLevelScore}`;
 
   return userLevelInfoFormat;
@@ -39,7 +39,7 @@ export default {
    * @param {Boolean} isInteraction whether the message is from interaction or not
    */
   async run(invokeParams) {
-    if (!global.locks.get("level").includes(invokeParams.msg.guild.id))
+    if (!global.locks.get("level")!.includes(invokeParams.msg.guild.id))
       return {
         content:
           "**Level system is off** in this server =(\n\nAdmins can turn it on using: `/serverconf level on`",
@@ -118,7 +118,7 @@ export default {
         };
       }
     } catch (err) {
-      updateLevel(invokeParams.msg.user, invokeParams.msg.guild.id);
+      updateLevel(invokeParams.msg.user, invokeParams.msg.guild.id, invokeParams.msg);
 
       const reply = await replier(
         invokeParams.msg,
