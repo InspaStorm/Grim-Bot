@@ -60,7 +60,7 @@ let i = -1;
 let q = -1;
 let commandsInfo: Array<cmdDetails> = [];
 let staffSpecial: Array<cmdDetails> = [];
-let categoryNames = [];
+let categoryNames: String[] = [];
 
 export async function collectCmdInfo(command: commandFile, folder: string) {
 

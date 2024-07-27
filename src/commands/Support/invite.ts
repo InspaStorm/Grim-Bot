@@ -1,6 +1,7 @@
-import discord, {
+import {
   ActionRowBuilder,
   ButtonBuilder,
+  ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
 
@@ -21,13 +22,13 @@ export default {
       new ButtonBuilder()
         .setURL("https://discord.gg/27qtUTyHhs")
         .setLabel("Join InspaStorm (support Server)")
-        .setStyle("LINK"),
+        .setStyle(ButtonStyle.Link),
       new ButtonBuilder()
         .setURL(
           "https://discord.com/api/oauth2/authorize?client_id=796625057391837185&permissions=137442479168&scope=bot%20applications.commands"
         )
         .setLabel("Invite Grim Bot")
-        .setStyle("LINK")
+        .setStyle(ButtonStyle.Link)
     );
     const serverLink = new EmbedBuilder()
       .setColor("#00ffff")

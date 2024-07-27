@@ -2,7 +2,7 @@ import dbManager from "../../database/dbCrud.js";
 import achievementList from "../../commandHelpers/achievements/achievementList.js";
 import { ApplicationCommandOptionType, EmbedBuilder, User } from "discord.js";
 import { inputMemberCheck } from "../../helpers/member.js";
-import { CommandParamType } from "../../types/commands";
+import { CommandParamType } from "../../types/commands.js";
 
 const db = new dbManager("level");
 
@@ -10,7 +10,7 @@ async function makeAwardEmbed(user: User) {
   const res = await db.singleFind({ id: user.id });
 
   const achievementIndexes = res?.achievements || [];
-  const achievements = [];
+  const achievements: {name: string, value: string}[] = [];
 
   if (achievementIndexes.length == 0) {
     achievements.push({

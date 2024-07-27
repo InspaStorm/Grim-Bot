@@ -5,7 +5,7 @@ import {
   CommandInteractionOption,
   Interaction,
   ModalSubmitInteraction,
-  SelectMenuInteraction,
+  StringSelectMenuInteraction,
   User,
 } from "discord.js";
 import fs from "fs";
@@ -103,7 +103,7 @@ export class CmdManager {
     interaction:
       | ButtonInteraction
       | ModalSubmitInteraction
-      | SelectMenuInteraction
+      | StringSelectMenuInteraction
   ) {
     const exe = await this.commands
       .find((cmd) => cmd.name == name || cmd.aliases.includes(name))!
@@ -123,7 +123,7 @@ export async function cmdLoader() {
     const commandFolder = fs.readdirSync(`${pathToCmds}/${folder}`);
 
     for (const file of commandFolder) {
-      if (path.extname(file) == ".js") {
+      if (path.extname(file) == ".js" || path.extname(file) == ".ts") {
         // for dynamic updation: `${pathToCmds}/${folder}/${file}?update=${new Date()}`
         let obj;
         try {

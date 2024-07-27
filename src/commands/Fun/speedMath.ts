@@ -55,7 +55,7 @@ class DiceGame extends ButtonGame {
 
     const question = await this.prepareImgs(questionNumbers.buffers);
 
-    const answer = questionNumbers.numbers.reduce(
+    const answer: number = questionNumbers.numbers.reduce(
       (total, value) => total * value
     );
 
@@ -64,8 +64,8 @@ class DiceGame extends ButtonGame {
   }
 
   async rollDice(quantity: number) {
-    const imgBuffers = [];
-    const numbers = [];
+    const imgBuffers: Buffer[] = [];
+    const numbers: number[] = [];
 
     let i = 0;
 
@@ -104,7 +104,7 @@ class DiceGame extends ButtonGame {
 
   makeButtons(ansNumber: number) {
     let randNums: number[] = [];
-    let buttons = [];
+    let buttons: ButtonBuilder[] = [];
 
     while (randNums.length <= 8) {
       const randInt = Math.floor(Math.random() * 99);
@@ -185,8 +185,8 @@ export default {
 
     const gameId = inter.message.id;
     const player = inter.user;
-
     const interactedGame: DiceGame = lobby.hasGame(gameId);
+
     if (interactedGame) {
       if (player.id != interactedGame.playerId) {
         inter.reply({
