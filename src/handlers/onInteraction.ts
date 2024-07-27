@@ -3,12 +3,12 @@ import {
   ButtonInteraction,
   Interaction,
   ModalSubmitInteraction,
-  SelectMenuInteraction,
+  StringSelectMenuInteraction,
 } from "discord.js";
 
 async function handleFollowUp(
   interaction:
-    | SelectMenuInteraction
+    | StringSelectMenuInteraction
     | ButtonInteraction
     | ModalSubmitInteraction,
   name: string
@@ -19,7 +19,7 @@ async function handleFollowUp(
 export function handleInteraction(
   interaction:
     | Interaction
-    | SelectMenuInteraction
+    | StringSelectMenuInteraction
     | ButtonInteraction
     | ModalSubmitInteraction
 ) {
@@ -31,7 +31,7 @@ export function handleInteraction(
       isInteraction: true,
       args: cmdArguments,
     });
-  } else if (interaction.isSelectMenu()) {
+  } else if (interaction.isStringSelectMenu()) {
     handleFollowUp(interaction, interaction.customId);
   } else if (interaction.isButton()) {
     handleFollowUp(interaction, interaction.customId.split(" ")[0]);

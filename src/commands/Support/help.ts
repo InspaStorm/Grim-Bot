@@ -1,8 +1,9 @@
 import {
   ActionRowBuilder,
-  Attachment,
+  AttachmentBuilder,
+  StringSelectMenuInteraction,
   EmbedBuilder,
-  SelectMenuBuilder,
+  StringSelectMenuBuilder,
 } from "discord.js";
 import { getCmdDetails } from "../../startup/command-loading/prepareCmdInfo.js";
 
@@ -25,11 +26,11 @@ function prepareMainEmbed(msg, isStaff = false) {
 
   if (isStaff) {
     commandsList = staffCommands;
-    file = new Attachment("./src/pics/embed/staff_help.png");
+    file = new AttachmentBuilder("./src/images/embed/staff_help.png");
     embedPic = "attachment://staff_help.png";
   } else {
     commandsList = userCommands;
-    file = new Attachment("./src/pics/embed/help.png");
+    file = new AttachmentBuilder("./src/images/embed/help.png");
     embedPic = "attachment://help.png";
   }
 
@@ -49,13 +50,13 @@ function prepareMainEmbed(msg, isStaff = false) {
   return { embeds: [helpEmbed], files: [file] };
 }
 
-function prepareCategoryEmbed(categoryName) {
+function prepareCategoryEmbed(categoryName: string) {
   const category = categoryDetails.get(categoryName);
   const helpEmbed = new EmbedBuilder()
     .setColor("#00ffff")
     .setTitle(category.label)
     .setDescription(category.detail)
-    .addField("\u200b", category.cmdInfo);
+    .addFields([{name: "\u200b", value: category.cmdInfo}]);
   return helpEmbed;
 }
 
@@ -79,7 +80,7 @@ export default {
       staffCommands = cmdDetails.staffCommands;
       categoryDetails = cmdDetails.categoryDetails;
     }
-    const menuEntries = [];
+    const menuEntries: {label: string, description: string, value: string}[]  = [];
 
     categoryDetails.forEach((value) => {
       const format = {
@@ -90,21 +91,21 @@ export default {
       menuEntries.push(format);
     });
 
-    const row = new ActionRowBuilder().addComponents(
-      new SelectMenuBuilder()
+    const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+      new StringSelectMenuBuilder()
         .setCustomId("help")
         .setPlaceholder("No category selected")
         .addOptions(menuEntries)
     );
 
-    const helpEmbed = devs.includes(invokeParams.author.id)
+    const helpEmbed: {embeds: EmbedBuilder[], files: AttachmentBuilder[], components?: ActionRowBuilder[]} = devs.includes(invokeParams.author.id)
       ? await prepareMainEmbed(invokeParams.msg, true)
       : await prepareMainEmbed(invokeParams.msg, false);
-    helpEmbed.components = [row];
+    helpEmbed.components! = [row];
     return helpEmbed;
   },
 
-  async handle(msg) {
+  async handle(msg: StringSelectMenuInteraction) {
     if (typeof userCommands == "undefined") {
       const cmdDetails = getCmdDetails();
 
@@ -112,6 +113,7 @@ export default {
       staffCommands = cmdDetails.staffCommands;
       categoryDetails = cmdDetails.categoryDetails;
     }
+    
     const embed = prepareCategoryEmbed(msg.values[0]);
     msg.update({ embeds: [embed], files: [] });
     setTimeout(async () => {
