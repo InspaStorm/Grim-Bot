@@ -1,7 +1,5 @@
-src/test.js
 node_modules/
-src/researchArea.js
 .dev
 .env
 
-/prod/
+prod/

@@ -1,17 +1,17 @@
 {
   "name": "grim-bot",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "An entertaining bot made by InspaStorm team!",
   "type": "module",
-  "main": "src/index.js",
+  "main": "prod/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "start": "node prod/index.js",
+    "start": "node .s",
     "build": "tsup src/index.ts --minify"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["discord-bot"],
+  "author": "Ranger",
+  "license": "GPL-3.0-only",
   "dependencies": {
     "axios": "^1.7.2",
     "chalk": "^5.0.1",
